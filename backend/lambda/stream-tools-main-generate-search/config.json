@@ -1,0 +1,5 @@
+{
+  "main_table": "tools-main",
+  "search_table": "tools-search",
+  "lambda_function_name": "stream-tools-main-generate-search"
+}
