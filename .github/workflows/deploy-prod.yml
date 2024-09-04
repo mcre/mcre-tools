@@ -128,7 +128,7 @@ jobs:
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
 
       - name: Sync with S3
-        uses: jakejarvis/s3-sync-action@master
+        uses: kevin-romer/s3-sync-action@master
         with:
           args: --follow-symlinks --delete
         env:
