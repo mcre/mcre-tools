@@ -256,11 +256,20 @@ def create_iam_role_github_actions(scope: Stack):
     px = f"{config['prefix']}-"
     id = config["account_id"]
     cdk_identifier = config["cdk_identifier"]
+
     policies = [
         iam.PolicyStatement(
             actions=["ssm:GetParameter"],
             resources=[
                 f"arn:aws:ssm:{rg}:{id}:parameter/cdk-bootstrap/{cdk_identifier}/*"
+            ],
+        ),
+        iam.PolicyStatement(
+            actions=["sts:AssumeRole"],
+            resources=[
+                f"arn:aws:iam::{id}:role/cdk-{cdk_identifier}-deploy-role-*",
+                f"arn:aws:iam::{id}:role/cdk-{cdk_identifier}-file-publishing-role-*",
+                f"arn:aws:iam::{id}:role/cdk-{cdk_identifier}-lookup-role-*",
             ],
         ),
         iam.PolicyStatement(
