@@ -23,6 +23,11 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    outputs:
+      PREFIX: ${{ steps.output-step.outputs.PREFIX }}
+      CLOUDFRONT_DISTRIBUTION: ${{ steps.output-step.outputs.CLOUDFRONT_DISTRIBUTION }}
+      BUCKET_DISTRIBUTION: ${{ steps.output-step.outputs.BUCKET_DISTRIBUTION }}
+      LAMBDA_FUNCTIONS: ${{ steps.output-step.outputs.LAMBDA_FUNCTIONS }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -45,6 +50,7 @@ jobs:
           cdk deploy --all --require-approval never --outputs-file cdk-outputs.json
 
       - name: Extract Outputs
+        id: output-step
         working-directory: backend/cdk
         run: |
           STACK_NAME=$(jq -r 'keys[0]' cdk-outputs.json)
@@ -52,10 +58,10 @@ jobs:
           CLOUDFRONT_DISTRIBUTION=$(jq -r --arg STACK_NAME "$STACK_NAME" '.[$STACK_NAME].CloudfrontDistribution' cdk-outputs.json)
           BUCKET_DISTRIBUTION=$(jq -r --arg STACK_NAME "$STACK_NAME" '.[$STACK_NAME].BucketDistribution' cdk-outputs.json)
           LAMBDA_FUNCTIONS=$(jq -r --arg STACK_NAME "$STACK_NAME" '.[$STACK_NAME].LambdaFunctions' cdk-outputs.json)
-          echo "PREFIX=${PREFIX}" >> "$GITHUB_OUTPUT"
-          echo "CLOUDFRONT_DISTRIBUTION=${CLOUDFRONT_DISTRIBUTION}" >> "$GITHUB_OUTPUT"
-          echo "BUCKET_DISTRIBUTION=${BUCKET_DISTRIBUTION}" >> "$GITHUB_OUTPUT"
-          echo "LAMBDA_FUNCTIONS=${LAMBDA_FUNCTIONS}" >> "$GITHUB_OUTPUT"
+          echo "PREFIX=${PREFIX}" >> $GITHUB_OUTPUT
+          echo "CLOUDFRONT_DISTRIBUTION=${CLOUDFRONT_DISTRIBUTION}" >> $GITHUB_OUTPUT
+          echo "BUCKET_DISTRIBUTION=${BUCKET_DISTRIBUTION}" >> $GITHUB_OUTPUT
+          echo "LAMBDA_FUNCTIONS=${LAMBDA_FUNCTIONS}" >> $GITHUB_OUTPUT
 
   deploy-lambda:
     runs-on: ubuntu-latest
@@ -81,7 +87,7 @@ jobs:
 
       - name: Deploy Lambda functions
         run: |
-          echo S=${{ needs.deploy-cdk.outputs.LAMBDA_FUNCTIONS }}"
+          echo ${{ needs.deploy-cdk.outputs.LAMBDA_FUNCTIONS }}
           IFS=',' read -r -a arr <<< "${{  needs.deploy-cdk.outputs.LAMBDA_FUNCTIONS }}"
           for fn in "${arr[@]}"; do
             short_name="${fn/${{  needs.deploy-cdk.outputs.PREFIX }}-/}"
