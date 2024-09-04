@@ -37,17 +37,16 @@ jobs:
         run: npm install -g aws-cdk
 
       - name: CDK Deploy
+        working-directory: backend/cdk
         run: |
-          cd backend/cdk
           python3 -m venv .venv
           source .venv/bin/activate
           pip install -r requirements.txt
-          cdk deploy --all --require-approval --outputs-file cdk-outputs.json
+          cdk deploy --all --require-approval never --outputs-file cdk-outputs.json
 
       - name: Extract Outputs
-        id: extract-outputs
+        working-directory: backend/cdk
         run: |
-          cd backend/cdk
           PREFIX=$(jq -r '.[].Prefix' cdk-outputs.json)
           CLOUDFRONT_DISTRIBUTION=$(jq -r '.[].CloudfrontDistribution' cdk-outputs.json)
           BUCKET_DISTRIBUTION=$(jq -r '.[].BucketDistribution' cdk-outputs.json)
