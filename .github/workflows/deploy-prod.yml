@@ -52,13 +52,10 @@ jobs:
           CLOUDFRONT_DISTRIBUTION=$(jq -r --arg STACK_NAME "$STACK_NAME" '.[$STACK_NAME].CloudfrontDistribution' cdk-outputs.json)
           BUCKET_DISTRIBUTION=$(jq -r --arg STACK_NAME "$STACK_NAME" '.[$STACK_NAME].BucketDistribution' cdk-outputs.json)
           LAMBDA_FUNCTIONS=$(jq -r --arg STACK_NAME "$STACK_NAME" '.[$STACK_NAME].LambdaFunctions' cdk-outputs.json)
-          echo "PREFIX=${PREFIX}" >> $GITHUB_ENV
-          echo "CLOUDFRONT_DISTRIBUTION=${CLOUDFRONT_DISTRIBUTION}" >> $GITHUB_ENV
-          echo "BUCKET_DISTRIBUTION=${BUCKET_DISTRIBUTION}" >> $GITHUB_ENV
-          echo "LAMBDA_FUNCTIONS=${LAMBDA_FUNCTIONS}" >> $GITHUB_ENV
-          echo "LAMBDA_FUNCTIONS=${{ env.LAMBDA_FUNCTIONS }}"
-          echo "LAMBDA_FUNCTIONS=${LAMBDA_FUNCTIONS}"
-          cat cdk-outputs.json
+          echo "PREFIX=${PREFIX}" >> "$GITHUB_OUTPUT"
+          echo "CLOUDFRONT_DISTRIBUTION=${CLOUDFRONT_DISTRIBUTION}" >> "$GITHUB_OUTPUT"
+          echo "BUCKET_DISTRIBUTION=${BUCKET_DISTRIBUTION}" >> "$GITHUB_OUTPUT"
+          echo "LAMBDA_FUNCTIONS=${LAMBDA_FUNCTIONS}" >> "$GITHUB_OUTPUT"
 
   deploy-lambda:
     runs-on: ubuntu-latest
@@ -84,10 +81,10 @@ jobs:
 
       - name: Deploy Lambda functions
         run: |
-          echo "LAMBDA_FUNCTIONS=${{ env.LAMBDA_FUNCTIONS }}"
-          IFS=',' read -r -a arr <<< "${{ env.LAMBDA_FUNCTIONS }}"
+          echo S=${{ needs.deploy-cdk.outputs.LAMBDA_FUNCTIONS }}"
+          IFS=',' read -r -a arr <<< "${{  needs.deploy-cdk.outputs.LAMBDA_FUNCTIONS }}"
           for fn in "${arr[@]}"; do
-            short_name="${fn/${{ env.PREFIX }}-/}"
+            short_name="${fn/${{  needs.deploy-cdk.outputs.PREFIX }}-/}"
             cd ./backend/lambda/${short_name}
             cp ../util.py ./
             zip -r package.zip *
@@ -100,7 +97,9 @@ jobs:
     permissions:
       id-token: write
       contents: read
-    needs: deploy-lambda
+    needs:
+      - deploy-cdk
+      - deploy-lambda
     steps:
       - uses: actions/checkout@v2
 
@@ -128,11 +127,11 @@ jobs:
         with:
           args: --follow-symlinks --delete
         env:
-          AWS_S3_BUCKET: ${{ env.BUCKET_DISTRIBUTION }}
+          AWS_S3_BUCKET: ${{  needs.deploy-cdk.outputs.BUCKET_DISTRIBUTION }}
           SOURCE_DIR: dist
 
       - name: Invalidate CloudFront
         uses: chetan/invalidate-cloudfront-action@master
         env:
-          DISTRIBUTION: ${{ env.CLOUDFRONT_DISTRIBUTION }}
+          DISTRIBUTION: ${{  needs.deploy-cdk.outputs.CLOUDFRONT_DISTRIBUTION }}
           PATHS: /*
