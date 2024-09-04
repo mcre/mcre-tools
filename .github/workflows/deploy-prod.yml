@@ -55,6 +55,7 @@ jobs:
           echo "CLOUDFRONT_DISTRIBUTION=${CLOUDFRONT_DISTRIBUTION}" >> $GITHUB_ENV
           echo "BUCKET_DISTRIBUTION=${BUCKET_DISTRIBUTION}" >> $GITHUB_ENV
           echo "LAMBDA_FUNCTIONS=${LAMBDA_FUNCTIONS}" >> $GITHUB_ENV
+          echo "LAMBDA_FUNCTIONS=${{ env.LAMBDA_FUNCTIONS }}"
 
   deploy-lambda:
     runs-on: ubuntu-latest
@@ -80,6 +81,7 @@ jobs:
 
       - name: Deploy Lambda functions
         run: |
+          echo "LAMBDA_FUNCTIONS=${{ env.LAMBDA_FUNCTIONS }}"
           IFS=',' read -r -a arr <<< "${{ env.LAMBDA_FUNCTIONS }}"
           for fn in "${arr[@]}"; do
             short_name="${fn/${{ env.PREFIX }}-/}"
