@@ -87,7 +87,6 @@ jobs:
 
       - name: Deploy Lambda functions
         run: |
-          echo ${{ needs.deploy-cdk.outputs.LAMBDA_FUNCTIONS }}
           IFS=',' read -r -a arr <<< "${{  needs.deploy-cdk.outputs.LAMBDA_FUNCTIONS }}"
           for fn in "${arr[@]}"; do
             short_name="${fn/${{  needs.deploy-cdk.outputs.PREFIX }}-/}"
@@ -95,7 +94,7 @@ jobs:
             cp ../util.py ./
             zip -r package.zip *
             cd ../../../
-            aws lambda update-function-code --function-name ${fn} --zip-file fileb://./lambda/${short_name}/package.zip
+            aws lambda update-function-code --function-name ${fn} --zip-file fileb://./backend/lambda/${short_name}/package.zip
           done
 
   deploy-node:
