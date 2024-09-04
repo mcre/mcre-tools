@@ -46,6 +46,7 @@ jobs:
       - name: Extract Outputs
         id: extract-outputs
         run: |
+          cd backend/cdk
           PREFIX=$(jq -r '.[].Prefix' cdk-outputs.json)
           CLOUDFRONT_DISTRIBUTION=$(jq -r '.[].CloudfrontDistribution' cdk-outputs.json)
           BUCKET_DISTRIBUTION=$(jq -r '.[].BucketDistribution' cdk-outputs.json)
