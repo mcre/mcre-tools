@@ -267,9 +267,10 @@ def create_iam_role_github_actions(scope: Stack):
         iam.PolicyStatement(
             actions=["sts:AssumeRole"],
             resources=[
-                f"arn:aws:iam::{id}:role/cdk-{cdk_identifier}-deploy-role-*",
-                f"arn:aws:iam::{id}:role/cdk-{cdk_identifier}-file-publishing-role-*",
-                f"arn:aws:iam::{id}:role/cdk-{cdk_identifier}-lookup-role-*",
+                f"arn:aws:iam::{id}:role/cdk-{cdk_identifier}-deploy-role-{id}-{rg}",
+                f"arn:aws:iam::{id}:role/cdk-{cdk_identifier}-file-publishing-role-{id}-{rg}",
+                f"arn:aws:iam::{id}:role/cdk-{cdk_identifier}-image-publishing-role-{id}-{rg}",
+                f"arn:aws:iam::{id}:role/cdk-{cdk_identifier}-lookup-role--{id}-{rg}",
             ],
         ),
         iam.PolicyStatement(
