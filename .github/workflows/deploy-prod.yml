@@ -27,7 +27,9 @@ jobs:
         run: npm install -g aws-cdk
 
       - name: CDK Deploy
-        run: cdk deploy --all --outputs-file cdk-outputs.json
+        run: |
+          cd backend/cdk
+          cdk deploy --all --outputs-file cdk-outputs.json
 
       - name: Extract Outputs
         id: extract-outputs
