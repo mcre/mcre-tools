@@ -29,6 +29,9 @@ jobs:
       - name: CDK Deploy
         run: |
           cd backend/cdk
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install -r requirements.txt
           cdk deploy --all --outputs-file cdk-outputs.json
 
       - name: Extract Outputs
