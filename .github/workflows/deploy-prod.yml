@@ -56,6 +56,8 @@ jobs:
           echo "BUCKET_DISTRIBUTION=${BUCKET_DISTRIBUTION}" >> $GITHUB_ENV
           echo "LAMBDA_FUNCTIONS=${LAMBDA_FUNCTIONS}" >> $GITHUB_ENV
           echo "LAMBDA_FUNCTIONS=${{ env.LAMBDA_FUNCTIONS }}"
+          echo "LAMBDA_FUNCTIONS=${LAMBDA_FUNCTIONS}"
+          cat cdk-outputs.json
 
   deploy-lambda:
     runs-on: ubuntu-latest
