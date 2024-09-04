@@ -1,5 +1,25 @@
 # CDK コマンドメモ
 
+## 設計方針について
+
+configのenvを変更することにより、AWSアカウントや同じアカウント内に独立環境を作成できるようにしたい。
+そうでない場合はできるだけPythonコード内にハードコードする。
+
+## 前提とするリソースについて
+
+下記は手動で作成する。
+
+- AWS Certificate Manager
+  - CDKでは別のリージョンにリソースを作成できないうえに、CloudFrontではus-east-1につくられたACMしか使用できないため。
+- Open ID Connect Provider
+  - AWSアカウント上に複数の同じProviderを使用することができないため。
+
+## Github Actionsの権限について
+
+Github Actions自体でもCDKのDeployを行っているが、そのためのIAM RoleはCDKで作成したものため、初回のCDK Deployはローカル環境から別の権限で実施する必要がある。
+
+なおIAM RoleのarnはGithubリポジトリのActions用の環境変数に`AWS_IAM_ROLE_ARN`として登録する必要がある。
+
 ## 仮想環境
 
 各コマンドは仮想環境上で実行する必要がある。

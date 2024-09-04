@@ -1,0 +1,100 @@
+name: deploy-prod
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - backend/cdk/**
+      - backend/lambda/**
+      - src/**
+      - index.html
+      - package.json
+      - package-lock.json
+  workflow_dispatch:
+
+env:
+  AWS_ROLE_ARN: ${{ vars.AWS_IAM_ROLE_ARN }}
+  AWS_DEFAULT_REGION: ap-northeast-1
+
+jobs:
+  deploy-cdk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install AWS CDK
+        run: npm install -g aws-cdk
+
+      - name: CDK Deploy
+        run: cdk deploy --all --outputs-file cdk-outputs.json
+
+      - name: Extract Outputs
+        id: extract-outputs
+        run: |
+          PREFIX=$(jq -r '.[].PREFIX' cdk-outputs.json)
+          CLOUDFRONT_DISTRIBUTION=$(jq -r '.[].CloudfrontDistribution' cdk-outputs.json)
+          BUCKET_DISTRIBUTION=$(jq -r '.[].BucketDistribution' cdk-outputs.json)
+          LAMBDA_FUNCTIONS=$(jq -r '.[].LambdaFunctions' cdk-outputs.json)
+          echo "PREFIX=${PREFIX}" >> $GITHUB_ENV
+          echo "CLOUDFRONT_DISTRIBUTION=${CLOUDFRONT_DISTRIBUTION}" >> $GITHUB_ENV
+          echo "BUCKET_DISTRIBUTION=${BUCKET_DISTRIBUTION}" >> $GITHUB_ENV
+          echo "LAMBDA_FUNCTIONS=${LAMBDA_FUNCTIONS}" >> $GITHUB_ENV
+
+  deploy-lambda:
+    runs-on: ubuntu-latest
+    needs: deploy-cdk
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+
+      - name: Install Python modules
+        run: pip3 install awscli
+
+      - name: Deploy Lambda functions
+        run: |
+          IFS=',' read -r -a arr <<< "${{ env.LAMBDA_FUNCTIONS }}"
+          for fn in "${arr[@]}"; do
+            short_name="${fn/${{ env.PREFIX }}-/}"
+            cd ./backend/lambda/${short_name}
+            cp ../util.py ./
+            zip -r package.zip *
+            cd ../../../
+            aws lambda update-function-code --function-name ${fn} --zip-file fileb://./lambda/${short_name}/package.zip
+          done
+
+  deploy-node:
+    runs-on: ubuntu-latest
+    needs: deploy-lambda
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+          cache: npm
+
+      - name: npm ci, build
+        run: |
+          export NODE_ENV=development
+          npm ci
+          export NODE_ENV=production
+          npm run build --if-present
+
+      - name: Sync with S3
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --follow-symlinks --delete
+        env:
+          AWS_S3_BUCKET: ${{ env.BUCKET_DISTRIBUTION }}
+          SOURCE_DIR: dist
+
+      - name: Invalidate CloudFront
+        uses: chetan/invalidate-cloudfront-action@master
+        env:
+          DISTRIBUTION: ${{ env.CLOUDFRONT_DISTRIBUTION }}
+          PATHS: /*

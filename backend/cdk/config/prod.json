@@ -1,6 +1,12 @@
 {
   "prefix": "mcre-tools",
+  "account_id": "118834186871",
   "tags": [{ "key": "project", "value": "mcre-tools" }],
+  "iam": {
+    "open_id_connect_provider": {
+      "github_arn": "arn:aws:iam::118834186871:oidc-provider/token.actions.githubusercontent.com"
+    }
+  },
   "dynamodb": {
     "primary": {
       "deletion_protection": false,

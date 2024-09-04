@@ -91,7 +91,6 @@ def create_lambda_function(
 ):
     policies.append(
         iam.PolicyStatement(
-            effect=iam.Effect.ALLOW,
             actions=[
                 "logs:CreateLogGroup",
                 "logs:CreateLogStream",
@@ -117,8 +116,8 @@ def create_lambda_function(
         scope,
         f"lambda-function-{name}",
         function_name=f"{config['prefix']}-{name}",
-        code=lambda_.InlineCode("def lambda_handler(event, context):\n    pass"),
-        handler="lambda_function.lambda_handler",
+        code=lambda_.InlineCode("def main(event, context):\n    pass"),
+        handler="main.main",
         runtime=lambda_.Runtime.PYTHON_3_12,
         memory_size=config["lambda"][name]["memory"],
         timeout=Duration.seconds(config["lambda"][name]["timeout_in_seconds"]),
@@ -201,7 +200,7 @@ def create_s3_bucket(scope: Stack, name: str):
     return resource
 
 
-def create_cloudfront_distribution(scope: Stack, name: str, bucket: s3.Bucket):
+def create_cloudfront(scope: Stack, name: str, bucket: s3.Bucket):
     domain_config = config["cloudfront"]["domain"][name]
 
     existing_hosted_zone = route53.HostedZone.from_hosted_zone_attributes(
@@ -219,10 +218,12 @@ def create_cloudfront_distribution(scope: Stack, name: str, bucket: s3.Bucket):
             f"cloudfront-certificate-{name}",
             domain_config["certificate_arn"],
         ),
+        domain_names=[f"{domain_config['name']}.{domain_config['zone_name']}"],
         default_behavior=cloudfront.BehaviorOptions(
             origin=cloudfront_origins.S3Origin(bucket),
             viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         ),
+        default_root_object="index.html",
         error_responses=[
             cloudfront.ErrorResponse(
                 http_status=403,
@@ -241,6 +242,93 @@ def create_cloudfront_distribution(scope: Stack, name: str, bucket: s3.Bucket):
         target=route53.RecordTarget.from_alias(
             route53_targets.CloudFrontTarget(resource)
         ),
+    )
+
+    add_tags(resource)
+    return resource
+
+
+def create_iam_role_github_actions(scope: Stack):
+    owner = "mcre"
+    repo = "mcre-tools"
+
+    rg = "ap-northeast-1"
+    px = f"{config['prefix']}-"
+    id = config["account_id"]
+    policies = [
+        iam.PolicyStatement(
+            actions=["cloudformation:*"],
+            resources=[
+                f"arn:aws:cloudformation:{rg}:{id}:stack/{px}*",
+            ],
+        ),
+        iam.PolicyStatement(
+            actions=[
+                "lambda:*",
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
+            ],
+            resources=[
+                f"arn:aws:lambda:{rg}:{id}:function:{px}*",
+                f"arn:aws:logs:{rg}:{id}:log-group:/aws/lambda/{px}*",
+            ],
+        ),
+        iam.PolicyStatement(
+            actions=["dynamodb:*"],
+            resources=[
+                f"arn:aws:dynamodb:{rg}:{id}:table/{px}*",
+                f"arn:aws:dynamodb:{rg}:{id}:table/{px}*/index/*",
+            ],
+        ),
+        iam.PolicyStatement(
+            actions=["apigateway:*"],
+            resources=[f"arn:aws:apigateway:{rg}::/restapis/{px}*"],
+        ),
+        iam.PolicyStatement(
+            actions=["route53:*"],
+            resources=[
+                f"arn:aws:route53:::hostedzone/{px}*",
+                f"arn:aws:route53:::change/*",
+                f"arn:aws:route53:::recordset/*",
+            ],
+        ),
+        iam.PolicyStatement(
+            actions=["s3:*"],
+            resources=[
+                f"arn:aws:s3:::{px}*",
+                f"arn:aws:s3:::{px}*/*",
+            ],
+        ),
+        iam.PolicyStatement(
+            actions=["cloudfront:*"],
+            resources=[
+                f"arn:aws:cloudfront::{id}:distribution/{px}*",
+            ],
+        ),
+        iam.PolicyStatement(
+            actions=["iam:PassRole"],
+            resources=["*"],
+        ),
+    ]
+
+    resource = iam.Role(
+        scope,
+        "iam-role-github-actions",
+        role_name=f"{config['prefix']}-github-actions",
+        assumed_by=iam.WebIdentityPrincipal(
+            config["iam"]["open_id_connect_provider"]["github_arn"],
+            {
+                "StringLike": {
+                    "token.actions.githubusercontent.com:sub": f"repo:{owner}/{repo}:*"
+                }
+            },
+        ),
+        inline_policies={
+            f"{config['prefix']}-github-actions-policy": iam.PolicyDocument(
+                statements=policies
+            )
+        },
     )
 
     add_tags(resource)
