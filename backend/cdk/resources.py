@@ -255,7 +255,21 @@ def create_iam_role_github_actions(scope: Stack):
     rg = "ap-northeast-1"
     px = f"{config['prefix']}-"
     id = config["account_id"]
+    cdk_identifier = config["cdk_identifier"]
     policies = [
+        iam.PolicyStatement(
+            actions=["ssm:GetParameter"],
+            resources=[
+                f"arn:aws:ssm:{rg}:{id}:parameter/cdk-bootstrap/{cdk_identifier}/*"
+            ],
+        ),
+        iam.PolicyStatement(
+            actions=["s3:ListBucket", "s3:GetObject", "s3:PutObject"],
+            resources=[
+                f"arn:aws:s3:::cdk-{cdk_identifier}-assets-{id}-{rg}",
+                f"arn:aws:s3:::cdk-{cdk_identifier}-assets-{id}-{rg}/*",
+            ],
+        ),
         iam.PolicyStatement(
             actions=["cloudformation:*"],
             resources=[
@@ -305,10 +319,6 @@ def create_iam_role_github_actions(scope: Stack):
             resources=[
                 f"arn:aws:cloudfront::{id}:distribution/{px}*",
             ],
-        ),
-        iam.PolicyStatement(
-            actions=["iam:PassRole"],
-            resources=["*"],
         ),
     ]
 
