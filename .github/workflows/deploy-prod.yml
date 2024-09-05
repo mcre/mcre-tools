@@ -133,7 +133,4 @@ jobs:
           aws-region: ap-northeast-1
           invalidate-paths: "/*"
           default-root-object: "index.html"
-          include-origin-prefix: true
-        env:
-          DISTRIBUTION: ${{  needs.deploy-cdk.outputs.CLOUDFRONT_DISTRIBUTION }}
-          PATHS: /*
+          include-origin-prefix: false
