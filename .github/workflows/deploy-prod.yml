@@ -127,7 +127,7 @@ jobs:
           SOURCE_DIR: dist
 
       - name: Invalidate CloudFront
-        uses: chetan/invalidate-cloudfront-action@v2
+        uses: chetan/invalidate-cloudfront-action@v2.4
         env:
           DISTRIBUTION: ${{  needs.deploy-cdk.outputs.CLOUDFRONT_DISTRIBUTION }}
           PATHS: /*
