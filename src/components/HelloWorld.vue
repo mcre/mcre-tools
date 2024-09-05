@@ -1,14 +1,7 @@
 <template>
   <v-container class="fill-height">
-    <v-responsive
-      class="align-centerfill-height mx-auto"
-      max-width="900"
-    >
-      <v-img
-        class="mb-4"
-        height="150"
-        src="@/assets/logo.png"
-      />
+    <v-responsive class="align-centerfill-height mx-auto" max-width="900">
+      <v-img class="mb-4" height="150" src="@/assets/logo.png" />
 
       <div class="text-center">
         <div class="text-body-2 font-weight-light mb-n1">Welcome to</div>
@@ -38,7 +31,9 @@
 
             <template #subtitle>
               <div class="text-subtitle-1">
-                Replace this page by removing <v-kbd>{{ `<HelloWorld />` }}</v-kbd> in <v-kbd>pages/index.vue</v-kbd>.
+                Replace this page by removing
+                <v-kbd>{{ `<HelloWorld />` }}</v-kbd> in
+                <v-kbd>pages/index.vue</v-kbd>.
               </div>
             </template>
 
@@ -153,5 +148,32 @@
 </template>
 
 <script setup lang="ts">
-  //
+import aspida from "@aspida/fetch";
+import api from "@/apis/$api";
+import { JukugoSearchResponse } from "@/apis/@types/index";
+
+const data = ref<JukugoSearchResponse | null>(null);
+const loading = ref(true);
+const error = ref<string | null>(null);
+
+const baseURL = import.meta.env.VITE_API_BASE_URL;
+console.log(baseURL);
+
+const fetchData = async () => {
+  const client = api(aspida(fetch, { baseURL }));
+
+  try {
+    data.value = await client.v1.jukugo._char("肉").left_search.$get();
+  } catch (err) {
+    error.value = "Failed to fetch data";
+  } finally {
+    loading.value = false;
+  }
+
+  console.log(data.value);
+};
+
+onMounted(() => {
+  fetchData();
+});
 </script>

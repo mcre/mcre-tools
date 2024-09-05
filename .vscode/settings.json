@@ -2,5 +2,8 @@
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter"
   },
-  "cSpell.words": ["ascg", "CBZA", "certificatemanager", "hostedzone", "mebibytes", "oidc", "QAZVLH", "recordset", "restapis", "runtimes", "venv"]
+  "cSpell.words": ["ascg", "CBZA", "certificatemanager", "hostedzone", "jukugo", "mebibytes", "oidc", "QAZVLH", "recordset", "restapis", "runtimes", "unplugin", "venv", "VITE"],
+  "yaml.schemas": {
+    "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json": "file:///Users/fujitashinya/mcre/git/mcre/mcre-tools/openapi.yaml"
+  }
 }

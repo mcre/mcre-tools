@@ -2,13 +2,19 @@
   "name": "mcre-tools",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
+    "dev": "npm run api:build && concurrently \"vite\" \"npm run api:watch\"",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
-    "lint": "eslint . --fix --ignore-path .gitignore"
+    "lint": "eslint . --fix --ignore-path .gitignore",
+    "api:build": "rm -rf ./src/apis && npx openapi2aspida",
+    "api:watch": "chokidar ./openapi.yaml -c \"npm run api:build\""
   },
   "dependencies": {
+    "@aspida/axios": "^1.14.0",
+    "@aspida/fetch": "^1.14.0",
     "@mdi/font": "7.4.47",
+    "aspida": "^1.14.0",
+    "axios": "^1.7.7",
     "core-js": "^3.37.1",
     "roboto-fontface": "*",
     "vue": "^3.4.31",
@@ -19,7 +25,10 @@
     "@types/node": "^20.14.10",
     "@vitejs/plugin-vue": "^5.0.5",
     "@vue/eslint-config-typescript": "^13.0.0",
+    "chokidar-cli": "^3.0.0",
+    "concurrently": "^8.2.2",
     "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-config-vuetify": "^1.0.0",
     "eslint-plugin-import": "^2.29.1",

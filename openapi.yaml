@@ -1,0 +1,56 @@
+openapi: 3.1.0
+info:
+  title: mcre-tools API
+  version: 0.0.1
+paths:
+  /v1/jukugo/{char}/left-search:
+    get:
+      summary: 熟語の左側の文字を検索
+      parameters:
+        - in: path
+          name: char
+          required: true
+          schema:
+            type: string
+            example: "力"
+          description: 右側の文字
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JukugoSearchResponse"
+
+  /v1/jukugo/{char}/right-search:
+    get:
+      summary: 熟語の右側の文字を検索
+      parameters:
+        - in: path
+          name: char
+          required: true
+          schema:
+            type: string
+            example: "力"
+          description: 左側の文字
+      responses:
+        "200":
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JukugoSearchResponse"
+
+components:
+  schemas:
+    JukugoSearchResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          char:
+            type: string
+            description: 熟語の反対側の文字
+          cost:
+            type: integer
+            description: 熟語生成コスト

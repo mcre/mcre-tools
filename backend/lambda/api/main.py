@@ -9,5 +9,5 @@ import util as u
 def main(event, context):
     return {
         "statusCode": 200,
-        "body": json.dumps({"TEST": "TEST"}),
+        "body": json.dumps([]),
     }

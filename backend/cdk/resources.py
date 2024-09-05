@@ -142,7 +142,12 @@ def create_apigateway(scope: Stack, name: str, target_lambda: lambda_.Function):
     lambda_integration = apigateway.LambdaIntegration(target_lambda)
     proxy_resource = resource.root.add_resource("{proxy+}")
     proxy_resource.add_method("ANY", lambda_integration)
-
+    proxy_resource.add_cors_preflight(
+        allow_origins=[
+            f"https://{config["cloudfront"]["domain"]["distribution"]['name']}.{config["cloudfront"]["domain"]["distribution"]['zone_name']}",
+            "http://localhost:3000",
+        ]
+    )
     domain_config = config["api-gateway"]["domain"][name]
 
     existing_hosted_zone = route53.HostedZone.from_hosted_zone_attributes(
