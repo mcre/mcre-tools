@@ -13,6 +13,10 @@ on:
       - package-lock.json
   workflow_dispatch:
 
+permissions:
+  id-token: write
+  contents: read
+
 env:
   AWS_ROLE_ARN: ${{ vars.AWS_IAM_ROLE_ARN }}
   AWS_DEFAULT_REGION: ap-northeast-1
@@ -20,9 +24,6 @@ env:
 jobs:
   deploy-cdk:
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
     outputs:
       PREFIX: ${{ steps.output-step.outputs.PREFIX }}
       CLOUDFRONT_DISTRIBUTION: ${{ steps.output-step.outputs.CLOUDFRONT_DISTRIBUTION }}
@@ -65,9 +66,6 @@ jobs:
 
   deploy-lambda:
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
     needs: deploy-cdk
     steps:
       - uses: actions/checkout@v2
@@ -99,9 +97,6 @@ jobs:
 
   deploy-node:
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
     needs:
       - deploy-cdk
       - deploy-lambda
