@@ -78,7 +78,9 @@ policies = [
     ),
     iam.PolicyStatement(
         actions=["cloudfront:CreateInvalidation"],
-        resources=[f"arn:aws:cloudfront::{config["account_id"]}:distribution/{cloudfront_distribution.distribution_id}"],
+        resources=[
+            f"arn:aws:cloudfront::{config['account_id']}:distribution/{cloudfront_distribution.distribution_id}"
+        ],
     ),
 ]
 
