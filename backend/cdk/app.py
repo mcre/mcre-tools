@@ -64,7 +64,7 @@ cloudfront_distribution = create_cloudfront(stack, "distribution", bucket_distri
 # Github Actions用のIAM Role
 policies = [
     iam.PolicyStatement(
-        actions=["s3:PutObject", "s3:DeleteObject"],
+        actions=["s3:ListBucket", "s3:PutObject", "s3:DeleteObject"],
         resources=[
             bucket_distribution.bucket_arn,
             f"{bucket_distribution.bucket_arn}/*",
