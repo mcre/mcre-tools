@@ -127,7 +127,12 @@ jobs:
           SOURCE_DIR: dist
 
       - name: Invalidate CloudFront
-        uses: chetan/invalidate-cloudfront-action@v2.4
+        uses: badsyntax/github-action-aws-cloudfront@master
+        with:
+          distribution-id: ${{  needs.deploy-cdk.outputs.CLOUDFRONT_DISTRIBUTION }}
+          aws-region: ap-northeast-1
+          invalidate-paths: "/*"
+          default-root-object: "index.html"
         env:
           DISTRIBUTION: ${{  needs.deploy-cdk.outputs.CLOUDFRONT_DISTRIBUTION }}
           PATHS: /*
