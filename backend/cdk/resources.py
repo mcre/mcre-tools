@@ -144,7 +144,7 @@ def create_apigateway(scope: Stack, name: str, target_lambda: lambda_.Function):
     proxy_resource.add_method("ANY", lambda_integration)
     proxy_resource.add_cors_preflight(
         allow_origins=[
-            f"https://{config["cloudfront"]["domain"]["distribution"]['name']}.{config["cloudfront"]["domain"]["distribution"]['zone_name']}",
+            f"https://{config['cloudfront']['domain']['distribution']['name']}.{config['cloudfront']['domain']['distribution']['zone_name']}",
             "http://localhost:3000",
         ]
     )
