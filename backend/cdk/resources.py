@@ -248,89 +248,40 @@ def create_cloudfront(scope: Stack, name: str, bucket: s3.Bucket):
     return resource
 
 
-def create_iam_role_github_actions(scope: Stack):
+def create_iam_role_github_actions(scope: Stack, policies: list = []):
     owner = "mcre"
     repo = "mcre-tools"
 
     rg = "ap-northeast-1"
-    px = f"{config['prefix']}-"
     id = config["account_id"]
     cdk_identifier = config["cdk_identifier"]
 
-    policies = [
-        iam.PolicyStatement(
-            actions=["ssm:GetParameter"],
-            resources=[
-                f"arn:aws:ssm:{rg}:{id}:parameter/cdk-bootstrap/{cdk_identifier}/*"
-            ],
-        ),
-        iam.PolicyStatement(
-            actions=["sts:AssumeRole"],
-            resources=[
-                f"arn:aws:iam::{id}:role/cdk-{cdk_identifier}-deploy-role-{id}-{rg}",
-                f"arn:aws:iam::{id}:role/cdk-{cdk_identifier}-file-publishing-role-{id}-{rg}",
-                f"arn:aws:iam::{id}:role/cdk-{cdk_identifier}-image-publishing-role-{id}-{rg}",
-                f"arn:aws:iam::{id}:role/cdk-{cdk_identifier}-lookup-role--{id}-{rg}",
-            ],
-        ),
-        iam.PolicyStatement(
-            actions=["s3:ListBucket", "s3:GetObject", "s3:PutObject"],
-            resources=[
-                f"arn:aws:s3:::cdk-{cdk_identifier}-assets-{id}-{rg}",
-                f"arn:aws:s3:::cdk-{cdk_identifier}-assets-{id}-{rg}/*",
-            ],
-        ),
-        iam.PolicyStatement(
-            actions=["cloudformation:*"],
-            resources=[
-                f"arn:aws:cloudformation:{rg}:{id}:stack/{px}*",
-            ],
-        ),
-        iam.PolicyStatement(
-            actions=[
-                "lambda:*",
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents",
-            ],
-            resources=[
-                f"arn:aws:lambda:{rg}:{id}:function:{px}*",
-                f"arn:aws:logs:{rg}:{id}:log-group:/aws/lambda/{px}*",
-            ],
-        ),
-        iam.PolicyStatement(
-            actions=["dynamodb:*"],
-            resources=[
-                f"arn:aws:dynamodb:{rg}:{id}:table/{px}*",
-                f"arn:aws:dynamodb:{rg}:{id}:table/{px}*/index/*",
-            ],
-        ),
-        iam.PolicyStatement(
-            actions=["apigateway:*"],
-            resources=[f"arn:aws:apigateway:{rg}::/restapis/{px}*"],
-        ),
-        iam.PolicyStatement(
-            actions=["route53:*"],
-            resources=[
-                f"arn:aws:route53:::hostedzone/{px}*",
-                f"arn:aws:route53:::change/*",
-                f"arn:aws:route53:::recordset/*",
-            ],
-        ),
-        iam.PolicyStatement(
-            actions=["s3:*"],
-            resources=[
-                f"arn:aws:s3:::{px}*",
-                f"arn:aws:s3:::{px}*/*",
-            ],
-        ),
-        iam.PolicyStatement(
-            actions=["cloudfront:*"],
-            resources=[
-                f"arn:aws:cloudfront::{id}:distribution/{px}*",
-            ],
-        ),
-    ]
+    policies.extend(
+        [
+            iam.PolicyStatement(
+                actions=["ssm:GetParameter"],
+                resources=[
+                    f"arn:aws:ssm:{rg}:{id}:parameter/cdk-bootstrap/{cdk_identifier}/*"
+                ],
+            ),
+            iam.PolicyStatement(
+                actions=["sts:AssumeRole"],
+                resources=[
+                    f"arn:aws:iam::{id}:role/cdk-{cdk_identifier}-deploy-role-{id}-{rg}",
+                    f"arn:aws:iam::{id}:role/cdk-{cdk_identifier}-file-publishing-role-{id}-{rg}",
+                    f"arn:aws:iam::{id}:role/cdk-{cdk_identifier}-image-publishing-role-{id}-{rg}",
+                    f"arn:aws:iam::{id}:role/cdk-{cdk_identifier}-lookup-role--{id}-{rg}",
+                ],
+            ),
+            iam.PolicyStatement(
+                actions=["s3:ListBucket", "s3:GetObject", "s3:PutObject"],
+                resources=[
+                    f"arn:aws:s3:::cdk-{cdk_identifier}-assets-{id}-{rg}",
+                    f"arn:aws:s3:::cdk-{cdk_identifier}-assets-{id}-{rg}/*",
+                ],
+            ),
+        ]
+    )
 
     resource = iam.Role(
         scope,
