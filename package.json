@@ -6,7 +6,7 @@
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "lint": "eslint . --fix --ignore-path .gitignore",
-    "api:build": "rm -rf ./src/apis && npx openapi2aspida",
+    "api:build": "rm -rf ./tmp-apis && npx openapi2aspida -o=./tmp-apis/ && rsync -a --delete ./tmp-apis/ ./src/apis/ && rm -rf ./tmp-apis",
     "api:watch": "chokidar ./openapi.yaml -c \"npm run api:build\""
   },
   "dependencies": {
