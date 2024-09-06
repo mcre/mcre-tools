@@ -3,12 +3,12 @@ info:
   title: mcre-tools API
   version: 0.0.1
 paths:
-  /v1/jukugo/{char}/left-search:
+  /v1/jukugo/{character}/left-search:
     get:
       summary: 熟語の左側の文字を検索
       parameters:
         - in: path
-          name: char
+          name: character
           required: true
           schema:
             type: string
@@ -22,12 +22,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/JukugoSearchResponse"
 
-  /v1/jukugo/{char}/right-search:
+  /v1/jukugo/{character}/right-search:
     get:
       summary: 熟語の右側の文字を検索
       parameters:
         - in: path
-          name: char
+          name: character
           required: true
           schema:
             type: string
@@ -48,7 +48,7 @@ components:
       items:
         type: object
         properties:
-          char:
+          character:
             type: string
             description: 熟語の反対側の文字
           cost:

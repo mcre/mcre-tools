@@ -163,7 +163,7 @@ const fetchData = async () => {
   const client = api(aspida(fetch, { baseURL }));
 
   try {
-    data.value = await client.v1.jukugo._char("肉").left_search.$get();
+    data.value = await client.v1.jukugo._character("肉").left_search.$get();
   } catch (err) {
     error.value = "Failed to fetch data";
   } finally {

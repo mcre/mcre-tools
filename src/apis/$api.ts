@@ -1,6 +1,6 @@
 import type { AspidaClient, BasicHeaders } from 'aspida';
-import type { Methods as Methods_27ohb9 } from './v1/jukugo/_char@string/left-search';
-import type { Methods as Methods_1n8a51e } from './v1/jukugo/_char@string/right-search';
+import type { Methods as Methods_2waeiu } from './v1/jukugo/_character@string/left-search';
+import type { Methods as Methods_1w1sy1j } from './v1/jukugo/_character@string/right-search';
 
 const api = <T>({ baseURL, fetch }: AspidaClient<T>) => {
   const prefix = (baseURL === undefined ? '' : baseURL).replace(/\/$/, '');
@@ -12,7 +12,7 @@ const api = <T>({ baseURL, fetch }: AspidaClient<T>) => {
   return {
     v1: {
       jukugo: {
-        _char: (val2: string) => {
+        _character: (val2: string) => {
           const prefix2 = `${PATH0}/${val2}`;
 
           return {
@@ -21,12 +21,12 @@ const api = <T>({ baseURL, fetch }: AspidaClient<T>) => {
                * @returns 成功
                */
               get: (option?: { config?: T | undefined } | undefined) =>
-                fetch<Methods_27ohb9['get']['resBody'], BasicHeaders, Methods_27ohb9['get']['status']>(prefix, `${prefix2}${PATH1}`, GET, option).json(),
+                fetch<Methods_2waeiu['get']['resBody'], BasicHeaders, Methods_2waeiu['get']['status']>(prefix, `${prefix2}${PATH1}`, GET, option).json(),
               /**
                * @returns 成功
                */
               $get: (option?: { config?: T | undefined } | undefined) =>
-                fetch<Methods_27ohb9['get']['resBody'], BasicHeaders, Methods_27ohb9['get']['status']>(prefix, `${prefix2}${PATH1}`, GET, option).json().then(r => r.body),
+                fetch<Methods_2waeiu['get']['resBody'], BasicHeaders, Methods_2waeiu['get']['status']>(prefix, `${prefix2}${PATH1}`, GET, option).json().then(r => r.body),
               $path: () => `${prefix}${prefix2}${PATH1}`,
             },
             right_search: {
@@ -34,12 +34,12 @@ const api = <T>({ baseURL, fetch }: AspidaClient<T>) => {
                * @returns 成功
                */
               get: (option?: { config?: T | undefined } | undefined) =>
-                fetch<Methods_1n8a51e['get']['resBody'], BasicHeaders, Methods_1n8a51e['get']['status']>(prefix, `${prefix2}${PATH2}`, GET, option).json(),
+                fetch<Methods_1w1sy1j['get']['resBody'], BasicHeaders, Methods_1w1sy1j['get']['status']>(prefix, `${prefix2}${PATH2}`, GET, option).json(),
               /**
                * @returns 成功
                */
               $get: (option?: { config?: T | undefined } | undefined) =>
-                fetch<Methods_1n8a51e['get']['resBody'], BasicHeaders, Methods_1n8a51e['get']['status']>(prefix, `${prefix2}${PATH2}`, GET, option).json().then(r => r.body),
+                fetch<Methods_1w1sy1j['get']['resBody'], BasicHeaders, Methods_1w1sy1j['get']['status']>(prefix, `${prefix2}${PATH2}`, GET, option).json().then(r => r.body),
               $path: () => `${prefix}${prefix2}${PATH2}`,
             },
           };
