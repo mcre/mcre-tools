@@ -51,9 +51,8 @@ def create_dynamodb_primary_table(scope: Stack):
             min_capacity=asc["write"]["min"], max_capacity=asc["write"]["max"]
         ).scale_on_utilization(target_utilization_percent=asc["write"]["percent"])
 
-    columns = [
-        ("record_type", dynamodb.AttributeType.STRING),
-    ]
+    # columns = [("search_key", dynamodb.AttributeType.STRING)]
+    columns = []
 
     for column_name, column_type in columns:
         resource.add_global_secondary_index(

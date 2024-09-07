@@ -4,6 +4,8 @@
 import sys
 import time
 import boto3
+import zipfile
+import io
 from botocore.exceptions import ClientError
 
 
@@ -18,13 +20,12 @@ def insert_jukugo_data(aws_profile, table_name):
 
     data_dict = {}
 
-    def insert_data(kanji_key, kanji, cost, record_type):
+    def insert_data(kanji_key, kanji, cost):
         if kanji_key in data_dict:
             data_dict[kanji_key]["pairs"].append({"character": kanji, "cost": cost})
         else:
             data_dict[kanji_key] = {
                 "id": kanji_key,
-                "record_type": record_type,
                 "pairs": [{"character": kanji, "cost": cost}],
             }
 
@@ -48,15 +49,16 @@ def insert_jukugo_data(aws_profile, table_name):
         print("Max retries reached. Failed to insert item.")
         return False
 
-    with open("dic.txt", "r", encoding="utf-8") as file:
-        for line in file:
-            parts = line.strip().split(" ")
-            left_kanji = parts[0][0]
-            right_kanji = parts[0][1]
-            cost = int(parts[1])
+    with zipfile.ZipFile("dic.txt.zip", "r") as zip_ref:
+        with zip_ref.open("dic.txt") as file:
+            for line in io.TextIOWrapper(file, encoding="utf-8"):
+                parts = line.strip().split(" ")
+                left_kanji = parts[0][0]
+                right_kanji = parts[0][1]
+                cost = int(parts[1])
 
-            insert_data(f"jukugo|left|{left_kanji}", right_kanji, cost, "jukugo|left")
-            insert_data(f"jukugo|right|{right_kanji}", left_kanji, cost, "jukugo|right")
+                insert_data(f"jukugo|left|{left_kanji}", right_kanji, cost)
+                insert_data(f"jukugo|right|{right_kanji}", left_kanji, cost)
 
     for i, item in enumerate(data_dict.values()):
         success = put_item_with_retry(item)

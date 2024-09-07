@@ -20,14 +20,6 @@
             "read": { "min": 1, "max": 10, "percent": 70 },
             "write": { "min": 1, "max": 10, "percent": 70 }
           }
-        },
-        "record_type": {
-          "read": 1,
-          "write": 1,
-          "autoscaling": {
-            "read": { "min": 1, "max": 10, "percent": 70 },
-            "write": { "min": 1, "max": 10, "percent": 70 }
-          }
         }
       }
     }
