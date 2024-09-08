@@ -1,14 +1,13 @@
 # cd tools/jukugo
-# python seed.py m_cre-super-user mcre-tools-primary
+# python 03_seed.py m_cre-super-user mcre-tools-primary
 
 import sys
 import time
 import boto3
-import zipfile
-import io
 from botocore.exceptions import ClientError
 
 
+DATA_FILE = "./work/dict.csv"
 RETRIES = 5
 DELAY = 1
 
@@ -49,16 +48,15 @@ def insert_jukugo_data(aws_profile, table_name):
         print("Max retries reached. Failed to insert item.")
         return False
 
-    with zipfile.ZipFile("dic.txt.zip", "r") as zip_ref:
-        with zip_ref.open("dic.txt") as file:
-            for line in io.TextIOWrapper(file, encoding="utf-8"):
-                parts = line.strip().split(" ")
-                left_kanji = parts[0][0]
-                right_kanji = parts[0][1]
-                cost = int(parts[1])
+    with open(DATA_FILE, "r", encoding="utf-8") as file:
+        for line in file:
+            parts = line.strip().split(",")
+            left_kanji = parts[0][0]
+            right_kanji = parts[0][1]
+            cost = int(parts[1])
 
-                insert_data(f"jukugo|left|{left_kanji}", right_kanji, cost)
-                insert_data(f"jukugo|right|{right_kanji}", left_kanji, cost)
+            insert_data(f"jukugo|left|{left_kanji}", right_kanji, cost)
+            insert_data(f"jukugo|right|{right_kanji}", left_kanji, cost)
 
     for i, item in enumerate(data_dict.values()):
         success = put_item_with_retry(item)
@@ -69,7 +67,7 @@ def insert_jukugo_data(aws_profile, table_name):
 
 
 if len(sys.argv) != 3:
-    print("Usage: python seed.py <aws_profile> <table_name>")
+    print("Usage: python 03_seed.py <aws_profile> <table_name>")
     sys.exit(1)
 
 insert_jukugo_data(sys.argv[1], sys.argv[2])
