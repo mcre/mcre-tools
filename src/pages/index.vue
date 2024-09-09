@@ -1,7 +1,81 @@
 <template>
-  <HelloWorld />
+  <v-container>
+    <v-row>
+      <v-col cols="12">
+        <h1>MCRE TOOLS</h1>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12">
+        <p>便利ツールやジョークツールなど、いろいろ置いていきます。</p>
+      </v-col>
+    </v-row>
+  </v-container>
+  <v-container>
+    <v-row>
+      <v-col cols="12">
+        <h2><v-icon start>mdi-toolbox</v-icon>ツール一覧</h2>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12">
+        <v-card
+          title="熟語パズル"
+          text="上下左右4つの漢字から真ん中の漢字を当てるパズル、いわゆる「和同開珎」を自動で解くツールです。"
+          to="/jukugo"
+        />
+      </v-col>
+    </v-row>
+  </v-container>
+  <v-container>
+    <v-row>
+      <v-col cols="12">
+        <h2>
+          <v-icon start class="mb-1">mdi-information-outline</v-icon>参考情報
+        </h2>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12" sm="4">
+        <v-btn
+          class="mb-1 mr-2"
+          href="https://mcre.info"
+          target="_blank"
+          rel="noopener noreferrer"
+          icon="mdi-account-circle"
+          size="small"
+        />
+        作者について
+      </v-col>
+      <v-col cols="12" sm="4">
+        <v-btn
+          class="mb-1 mr-2"
+          href="https://github.com/mcre/mcre-tools"
+          target="_blank"
+          rel="noopener noreferrer"
+          icon="mdi-github"
+          size="small"
+        />
+        ソースコード・要望
+      </v-col>
+      <v-col cols="12" sm="4">
+        <v-btn
+          class="mb-1 mr-2"
+          href="https://github.com/mcre/mcre-tools/blob/main/LICENSE"
+          target="_blank"
+          rel="noopener noreferrer"
+          icon="mdi-certificate-outline"
+          size="small"
+        />
+        ライセンスに関して
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script lang="ts" setup>
-//
+import { useUtil } from "@/composables/util";
+
+const util = useUtil();
+util.setTitle("");
 </script>
