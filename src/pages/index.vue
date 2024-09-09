@@ -77,5 +77,5 @@
 import { useUtil } from "@/composables/util";
 
 const util = useUtil();
-util.setTitle("");
+util.setTitle();
 </script>
