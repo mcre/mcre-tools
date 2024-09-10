@@ -47,6 +47,9 @@ components:
       type: array
       items:
         type: object
+        required:
+          - character
+          - cost
         properties:
           character:
             type: string
