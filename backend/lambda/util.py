@@ -1,8 +1,18 @@
 import json
 import os
+import urllib.parse
 
 import boto3
 
+
+# --- utility functions ---
+
+
+def decode(encoded_string: str) -> str:
+    return urllib.parse.unquote(encoded_string)
+
+
+# --- dynamodb functions ---
 
 DYNAMODB_RESERVED_WORDS = []
 
