@@ -24,6 +24,8 @@ def decimal_default(obj):
 
 
 def api_response(body: dict | list = {}, status_code: int = 200):
+    logger.info(status_code)
+    logger.info(body)
     return {
         "statusCode": status_code,
         "headers": {

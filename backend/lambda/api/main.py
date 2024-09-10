@@ -1,4 +1,3 @@
-import json
 import os
 import sys
 
@@ -10,15 +9,13 @@ import util as u
 def get_jukugo_search(search_type: str, character: str):
     decoded_character = u.decode(character)[0]
     response = u.get_db_item(f"jukugo|{search_type}|{decoded_character}", ["pairs"])
-    print(response)
     if response is not None:
         return u.api_response(response["pairs"])
     return u.api_response([])
 
 
+@u.logger.inject_lambda_context(log_event=True)
 def main(event, context):
-    print(json.dumps(event))
-
     api = event.get("pathParameters", {}).get("proxy", None)
     method = event.get("httpMethod", None)
 
