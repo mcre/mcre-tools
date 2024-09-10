@@ -1,9 +1,14 @@
+import decimal
 import json
 import os
 import urllib.parse
 
 import boto3
+import aws_lambda_powertools
 
+# --- logger ---
+
+logger = aws_lambda_powertools.Logger()
 
 # --- utility functions ---
 
@@ -12,12 +17,13 @@ def decode(encoded_string: str) -> str:
     return urllib.parse.unquote(encoded_string)
 
 
-# --- dynamodb functions ---
+def decimal_default(obj):
+    if isinstance(obj, decimal.Decimal):
+        return float(obj)
+    raise TypeError
 
-DYNAMODB_RESERVED_WORDS = []
 
-
-def api_response(status_code: int = 200, body: dict | list = {}):
+def api_response(body: dict | list = {}, status_code: int = 200):
     return {
         "statusCode": status_code,
         "headers": {
@@ -26,8 +32,13 @@ def api_response(status_code: int = 200, body: dict | list = {}):
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Methods": "GET,POST",
         },
-        "body": json.dumps(body),
+        "body": json.dumps(body, default=decimal_default),
     }
+
+
+# --- dynamodb functions ---
+
+DYNAMODB_RESERVED_WORDS = []
 
 
 def generate_dynamodb_params(columns: list):

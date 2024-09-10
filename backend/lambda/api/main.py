@@ -1,7 +1,7 @@
 import json
 import os
 import sys
-import traceback
+
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 import util as u
@@ -9,9 +9,11 @@ import util as u
 
 def get_jukugo_search(search_type: str, character: str):
     decoded_character = u.decode(character)[0]
-    response = u.get_db_item(f"jukugo|{search_type}|{decoded_character}")
+    response = u.get_db_item(f"jukugo|{search_type}|{decoded_character}", ["pairs"])
     print(response)
-    return u.api_response(response)
+    if response is not None:
+        return u.api_response(response["pairs"])
+    return u.api_response([])
 
 
 def main(event, context):
@@ -29,7 +31,7 @@ def main(event, context):
         if m == "GET" and l == 3 and a[0] == "jukugo" and a[2] == "right-search":
             return get_jukugo_search("right", a[1])
     except Exception:
-        traceback.print_exc()
+        u.logger.exception("API処理中にエラー")
         return u.api_response(500)
 
     return u.api_response(404)

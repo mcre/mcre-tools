@@ -3,6 +3,7 @@ from aws_cdk import (
     Environment,
     Stack,
     CfnOutput,
+    aws_lambda as lambda_,
     aws_iam as iam,
 )
 
@@ -45,6 +46,14 @@ policy_dynamodb_primary_rw = iam.PolicyStatement(
 )
 
 ## Lambda Function
+lambda_layers = [
+    lambda_.LayerVersion.from_layer_version_arn(
+        stack,
+        "lambda-layers-powertools",
+        "arn:aws:lambda:ap-northeast-1:017000801446:layer:AWSLambdaPowertoolsPythonV2:78",
+    )
+]
+
 lambda_api = create_lambda_function(
     stack,
     "api",
@@ -52,6 +61,7 @@ lambda_api = create_lambda_function(
     environment={
         "DYNAMO_DB_PRIMARY_TABLE_NAME": dynamodb_primary_table.table_name,
     },
+    layers=lambda_layers,
 )
 lambda_functions = [lambda_api]
 

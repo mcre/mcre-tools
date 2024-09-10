@@ -88,6 +88,7 @@ def create_lambda_function(
     name: str,
     policies: list = [],
     environment: dict = {},
+    layers: list = [],
 ) -> lambda_.Function:
     policies.append(
         iam.PolicyStatement(
@@ -125,6 +126,7 @@ def create_lambda_function(
         log_retention=logs.RetentionDays.INFINITE,
         ephemeral_storage_size=Size.mebibytes(512),
         environment=environment,
+        layers=layers,
     )
 
     add_tags(resource)
