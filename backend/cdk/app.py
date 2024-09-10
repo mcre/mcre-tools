@@ -49,17 +49,22 @@ lambda_api = create_lambda_function(
     stack,
     "api",
     policies=[policy_dynamodb_primary_rw],
+    environment={
+        "DYNAMO_DB_PRIMARY_TABLE_NAME": dynamodb_primary_table.table_name,
+    },
 )
 lambda_functions = [lambda_api]
 
 # API-Gateway
-create_apigateway(stack, "api", lambda_api)
+_, domain_name_api = create_apigateway(stack, "api", lambda_api)
 
 # S3
 bucket_distribution = create_s3_bucket(stack, "distribution")
 
 # CloudFront
-cloudfront_distribution = create_cloudfront(stack, "distribution", bucket_distribution)
+cloudfront_distribution, domain_name_app = create_cloudfront(
+    stack, "distribution", bucket_distribution
+)
 
 # Github Actions用のIAM Role
 policies = [
@@ -88,6 +93,8 @@ iam_role_github_actions = create_iam_role_github_actions(stack, policies)
 
 # 後続処理で参照するパラメータを出力する処理
 CfnOutput(stack, "Prefix", value=config["prefix"])
+CfnOutput(stack, "DomainNameApp", value=domain_name_app)
+CfnOutput(stack, "DomainNameApi", value=domain_name_api)
 CfnOutput(stack, "IamRoleGithubActions", value=iam_role_github_actions.role_arn)
 CfnOutput(
     stack,

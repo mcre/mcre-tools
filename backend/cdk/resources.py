@@ -21,12 +21,12 @@ from config import get_env_config
 config = get_env_config()
 
 
-def add_tags(resource):
+def add_tags(resource) -> None:
     for tag in config["tags"]:
         Tags.of(resource).add(tag["key"], tag["value"])
 
 
-def create_dynamodb_primary_table(scope: Stack):
+def create_dynamodb_primary_table(scope: Stack) -> dynamodb.Table:
     table_config = config["dynamodb"]["primary"]
     dp = table_config["deletion_protection"]
     resource = dynamodb.Table(
@@ -87,7 +87,8 @@ def create_lambda_function(
     scope: Stack,
     name: str,
     policies: list = [],
-):
+    environment: dict = {},
+) -> lambda_.Function:
     policies.append(
         iam.PolicyStatement(
             actions=[
@@ -123,13 +124,16 @@ def create_lambda_function(
         role=iam_role,
         log_retention=logs.RetentionDays.INFINITE,
         ephemeral_storage_size=Size.mebibytes(512),
+        environment=environment,
     )
 
     add_tags(resource)
     return resource
 
 
-def create_apigateway(scope: Stack, name: str, target_lambda: lambda_.Function):
+def create_apigateway(
+    scope: Stack, name: str, target_lambda: lambda_.Function
+) -> tuple[apigateway.RestApi, str]:
     resource = apigateway.RestApi(
         scope,
         f"api-gateway-{name}",
@@ -156,10 +160,12 @@ def create_apigateway(scope: Stack, name: str, target_lambda: lambda_.Function):
         zone_name=domain_config["zone_name"],
     )
 
+    domain_name = f"{domain_config['name']}.{domain_config['zone_name']}"
+
     custom_domain = apigateway.DomainName(
         scope,
         f"api-gateway-domain-{name}",
-        domain_name=f"{domain_config['name']}.{domain_config['zone_name']}",
+        domain_name=domain_name,
         certificate=acm.Certificate.from_certificate_arn(
             scope,
             f"api-gateway-certificate-{name}",
@@ -189,10 +195,10 @@ def create_apigateway(scope: Stack, name: str, target_lambda: lambda_.Function):
         ),
     )
 
-    return resource
+    return resource, domain_name
 
 
-def create_s3_bucket(scope: Stack, name: str):
+def create_s3_bucket(scope: Stack, name: str) -> s3.Bucket:
     dp = config["s3"][name]["deletion_protection"]
     resource = s3.Bucket(
         scope,
@@ -204,7 +210,9 @@ def create_s3_bucket(scope: Stack, name: str):
     return resource
 
 
-def create_cloudfront(scope: Stack, name: str, bucket: s3.Bucket):
+def create_cloudfront(
+    scope: Stack, name: str, bucket: s3.Bucket
+) -> tuple[cloudfront.Distribution, str]:
     domain_config = config["cloudfront"]["domain"][name]
 
     existing_hosted_zone = route53.HostedZone.from_hosted_zone_attributes(
@@ -214,6 +222,8 @@ def create_cloudfront(scope: Stack, name: str, bucket: s3.Bucket):
         zone_name=domain_config["zone_name"],
     )
 
+    domain_name = f"{domain_config['name']}.{domain_config['zone_name']}"
+
     resource = cloudfront.Distribution(
         scope,
         f"cloudfront-distribution-{name}",
@@ -222,7 +232,7 @@ def create_cloudfront(scope: Stack, name: str, bucket: s3.Bucket):
             f"cloudfront-certificate-{name}",
             domain_config["certificate_arn"],
         ),
-        domain_names=[f"{domain_config['name']}.{domain_config['zone_name']}"],
+        domain_names=[domain_name],
         default_behavior=cloudfront.BehaviorOptions(
             origin=cloudfront_origins.S3Origin(bucket),
             viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
@@ -249,10 +259,10 @@ def create_cloudfront(scope: Stack, name: str, bucket: s3.Bucket):
     )
 
     add_tags(resource)
-    return resource
+    return resource, domain_name
 
 
-def create_iam_role_github_actions(scope: Stack, policies: list = []):
+def create_iam_role_github_actions(scope: Stack, policies: list = []) -> iam.Role:
     owner = "mcre"
     repo = "mcre-tools"
 
