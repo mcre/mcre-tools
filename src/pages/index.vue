@@ -23,7 +23,11 @@
           title="熟語パズル"
           text="上下左右4つの漢字から真ん中の漢字を当てるパズル、いわゆる「和同開珎」を自動で解くツールです。"
           to="/jukugo"
-        />
+        >
+          <template v-slot:prepend>
+            <v-avatar image="/img/jukugo_32.png" size="24" />
+          </template>
+        </v-card>
       </v-col>
     </v-row>
   </v-container>

@@ -10,10 +10,15 @@
     </v-app-bar>
 
     <v-navigation-drawer v-model="drawer">
-      <v-list>
-        <v-list-item two-line to="/jukugo">
-          <v-list-item-title>熟語パズル</v-list-item-title>
-          <v-list-item-subtitle>和同開珎を自動で解きます</v-list-item-subtitle>
+      <v-list lines="two">
+        <v-list-item
+          title="熟語パズル"
+          subtitle="和同開珎を自動で解きます"
+          to="/jukugo"
+        >
+          <template v-slot:prepend>
+            <v-avatar image="/img/jukugo_32.png" size="24" />
+          </template>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
