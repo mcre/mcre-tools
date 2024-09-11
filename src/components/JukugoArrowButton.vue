@@ -7,6 +7,7 @@
     "
     variant="text"
     tabindex="-1"
+    size="small"
     @click="model = !model"
   />
 </template>

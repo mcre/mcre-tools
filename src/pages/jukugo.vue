@@ -20,16 +20,16 @@
         <p>
           上下左右4つの漢字から真ん中の漢字を当てるパズル、いわゆる「和同開珎」を自動で解くツールです。
         </p>
-        <p>
+        <p class="text-caption">
           <span class="text-decoration-underline">矢印</span>
-          をタップすると逆向きになります。
+          はタップすると逆向きに変更できます。
         </p>
       </v-col>
     </v-row>
   </v-container>
   <v-container>
     <v-row justify="center">
-      <v-col cols="12">
+      <v-col cols="auto">
         <table>
           <tr>
             <td></td>
@@ -75,6 +75,7 @@
             <td>
               <v-text-field
                 :value="loading ? '' : answers[0] || ''"
+                class="centered-input"
                 placeholder="？"
                 maxlength="1"
                 variant="solo"
@@ -182,10 +183,8 @@ const fetchData = () => {
     const input = inputs.value[pos];
     const arrow = arrows.value[pos];
 
-    console.log(input);
     if (input && util.isKanji(input)) {
       const key = `${input}-${arrow}`;
-      console.log(key);
 
       if (!apiResults[key] && !inProgress.value.has(key)) {
         inProgress.value.add(key);
@@ -250,3 +249,10 @@ const updateAnswers = () => {
   }
 };
 </script>
+
+<style scoped>
+table td {
+  text-align: center;
+  vertical-align: middle;
+}
+</style>

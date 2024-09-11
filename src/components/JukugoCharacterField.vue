@@ -1,6 +1,7 @@
 <template>
   <v-text-field
     v-model="model"
+    class="centered-input"
     maxlength="1"
     variant="outlined"
     hide-details
@@ -8,6 +9,7 @@
     @compositionstart="isComposing = true"
     @compositionend="handleCompositionEnd"
     @input="handleInput"
+    min-width="48px"
   />
 </template>
 
