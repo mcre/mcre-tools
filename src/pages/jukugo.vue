@@ -152,13 +152,13 @@
       </v-col>
     </v-row>
   </v-container>
-  <v-container>
-    <v-row justify="center">
-      <v-col cols="12">
-        <v-btn @click="resetInputs">リセット</v-btn>
-      </v-col>
-    </v-row>
-  </v-container>
+  <v-fab
+    :active="isModified"
+    icon="mdi-eraser"
+    @click="resetInputs"
+    app
+    location="bottom end"
+  />
 </template>
 
 <script lang="ts" setup>
@@ -181,6 +181,12 @@ const positions = ["top", "bottom", "left", "right"] as const;
 const inputs = ref(Object.fromEntries(positions.map((pos) => [pos, ""])));
 const arrows = ref(Object.fromEntries(positions.map((pos) => [pos, true])));
 const answers = ref<string[]>([]);
+
+const isModified = computed(() => {
+  const hasInput = Object.values(inputs.value).some((input) => input !== "");
+  const arrowsChanged = Object.values(arrows.value).some((arrow) => !arrow);
+  return hasInput || arrowsChanged;
+});
 
 const resetInputs = () => {
   inputs.value = Object.fromEntries(positions.map((pos) => [pos, ""]));
