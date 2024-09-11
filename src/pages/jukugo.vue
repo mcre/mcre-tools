@@ -20,7 +20,10 @@
         <p>
           上下左右4つの漢字から真ん中の漢字を当てるパズル、いわゆる「和同開珎」を自動で解くツールです。
         </p>
-        <p><b>矢印</b>をタップすると逆向きになります。</p>
+        <p>
+          <span class="text-decoration-underline">矢印</span>
+          をタップすると逆向きになります。
+        </p>
       </v-col>
     </v-row>
   </v-container>
@@ -34,8 +37,7 @@
             <td>
               <jukugo-character-field
                 v-model="inputs.top"
-                placeholder="漢"
-                @input="fetchData"
+                @compositionend="fetchData"
               />
             </td>
             <td></td>
@@ -59,8 +61,7 @@
             <td>
               <jukugo-character-field
                 v-model="inputs.left"
-                placeholder="力"
-                @input="fetchData"
+                @compositionend="fetchData"
               />
             </td>
             <td>
@@ -94,8 +95,7 @@
             <td>
               <jukugo-character-field
                 v-model="inputs.right"
-                placeholder="字"
-                @input="fetchData"
+                @compositionend="fetchData"
               />
             </td>
           </tr>
@@ -119,8 +119,7 @@
             <td>
               <jukugo-character-field
                 v-model="inputs.bottom"
-                placeholder="入"
-                @input="fetchData"
+                @compositionend="fetchData"
               />
             </td>
             <td></td>
@@ -183,8 +182,10 @@ const fetchData = () => {
     const input = inputs.value[pos];
     const arrow = arrows.value[pos];
 
-    if (input && /^[\u4E00-\u9FFF]$/.test(input)) {
+    console.log(input);
+    if (input && util.isKanji(input)) {
       const key = `${input}-${arrow}`;
+      console.log(key);
 
       if (!apiResults[key] && !inProgress.value.has(key)) {
         inProgress.value.add(key);

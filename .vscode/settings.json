@@ -2,7 +2,7 @@
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter"
   },
-  "cSpell.words": ["Adic", "ascg", "botocore", "CBZA", "certificatemanager", "hostedzone", "ICOT", "ipadic", "jigyosyo", "jukugo", "materialdesignicons", "mebibytes", "mecab", "midashi", "nocheck", "oidc", "powertools", "PYTHONPATH", "QAZVLH", "recordset", "restapis", "runtimes", "unplugin", "venv", "VITE", "wght"],
+  "cSpell.words": ["Adic", "ascg", "botocore", "CBZA", "certificatemanager", "compositionend", "compositionstart", "hostedzone", "ICOT", "ipadic", "jigyosyo", "jukugo", "materialdesignicons", "mebibytes", "mecab", "midashi", "nocheck", "oidc", "powertools", "PYTHONPATH", "QAZVLH", "recordset", "restapis", "runtimes", "unplugin", "venv", "VITE", "wght"],
   "yaml.schemas": {
     "https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/schemas/v3.1/schema.json": "file:///Users/fujitashinya/mcre/git/mcre/mcre-tools/openapi.yaml"
   }
