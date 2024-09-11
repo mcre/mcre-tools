@@ -74,7 +74,11 @@
             </td>
             <td>
               <v-text-field
-                :value="loading ? '' : answers[0] || ''"
+                :value="
+                  loading || answers.length <= 0
+                    ? ''
+                    : answers[0].character || ''
+                "
                 class="centered-input"
                 placeholder="？"
                 maxlength="1"
@@ -159,7 +163,16 @@ const loading = computed(() => inProgress.value.size > 0);
 const positions = ["top", "bottom", "left", "right"] as const;
 const inputs = ref(Object.fromEntries(positions.map((pos) => [pos, ""])));
 const arrows = ref(Object.fromEntries(positions.map((pos) => [pos, true])));
-const answers = ref<string[]>([]);
+const answers = ref<
+  {
+    character: string;
+    cost: number;
+    costs: {
+      position: (typeof positions)[number];
+      cost: number;
+    }[];
+  }[]
+>([]);
 
 const isModified = computed(() => {
   const hasInput = Object.values(inputs.value).some((input) => input !== "");
@@ -210,39 +223,40 @@ const fetchData = () => {
 
 const updateAnswers = () => {
   const resultSets = positions
-    .map((pos) => {
-      const input = inputs.value[pos];
-      const arrow = arrows.value[pos];
+    .map((position) => {
+      const input = inputs.value[position];
+      const arrow = arrows.value[position];
       const key = `${input}-${arrow}`;
-      return apiResults[key] || [];
+      return { position, results: apiResults[key] || [] };
     })
-    .filter((set) => set.length > 0);
+    .filter(({ results }) => results.length > 0);
 
   if (resultSets.length === 0) {
     answers.value = [];
     return;
   }
 
-  let commonResults = resultSets[0];
-
-  for (let i = 1; i < resultSets.length; i++) {
-    commonResults = commonResults.filter((item) =>
-      resultSets[i].some((res) => res.character === item.character)
-    );
-  }
+  const commonResults = resultSets.reduce((common, { results }) => {
+    const currentCharacters = new Set(results.map((res) => res.character));
+    return common.filter((item) => currentCharacters.has(item.character));
+  }, resultSets[0].results);
 
   answers.value = commonResults
-    .map((item) => ({
-      character: item.character,
-      cost: resultSets.reduce(
-        (sum, set) =>
-          sum +
-          (set.find((res) => res.character === item.character)?.cost || 0),
-        0
-      ),
-    }))
-    .sort((a, b) => a.cost - b.cost)
-    .map((item) => item.character);
+    .map((item) => {
+      const costs = resultSets.map(({ position, results }) => ({
+        position,
+        cost:
+          results.find((res) => res.character === item.character)?.cost || 0,
+      }));
+      const totalCost = costs.reduce((sum, { cost }) => sum + cost, 0);
+
+      return {
+        character: item.character,
+        costs,
+        cost: totalCost,
+      };
+    })
+    .sort((a, b) => a.cost - b.cost);
 
   if (answers.value.length === 0) {
     answers.value = [];
