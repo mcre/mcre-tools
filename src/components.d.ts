@@ -7,7 +7,6 @@ export {};
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    HelloWorld: typeof import('./components/HelloWorld.vue')['default']
     JukugoArrowButton: typeof import('./components/JukugoArrowButton.vue')['default']
     JukugoCharacterField: typeof import('./components/JukugoCharacterField.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
