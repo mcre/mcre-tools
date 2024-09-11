@@ -32,12 +32,9 @@
             <td></td>
             <td></td>
             <td>
-              <v-text-field
+              <jukugo-character-field
                 v-model="inputs.top"
                 placeholder="漢"
-                maxlength="1"
-                variant="outlined"
-                hide-details
                 @input="fetchData"
               />
             </td>
@@ -48,13 +45,11 @@
             <td></td>
             <td></td>
             <td>
-              <v-btn
-                :icon="
-                  arrows.top ? 'mdi-arrow-down-thick' : 'mdi-arrow-up-thick'
-                "
-                @click="toggleArrow('top')"
-                variant="text"
-                tabindex="-1"
+              <jukugo-arrow-button
+                v-model="arrows.top"
+                forward="down"
+                reverse="up"
+                @update:modelValue="fetchData"
               />
             </td>
             <td></td>
@@ -62,23 +57,18 @@
           </tr>
           <tr>
             <td>
-              <v-text-field
+              <jukugo-character-field
                 v-model="inputs.left"
                 placeholder="力"
-                maxlength="1"
-                variant="outlined"
-                hide-details
                 @input="fetchData"
               />
             </td>
             <td>
-              <v-btn
-                :icon="
-                  arrows.left ? 'mdi-arrow-right-thick' : 'mdi-arrow-left-thick'
-                "
-                @click="toggleArrow('left')"
-                variant="text"
-                tabindex="-1"
+              <jukugo-arrow-button
+                v-model="arrows.left"
+                forward="right"
+                reverse="left"
+                @update:modelValue="fetchData"
               />
             </td>
             <td>
@@ -94,24 +84,17 @@
               />
             </td>
             <td>
-              <v-btn
-                :icon="
-                  arrows.right
-                    ? 'mdi-arrow-left-thick'
-                    : 'mdi-arrow-right-thick'
-                "
-                @click="toggleArrow('right')"
-                variant="text"
-                tabindex="-1"
+              <jukugo-arrow-button
+                v-model="arrows.right"
+                forward="left"
+                reverse="right"
+                @update:modelValue="fetchData"
               />
             </td>
             <td>
-              <v-text-field
+              <jukugo-character-field
                 v-model="inputs.right"
                 placeholder="字"
-                maxlength="1"
-                variant="outlined"
-                hide-details
                 @input="fetchData"
               />
             </td>
@@ -120,13 +103,11 @@
             <td></td>
             <td></td>
             <td>
-              <v-btn
-                :icon="
-                  arrows.bottom ? 'mdi-arrow-up-thick' : 'mdi-arrow-down-thick'
-                "
-                @click="toggleArrow('bottom')"
-                variant="text"
-                tabindex="-1"
+              <jukugo-arrow-button
+                v-model="arrows.bottom"
+                forward="up"
+                reverse="down"
+                @update:modelValue="fetchData"
               />
             </td>
             <td></td>
@@ -136,12 +117,9 @@
             <td></td>
             <td></td>
             <td>
-              <v-text-field
+              <jukugo-character-field
                 v-model="inputs.bottom"
                 placeholder="入"
-                maxlength="1"
-                variant="outlined"
-                hide-details
                 @input="fetchData"
               />
             </td>
@@ -162,8 +140,9 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from "vue";
 import { useUtil } from "@/composables/util";
+import JukugoCharacterField from "@/components/JukugoCharacterField.vue";
+import JukugoArrowButton from "@/components/JukugoArrowButton.vue";
 
 import aspida from "@aspida/fetch";
 import api from "@/apis/$api";
@@ -192,11 +171,6 @@ const resetInputs = () => {
   inputs.value = Object.fromEntries(positions.map((pos) => [pos, ""]));
   arrows.value = Object.fromEntries(positions.map((pos) => [pos, true]));
   answers.value = [];
-};
-
-const toggleArrow = (position: (typeof positions)[number]) => {
-  arrows.value[position] = !arrows.value[position];
-  fetchData();
 };
 
 const baseURL = `https://${import.meta.env.VITE_API_DOMAIN_NAME}`;
