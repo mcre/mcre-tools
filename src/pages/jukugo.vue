@@ -207,7 +207,7 @@
                   </span>
                 </v-col>
                 <v-col cols="3" class="text-center">
-                  <span v-if="inputs.left && util.isKanji(inputs.center)">
+                  <span v-if="inputs.left && util.isKanji(inputs.left)">
                     {{
                       arrows.left
                         ? `${inputs.left}${item.character}`
