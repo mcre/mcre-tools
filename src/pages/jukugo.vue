@@ -2,8 +2,8 @@
   <v-container v-if="dayjs().isBefore('2024-12-31')">
     <v-row>
       <v-col cols="12">
-        <v-alert type="info" variant="tonal" density="comfortable">
-          こちらは「熟語パズル」の新しいサイトです<br />
+        <v-alert variant="tonal" color="primary" density="comfortable">
+          こちらは「熟語パズル」の新しいサイトです。<br />
           旧サイトから転送されてきた場合は、ブックマークの変更をお願いします。
         </v-alert>
       </v-col>
