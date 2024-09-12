@@ -1,8 +1,11 @@
 <template>
-  <v-container>
+  <v-container v-if="dayjs().isBefore('2024-12-31')">
     <v-row>
       <v-col cols="12">
-        <v-alert type="info" title="開発中" variant="outlined" />
+        <v-alert type="info" variant="tonal" density="comfortable">
+          こちらは「熟語パズル」の新しいサイトです<br />
+          旧サイトから転送されてきた場合は、ブックマークの変更をお願いします。
+        </v-alert>
       </v-col>
     </v-row>
   </v-container>
@@ -77,7 +80,7 @@
                 :value="
                   loading || answers.length <= 0
                     ? ''
-                    : answers[0].character || ''
+                    : answers[selectedAnswerId].character || ''
                 "
                 class="centered-input"
                 placeholder="？"
@@ -134,6 +137,91 @@
       </v-col>
     </v-row>
   </v-container>
+  <v-container v-if="isModified">
+    <v-row justify="center">
+      <v-col cols="12" sm="8" md="6" class="text-end">
+        <v-chip>{{ loading ? "-" : answers.length }} 候補</v-chip>
+      </v-col>
+    </v-row>
+    <v-row justify="center">
+      <v-col cols="12" sm="8" md="6">
+        <v-list-item>
+          <template v-slot:prepend>
+            <v-avatar size="40">
+              <v-icon>mdi-help-box-outline</v-icon>
+            </v-avatar>
+          </template>
+          <v-row>
+            <v-col cols="3" class="text-center">
+              <v-icon>mdi-gamepad-circle-up</v-icon>
+            </v-col>
+            <v-col cols="3" class="text-center">
+              <v-icon>mdi-gamepad-circle-right</v-icon>
+            </v-col>
+            <v-col cols="3" class="text-center">
+              <v-icon>mdi-gamepad-circle-down</v-icon>
+            </v-col>
+            <v-col cols="3" class="text-center">
+              <v-icon>mdi-gamepad-circle-left</v-icon>
+            </v-col>
+          </v-row>
+        </v-list-item>
+        <v-virtual-scroll :height="300" item-height="50" :items="answers">
+          <template v-slot:default="{ item, index }">
+            <v-list-item
+              @click="selectedAnswerId = index"
+              :active="selectedAnswerId === index"
+              v-if="!loading"
+            >
+              <template v-slot:prepend>
+                <v-avatar size="40">
+                  {{ item.character }}
+                </v-avatar>
+              </template>
+              <v-row>
+                <v-col cols="3" class="text-center">
+                  <span v-if="inputs.top && util.isKanji(inputs.top)">
+                    {{
+                      arrows.top
+                        ? `${inputs.top}${item.character}`
+                        : `${item.character}${inputs.top}`
+                    }}
+                  </span>
+                </v-col>
+                <v-col cols="3" class="text-center">
+                  <span v-if="inputs.right && util.isKanji(inputs.right)">
+                    {{
+                      arrows.right
+                        ? `${inputs.right}${item.character}`
+                        : `${item.character}${inputs.right}`
+                    }}
+                  </span>
+                </v-col>
+                <v-col cols="3" class="text-center">
+                  <span v-if="inputs.bottom && util.isKanji(inputs.bottom)">
+                    {{
+                      arrows.bottom
+                        ? `${inputs.bottom}${item.character}`
+                        : `${item.character}${inputs.bottom}`
+                    }}
+                  </span>
+                </v-col>
+                <v-col cols="3" class="text-center">
+                  <span v-if="inputs.left && util.isKanji(inputs.center)">
+                    {{
+                      arrows.left
+                        ? `${inputs.left}${item.character}`
+                        : `${item.character}${inputs.left}`
+                    }}
+                  </span>
+                </v-col>
+              </v-row>
+            </v-list-item>
+          </template>
+        </v-virtual-scroll>
+      </v-col>
+    </v-row>
+  </v-container>
   <v-fab
     :active="isModified"
     icon="mdi-eraser"
@@ -152,6 +240,8 @@ import aspida from "@aspida/fetch";
 import api from "@/apis/$api";
 import { JukugoSearchResponse } from "@/apis/@types/index";
 
+import dayjs from "dayjs";
+
 const util = useUtil();
 util.setTitle(
   "熟語パズル",
@@ -163,14 +253,14 @@ const loading = computed(() => inProgress.value.size > 0);
 const positions = ["top", "bottom", "left", "right"] as const;
 const inputs = ref(Object.fromEntries(positions.map((pos) => [pos, ""])));
 const arrows = ref(Object.fromEntries(positions.map((pos) => [pos, true])));
+const selectedAnswerId = ref(0);
 const answers = ref<
   {
     character: string;
     cost: number;
     costs: {
-      position: (typeof positions)[number];
-      cost: number;
-    }[];
+      [key in (typeof positions)[number]]?: number;
+    };
   }[]
 >([]);
 
@@ -184,6 +274,7 @@ const resetInputs = () => {
   inputs.value = Object.fromEntries(positions.map((pos) => [pos, ""]));
   arrows.value = Object.fromEntries(positions.map((pos) => [pos, true]));
   answers.value = [];
+  selectedAnswerId.value = 0;
 };
 
 const baseURL = `https://${import.meta.env.VITE_API_DOMAIN_NAME}`;
@@ -243,12 +334,17 @@ const updateAnswers = () => {
 
   answers.value = commonResults
     .map((item) => {
-      const costs = resultSets.map(({ position, results }) => ({
-        position,
-        cost:
-          results.find((res) => res.character === item.character)?.cost || 0,
-      }));
-      const totalCost = costs.reduce((sum, { cost }) => sum + cost, 0);
+      const costs = resultSets.reduce((obj, { position, results }) => {
+        const cost =
+          results.find((res) => res.character === item.character)?.cost || 0;
+        obj[position] = cost;
+        return obj;
+      }, {} as { [key in (typeof positions)[number]]?: number });
+
+      const totalCost = Object.values(costs).reduce(
+        (sum, cost) => sum + (cost || 0),
+        0
+      );
 
       return {
         character: item.character,
@@ -257,6 +353,7 @@ const updateAnswers = () => {
       };
     })
     .sort((a, b) => a.cost - b.cost);
+  selectedAnswerId.value = 0;
 
   if (answers.value.length === 0) {
     answers.value = [];
