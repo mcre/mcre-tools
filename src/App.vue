@@ -9,15 +9,19 @@
       </v-app-bar-title>
     </v-app-bar>
 
-    <v-navigation-drawer v-model="drawer">
+    <v-navigation-drawer
+      v-model="drawer"
+      v-for="(tool, key) in tools"
+      :key="key"
+    >
       <v-list lines="two">
         <v-list-item
-          title="熟語パズル"
-          subtitle="和同開珎を自動で解きます"
-          to="/jukugo"
+          :title="tool.title"
+          :subtitle="tool.descriptionShort"
+          :to="tool.to"
         >
           <template v-slot:prepend>
-            <v-avatar image="/img/jukugo_32.png" size="24" />
+            <v-avatar :image="`/img/${tool.iconDir}/32.png`" size="24" />
           </template>
         </v-list-item>
       </v-list>
@@ -32,7 +36,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
+import tools from "@/consts/tools";
 
 const drawer = ref(false);
 </script>

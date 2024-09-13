@@ -18,14 +18,14 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col cols="12">
+      <v-col cols="12" v-for="(tool, key) in tools" :key="key">
         <v-card
-          title="熟語パズル"
-          text="上下左右4つの漢字から真ん中の漢字を当てるパズル、いわゆる「和同開珎」を自動で解くツールです。"
-          to="/jukugo"
+          :title="tool.title"
+          :subtitle="tool.descriptionShort"
+          :to="tool.to"
         >
           <template v-slot:prepend>
-            <v-avatar image="/img/jukugo_32.png" size="24" />
+            <v-avatar :image="`/img/${tool.iconDir}/32.png`" size="24" />
           </template>
         </v-card>
       </v-col>
@@ -96,6 +96,7 @@
 
 <script lang="ts" setup>
 import { useUtil } from "@/composables/util";
+import tools from "@/consts/tools";
 
 const util = useUtil();
 util.setTitle();

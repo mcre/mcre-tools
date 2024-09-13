@@ -12,7 +12,7 @@
   <v-container>
     <v-row class="align-center">
       <v-col cols="auto">
-        <v-avatar image="/img/jukugo_32.png" size="32" />
+        <v-avatar :image="`/img/${tool.iconDir}/32.png`" size="32" />
       </v-col>
       <v-col>
         <h1>熟語パズル</h1>
@@ -21,7 +21,7 @@
     <v-row>
       <v-col cols="12">
         <p>
-          上下左右4つの漢字から真ん中の漢字を当てるパズル、いわゆる「和同開珎」を自動で解くツールです。
+          {{ tool.description }}
         </p>
         <p class="text-caption">
           <span class="text-decoration-underline">矢印</span>
@@ -236,6 +236,7 @@
 
 <script lang="ts" setup>
 import { useUtil } from "@/composables/util";
+
 import JukugoCharacterField from "@/components/JukugoCharacterField.vue";
 import JukugoArrowButton from "@/components/JukugoArrowButton.vue";
 
@@ -248,12 +249,11 @@ import dayjs from "dayjs";
 const route = useRoute();
 const router = useRouter();
 
+import tools from "@/consts/tools";
+const tool = tools.jukugo;
+
 const util = useUtil();
-util.setTitle(
-  "熟語パズル",
-  "jukugo",
-  "上下左右4つの漢字から真ん中の漢字を当てるパズル、いわゆる「和同開珎」を自動で解くツールです。"
-);
+util.setTitle(tool.title, tool.iconDir, tool.description);
 
 let initializing = true;
 const loading = computed(() => inProgress.value.size > 0);
