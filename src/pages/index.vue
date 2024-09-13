@@ -34,6 +34,23 @@
   <v-container>
     <v-row>
       <v-col cols="12">
+        <h2><v-icon start class="mb-1">mdi-scale-balance</v-icon>利用規約</h2>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12">
+        <p>
+          当ウェブサイトで提供されるサービスやコンテンツは、あくまで参考としてご利用ください。その正確性や信頼性については保証いたしかねますので、利用者ご自身の判断と責任でご利用ください。
+        </p>
+        <p>
+          また、当サイトの利用に関連して生じた損害等に関して、運営者は一切の責任を負いません。予告なく内容の変更や提供の終了を行うことがありますので、あらかじめご了承ください。
+        </p>
+      </v-col>
+    </v-row>
+  </v-container>
+  <v-container>
+    <v-row>
+      <v-col cols="12">
         <h2>
           <v-icon start class="mb-1">mdi-information-outline</v-icon>参考情報
         </h2>
