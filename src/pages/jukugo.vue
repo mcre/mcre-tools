@@ -32,6 +32,15 @@
   </v-container>
   <v-container>
     <v-row justify="center">
+      <v-col cols="12" sm="8" md="6" class="text-end ma-0">
+        <v-chip>
+          {{ !isModified || loading ? "-" : answers.length }} 候補
+        </v-chip>
+      </v-col>
+    </v-row>
+  </v-container>
+  <v-container>
+    <v-row justify="center">
       <v-col cols="auto">
         <table>
           <tr>
@@ -77,11 +86,7 @@
             </td>
             <td>
               <v-text-field
-                :value="
-                  loading || answers.length <= 0
-                    ? ''
-                    : answers[selectedAnswerId].character || ''
-                "
+                :value="selectedAnswer"
                 class="centered-input"
                 placeholder="？"
                 maxlength="1"
@@ -139,11 +144,6 @@
   </v-container>
   <v-container v-if="isModified">
     <v-row justify="center">
-      <v-col cols="12" sm="8" md="6" class="text-end">
-        <v-chip>{{ loading ? "-" : answers.length }} 候補</v-chip>
-      </v-col>
-    </v-row>
-    <v-row justify="center">
       <v-col cols="12" sm="8" md="6">
         <v-list-item>
           <template v-slot:prepend>
@@ -169,7 +169,10 @@
         <v-virtual-scroll :height="300" item-height="50" :items="answers">
           <template v-slot:default="{ item, index }">
             <v-list-item
-              @click="selectedAnswerId = index"
+              @click="
+                selectedAnswerId = index;
+                updateQueryString();
+              "
               :active="selectedAnswerId === index"
               v-if="!loading"
             >
@@ -242,6 +245,9 @@ import { JukugoSearchResponse } from "@/apis/@types/index";
 
 import dayjs from "dayjs";
 
+const route = useRoute();
+const router = useRouter();
+
 const util = useUtil();
 util.setTitle(
   "熟語パズル",
@@ -249,6 +255,7 @@ util.setTitle(
   "上下左右4つの漢字から真ん中の漢字を当てるパズル、いわゆる「和同開珎」を自動で解くツールです。"
 );
 
+let initializing = true;
 const loading = computed(() => inProgress.value.size > 0);
 const positions = ["top", "bottom", "left", "right"] as const;
 const inputs = ref(Object.fromEntries(positions.map((pos) => [pos, ""])));
@@ -264,6 +271,16 @@ const answers = ref<
   }[]
 >([]);
 
+const selectedAnswer = computed(() => {
+  if (loading.value) return "";
+  if (answers.value.length <= 0) {
+    if (isModified.value) return "×";
+    else return "";
+  }
+  if (isModified.value && answers.value.length <= 0) return "×";
+  return answers.value[selectedAnswerId.value].character;
+});
+
 const isModified = computed(() => {
   const hasInput = Object.values(inputs.value).some((input) => input !== "");
   const arrowsChanged = Object.values(arrows.value).some((arrow) => !arrow);
@@ -275,6 +292,7 @@ const resetInputs = () => {
   arrows.value = Object.fromEntries(positions.map((pos) => [pos, true]));
   answers.value = [];
   selectedAnswerId.value = 0;
+  router.push({ query: {} });
 };
 
 const baseURL = `https://${import.meta.env.VITE_API_DOMAIN_NAME}`;
@@ -283,6 +301,8 @@ const apiResults: Record<string, JukugoSearchResponse> = {};
 const inProgress = ref(new Set<string>());
 
 const fetchData = () => {
+  if (!initializing) selectedAnswerId.value = 0;
+  updateQueryString();
   positions.forEach(async (pos) => {
     const input = inputs.value[pos];
     const arrow = arrows.value[pos];
@@ -353,12 +373,74 @@ const updateAnswers = () => {
       };
     })
     .sort((a, b) => a.cost - b.cost);
-  selectedAnswerId.value = 0;
 
   if (answers.value.length === 0) {
     answers.value = [];
   }
 };
+
+const updateQueryString = () => {
+  const query: Record<string, string> = {};
+
+  if (util.isKanji(inputs.value.top)) query.t = inputs.value.top;
+  if (util.isKanji(inputs.value.right)) query.r = inputs.value.right;
+  if (util.isKanji(inputs.value.bottom)) query.b = inputs.value.bottom;
+  if (util.isKanji(inputs.value.left)) query.l = inputs.value.left;
+
+  if (!arrows.value.top) query.at = "0";
+  if (!arrows.value.right) query.ar = "0";
+  if (!arrows.value.bottom) query.ab = "0";
+  if (!arrows.value.left) query.al = "0";
+
+  if (initializing && route.query.id) {
+    query.id = route.query.id.toString();
+  } else {
+    if (selectedAnswerId.value && selectedAnswerId.value != 0)
+      query.id = selectedAnswerId.value.toString();
+  }
+
+  router.push({ query });
+};
+
+const initializeFromQueryString = () => {
+  inputs.value.top = util.isKanji(route.query.t)
+    ? route.query.t?.toString() || ""
+    : "";
+  inputs.value.right = util.isKanji(route.query.r)
+    ? route.query.r?.toString() || ""
+    : "";
+  inputs.value.bottom = util.isKanji(route.query.b)
+    ? route.query.b?.toString() || ""
+    : "";
+  inputs.value.left = util.isKanji(route.query.l)
+    ? route.query.l?.toString() || ""
+    : "";
+
+  arrows.value.top = route.query.at === "0" ? false : true;
+  arrows.value.right = route.query.ar === "0" ? false : true;
+  arrows.value.bottom = route.query.ab === "0" ? false : true;
+  arrows.value.left = route.query.al === "0" ? false : true;
+
+  fetchData();
+
+  const unwatch = watch(loading, (newVal) => {
+    if (!newVal) {
+      initializing = false;
+      const id = Number(route.query.id);
+      if (!isNaN(id) && id < answers.value.length) {
+        selectedAnswerId.value = id;
+      } else {
+        selectedAnswerId.value = 0;
+      }
+      updateQueryString();
+      unwatch();
+    }
+  });
+};
+
+onMounted(() => {
+  initializeFromQueryString();
+});
 </script>
 
 <style scoped>

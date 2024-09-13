@@ -44,9 +44,9 @@ export const useUtil = () => {
     if (ogDescription) ogDescription.setAttribute("content", description);
   };
 
-  const isKanji = (character: string | null) => {
-    if (character === null) return false;
-    const regex = new RegExp("^[\u4e00-\u9fff]+$");
+  const isKanji = (character: any): boolean => {
+    if (typeof character !== "string") return false;
+    const regex = new RegExp("^[\u4e00-\u9fff]$");
     return regex.test(character);
   };
 
