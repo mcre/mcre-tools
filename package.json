@@ -2,14 +2,13 @@
   "name": "mcre-tools",
   "version": "0.0.0",
   "scripts": {
-    "dev": "npm run api:build && concurrently \"vite\" \"npm run api:watch\"  \"npm run sitemap:watch\"",
-    "build": "vue-tsc --noEmit && vite build",
+    "dev": "npm run api:build && concurrently \"vite\" \"npm run api:watch\"",
+    "build": "npm run sitemap:build && vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "lint": "eslint . --fix --ignore-path .gitignore",
     "api:build": "rm -rf ./tmp-apis && npx openapi2aspida -o=./tmp-apis/ && rsync -a --delete ./tmp-apis/ ./src/apis/ && rm -rf ./tmp-apis",
     "api:watch": "chokidar ./openapi.yaml -c \"npm run api:build\"",
-    "sitemap:build": "node ./bin/updateSitemap.js",
-    "sitemap:watch": "chokidar ./src/typed-router.d.ts -c \"npm run sitemap:build\""
+    "sitemap:build": "node ./bin/updateSitemap.js"
   },
   "dependencies": {
     "@aspida/axios": "^1.14.0",
