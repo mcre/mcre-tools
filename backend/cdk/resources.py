@@ -277,12 +277,17 @@ def create_iam_role_github_actions(scope: Stack, policies: list = []) -> iam.Rol
             iam.PolicyStatement(
                 actions=["ssm:GetParameter"],
                 resources=[
-                    f"arn:aws:ssm:{rg}:{id}:parameter/cdk-bootstrap/{cdk_identifier}/*"
+                    f"arn:aws:ssm:us-east-1:{id}:parameter/cdk-bootstrap/{cdk_identifier}/*",
+                    f"arn:aws:ssm:{rg}:{id}:parameter/cdk-bootstrap/{cdk_identifier}/*",
                 ],
             ),
             iam.PolicyStatement(
                 actions=["sts:AssumeRole"],
                 resources=[
+                    f"arn:aws:iam::{id}:role/cdk-{cdk_identifier}-deploy-role-{id}-us-east-1",
+                    f"arn:aws:iam::{id}:role/cdk-{cdk_identifier}-file-publishing-role-{id}-us-east-1",
+                    f"arn:aws:iam::{id}:role/cdk-{cdk_identifier}-image-publishing-role-{id}-us-east-1",
+                    f"arn:aws:iam::{id}:role/cdk-{cdk_identifier}-lookup-role--{id}-us-east-1",
                     f"arn:aws:iam::{id}:role/cdk-{cdk_identifier}-deploy-role-{id}-{rg}",
                     f"arn:aws:iam::{id}:role/cdk-{cdk_identifier}-file-publishing-role-{id}-{rg}",
                     f"arn:aws:iam::{id}:role/cdk-{cdk_identifier}-image-publishing-role-{id}-{rg}",
@@ -292,6 +297,8 @@ def create_iam_role_github_actions(scope: Stack, policies: list = []) -> iam.Rol
             iam.PolicyStatement(
                 actions=["s3:ListBucket", "s3:GetObject", "s3:PutObject"],
                 resources=[
+                    f"arn:aws:s3:::cdk-{cdk_identifier}-assets-{id}-us-east-1",
+                    f"arn:aws:s3:::cdk-{cdk_identifier}-assets-{id}-us-east-1/*",
                     f"arn:aws:s3:::cdk-{cdk_identifier}-assets-{id}-{rg}",
                     f"arn:aws:s3:::cdk-{cdk_identifier}-assets-{id}-{rg}/*",
                 ],
