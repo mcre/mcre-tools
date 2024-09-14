@@ -9,8 +9,6 @@ configのenvを変更することにより、AWSアカウントや同じアカ�
 
 下記は手動で作成する。
 
-- AWS Certificate Manager
-  - CDKでは別のリージョンにリソースを作成できないうえに、CloudFrontではus-east-1につくられたACMしか使用できないため。
 - Open ID Connect Provider
   - AWSアカウント上に複数の同じProviderを使用することができないため。
 
@@ -53,7 +51,7 @@ cdk --profile m_cre-super-user synth
 synth が通ったあとはデプロイする
 
 ```
-cdk --profile m_cre-super-user deploy
+cdk --profile m_cre-super-user deploy --all
 ```
 
 (差分を見るとき)

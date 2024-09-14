@@ -37,7 +37,9 @@ export const useUtil = () => {
     if (ogImage)
       ogImage.setAttribute(
         "content",
-        `https://${import.meta.env.VITE_APP_DOMAIN_NAME}/img/${favicon}/180.png`
+        `https://${
+          import.meta.env.VITE_DISTRIBUTION_DOMAIN_NAME
+        }/img/${favicon}/180.png`
       );
 
     const ogDescription = document.querySelector("meta[id='og-description']");

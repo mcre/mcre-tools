@@ -9,7 +9,7 @@ const envFile =
   process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development'
 dotenv.config({ path: path.resolve(__dirname, `../${envFile}`) })
 
-const domain = `https://${process.env.VITE_APP_DOMAIN_NAME}`
+const domain = `https://${process.env.VITE_DISTRIBUTION_DOMAIN_NAME}`
 
 const routes = []
 const regex = /^\s*'\/[^']*'/gm

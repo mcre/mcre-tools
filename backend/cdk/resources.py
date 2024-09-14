@@ -26,6 +26,26 @@ def add_tags(resource) -> None:
         Tags.of(resource).add(tag["key"], tag["value"])
 
 
+def create_acm_certificate(
+    scope: Stack, name: str, domain_config: dict
+) -> tuple[acm.Certificate, route53.HostedZone]:
+    existing_hosted_zone = route53.HostedZone.from_hosted_zone_attributes(
+        scope,
+        f"hosted-zone-{name}",
+        hosted_zone_id=domain_config["hosted_zone_id"],
+        zone_name=domain_config["zone_name"],
+    )
+    domain_name = f"{domain_config['name']}.{domain_config['zone_name']}"
+    resource = acm.Certificate(
+        scope,
+        f"acm-certificate-{name}",
+        domain_name=domain_name,
+        validation=acm.CertificateValidation.from_dns(existing_hosted_zone),
+    )
+    add_tags(resource)
+    return (resource, existing_hosted_zone, domain_name)
+
+
 def create_dynamodb_primary_table(scope: Stack) -> dynamodb.Table:
     table_config = config["dynamodb"]["primary"]
     dp = table_config["deletion_protection"]
@@ -134,8 +154,13 @@ def create_lambda_function(
 
 
 def create_apigateway(
-    scope: Stack, name: str, target_lambda: lambda_.Function
-) -> tuple[apigateway.RestApi, str]:
+    scope: Stack,
+    name: str,
+    target_lambda: lambda_.Function,
+    acm_certificate: acm.Certificate,
+    hosted_zone: route53.HostedZone,
+    domain_name: str,
+) -> apigateway.RestApi:
     resource = apigateway.RestApi(
         scope,
         f"api-gateway-{name}",
@@ -153,26 +178,12 @@ def create_apigateway(
             "http://localhost:3000",
         ]
     )
-    domain_config = config["api-gateway"]["domain"][name]
-
-    existing_hosted_zone = route53.HostedZone.from_hosted_zone_attributes(
-        scope,
-        f"api-gateway-hosted-zone-{name}",
-        hosted_zone_id=domain_config["hosted_zone_id"],
-        zone_name=domain_config["zone_name"],
-    )
-
-    domain_name = f"{domain_config['name']}.{domain_config['zone_name']}"
 
     custom_domain = apigateway.DomainName(
         scope,
         f"api-gateway-domain-{name}",
         domain_name=domain_name,
-        certificate=acm.Certificate.from_certificate_arn(
-            scope,
-            f"api-gateway-certificate-{name}",
-            domain_config["certificate_arn"],
-        ),
+        certificate=acm_certificate,
         endpoint_type=apigateway.EndpointType.REGIONAL,
         security_policy=apigateway.SecurityPolicy.TLS_1_2,
     )
@@ -184,20 +195,19 @@ def create_apigateway(
         domain_name=custom_domain,
         rest_api=resource,
         stage=resource.deployment_stage,
-        base_path=domain_config.get("base_path", ""),
+        base_path=config["api-gateway"]["domain"][name]["base_path"],
     )
 
     route53.ARecord(
         scope,
         f"api-gateway-a-record-{name}",
-        record_name=domain_config["name"],
-        zone=existing_hosted_zone,
+        record_name=domain_name.split(".")[0],
+        zone=hosted_zone,
         target=route53.RecordTarget.from_alias(
             route53_targets.ApiGatewayDomain(custom_domain)
         ),
     )
-
-    return resource, domain_name
+    return resource
 
 
 def create_s3_bucket(scope: Stack, name: str) -> s3.Bucket:
@@ -213,27 +223,17 @@ def create_s3_bucket(scope: Stack, name: str) -> s3.Bucket:
 
 
 def create_cloudfront(
-    scope: Stack, name: str, bucket: s3.Bucket
-) -> tuple[cloudfront.Distribution, str]:
-    domain_config = config["cloudfront"]["domain"][name]
-
-    existing_hosted_zone = route53.HostedZone.from_hosted_zone_attributes(
-        scope,
-        f"cloudfront-hosted-zone-{name}",
-        hosted_zone_id=domain_config["hosted_zone_id"],
-        zone_name=domain_config["zone_name"],
-    )
-
-    domain_name = f"{domain_config['name']}.{domain_config['zone_name']}"
-
+    scope: Stack,
+    name: str,
+    bucket: s3.Bucket,
+    acm_certificate: acm.Certificate,
+    hosted_zone: route53.HostedZone,
+    domain_name: str,
+) -> cloudfront.Distribution:
     resource = cloudfront.Distribution(
         scope,
         f"cloudfront-distribution-{name}",
-        certificate=acm.Certificate.from_certificate_arn(
-            scope,
-            f"cloudfront-certificate-{name}",
-            domain_config["certificate_arn"],
-        ),
+        certificate=acm_certificate,
         domain_names=[domain_name],
         default_behavior=cloudfront.BehaviorOptions(
             origin=cloudfront_origins.S3Origin(bucket),
@@ -253,15 +253,15 @@ def create_cloudfront(
     route53.ARecord(
         scope,
         f"cloudfront-a-record-{name}",
-        record_name=domain_config["name"],
-        zone=existing_hosted_zone,
+        record_name=domain_name.split(".")[0],
+        zone=hosted_zone,
         target=route53.RecordTarget.from_alias(
             route53_targets.CloudFrontTarget(resource)
         ),
     )
 
     add_tags(resource)
-    return resource, domain_name
+    return resource
 
 
 def create_iam_role_github_actions(scope: Stack, policies: list = []) -> iam.Role:

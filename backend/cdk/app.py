@@ -9,6 +9,7 @@ from aws_cdk import (
 
 
 from resources import (
+    create_acm_certificate,
     create_dynamodb_primary_table,
     create_lambda_function,
     create_apigateway,
@@ -21,8 +22,28 @@ from config import get_env_config
 # 開始処理
 config = get_env_config()
 app = App()
+
+# ===== USリージョン =====
+stack_us = Stack(
+    app,
+    f"{config['prefix']}-stack-us",
+    env=Environment(region="us-east-1"),
+    cross_region_references=True,
+)
+
+# ACM (CloudFront用のACMはUSリージョンにある必要があるので別スタックをつくる)
+acm_distribution, hosted_zone_distribution, domain_name_distribution = (
+    create_acm_certificate(
+        stack_us, "distribution", config["cloudfront"]["domain"]["distribution"]
+    )
+)
+
+# ===== 東京リージョン =====
 stack = Stack(
-    app, f"{config['prefix']}-stack", env=Environment(region="ap-northeast-1")
+    app,
+    f"{config['prefix']}-stack",
+    env=Environment(region="ap-northeast-1"),
+    cross_region_references=True,
 )
 
 # DynamoDB
@@ -66,14 +87,22 @@ lambda_api = create_lambda_function(
 lambda_functions = [lambda_api]
 
 # API-Gateway
-_, domain_name_api = create_apigateway(stack, "api", lambda_api)
+acm_api, hosted_zone_api, domain_name_api = create_acm_certificate(
+    stack, "api", config["api-gateway"]["domain"]["api"]
+)
+create_apigateway(stack, "api", lambda_api, acm_api, hosted_zone_api, domain_name_api)
 
 # S3
 bucket_distribution = create_s3_bucket(stack, "distribution")
 
 # CloudFront
-cloudfront_distribution, domain_name_app = create_cloudfront(
-    stack, "distribution", bucket_distribution
+cloudfront_distribution = create_cloudfront(
+    stack,
+    "distribution",
+    bucket_distribution,
+    acm_distribution,
+    hosted_zone_distribution,
+    domain_name_distribution,
 )
 
 # Github Actions用のIAM Role
@@ -103,7 +132,7 @@ iam_role_github_actions = create_iam_role_github_actions(stack, policies)
 
 # 後続処理で参照するパラメータを出力する処理
 CfnOutput(stack, "Prefix", value=config["prefix"])
-CfnOutput(stack, "DomainNameApp", value=domain_name_app)
+CfnOutput(stack, "DomainNameDistribution", value=domain_name_distribution)
 CfnOutput(stack, "DomainNameApi", value=domain_name_api)
 CfnOutput(stack, "IamRoleGithubActions", value=iam_role_github_actions.role_arn)
 CfnOutput(
