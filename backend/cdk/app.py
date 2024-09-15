@@ -11,6 +11,7 @@ from aws_cdk import (
 from resources import (
     create_acm_certificate,
     create_dynamodb_primary_table,
+    create_lambda_edge_function_version,
     create_lambda_function,
     create_apigateway,
     create_s3_bucket,
@@ -22,21 +23,6 @@ from config import get_env_config
 # 開始処理
 config = get_env_config()
 app = App()
-
-# ===== USリージョン =====
-stack_us = Stack(
-    app,
-    f"{config['prefix']}-stack-us",
-    env=Environment(region="us-east-1"),
-    cross_region_references=True,
-)
-
-# ACM (CloudFront用のACMはUSリージョンにある必要があるので別スタックをつくる)
-acm_distribution, hosted_zone_distribution, domain_name_distribution = (
-    create_acm_certificate(
-        stack_us, "distribution", config["cloudfront"]["domain"]["distribution"]
-    )
-)
 
 # ===== 東京リージョン =====
 stack = Stack(
@@ -92,19 +78,46 @@ acm_api, hosted_zone_api, domain_name_api = create_acm_certificate(
 )
 create_apigateway(stack, "api", lambda_api, acm_api, hosted_zone_api, domain_name_api)
 
+
+# ===== USリージョン =====
+# CloudFront関係はUSリージョンにある必要がある
+
+stack_us = Stack(
+    app,
+    f"{config['prefix']}-stack-us-east-1",
+    env=Environment(region="us-east-1"),
+    cross_region_references=True,
+)
+
 # S3
-bucket_distribution = create_s3_bucket(stack, "distribution")
+bucket_distribution = create_s3_bucket(stack_us, "dist")
+
+# ACM
+acm_distribution, hosted_zone_distribution, domain_name_distribution = (
+    create_acm_certificate(stack_us, "dist", config["cloudfront"]["domain"]["dist"])
+)
+
+# Lambda
+# lambda_edge_version_redirect_to_prerender = create_lambda_edge_function_version(
+#     stack_us, "redirect-to-prerender"
+# )
+# lambda_edge_version_set_prerender_header = create_lambda_edge_function_version(
+#     stack_us, "set-prerender-header"
+# )
 
 # CloudFront
 cloudfront_distribution = create_cloudfront(
-    stack,
-    "distribution",
+    stack_us,
+    "dist",
     bucket_distribution,
     acm_distribution,
     hosted_zone_distribution,
     domain_name_distribution,
+    # lambda_edge_version_redirect_to_prerender,
+    # lambda_edge_version_set_prerender_header,
 )
 
+# ===== 終了処理 =====
 # Github Actions用のIAM Role
 policies = [
     iam.PolicyStatement(
@@ -127,12 +140,10 @@ policies = [
         ],
     ),
 ]
-
 iam_role_github_actions = create_iam_role_github_actions(stack, policies)
 
 # 後続処理で参照するパラメータを出力する処理
 CfnOutput(stack, "Prefix", value=config["prefix"])
-CfnOutput(stack, "DomainNameDistribution", value=domain_name_distribution)
 CfnOutput(stack, "DomainNameApi", value=domain_name_api)
 CfnOutput(stack, "IamRoleGithubActions", value=iam_role_github_actions.role_arn)
 CfnOutput(
@@ -142,11 +153,12 @@ CfnOutput(
         [lambda_function.function_name for lambda_function in lambda_functions]
     ),
 )
-CfnOutput(stack, "BucketDistribution", value=bucket_distribution.bucket_name)
-CfnOutput(
-    stack, "CloudfrontDistribution", value=cloudfront_distribution.distribution_id
-)
 
+CfnOutput(stack_us, "DomainNameDistribution", value=domain_name_distribution)
+CfnOutput(stack_us, "BucketDistribution", value=bucket_distribution.bucket_name)
+CfnOutput(
+    stack_us, "CloudfrontDistribution", value=cloudfront_distribution.distribution_id
+)
 
 # 終了処理
 app.synth()

@@ -10,6 +10,7 @@
     "certificatemanager",
     "compositionend",
     "compositionstart",
+    "edgelambda",
     "hostedzone",
     "ICOT",
     "ipadic",

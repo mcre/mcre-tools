@@ -16,7 +16,20 @@ configのenvを変更することにより、AWSアカウントや同じアカ�
 
 Github Actions自体でもCDKのDeployを行っているが、そのためのIAM RoleはCDKで作成したものため、初回のCDK Deployはローカル環境から別の権限で実施する必要がある。
 
-なおIAM RoleのarnはGithubリポジトリのActions用の環境変数に`AWS_IAM_ROLE_ARN`として登録する必要がある。
+## Github Actionsの環境変数
+
+- Variables
+  - `AWS_IAM_ROLE_ARN` CDKのiam-role-github-actions
+- Secrets
+  - `PRERENDER_TOKEN` prerender.ioのトークン
+
+## ローカルの環境変数
+
+`./config/_secrets.sh` として下記のような内容を保存することで、ローカルから実行できる。
+
+```
+export PRERENDER_TOKEN="***"
+```
 
 ## 仮想環境
 
@@ -45,12 +58,14 @@ source .venv/bin/activate
 CDK から CloudFormation Template をつくる。
 
 ```
+source ./config/_secrets.sh
 cdk --profile m_cre-super-user synth
 ```
 
 synth が通ったあとはデプロイする
 
 ```
+source ./config/_secrets.sh
 cdk --profile m_cre-super-user deploy --all
 ```
 

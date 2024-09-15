@@ -1,3 +1,4 @@
+import os
 from aws_cdk import (
     Stack,
     Tags,
@@ -28,7 +29,7 @@ def add_tags(resource) -> None:
 
 def create_acm_certificate(
     scope: Stack, name: str, domain_config: dict
-) -> tuple[acm.Certificate, route53.HostedZone]:
+) -> tuple[acm.Certificate, route53.HostedZone, str]:
     existing_hosted_zone = route53.HostedZone.from_hosted_zone_attributes(
         scope,
         f"hosted-zone-{name}",
@@ -103,6 +104,55 @@ def create_dynamodb_primary_table(scope: Stack) -> dynamodb.Table:
     return resource
 
 
+def create_lambda_edge_function_version(
+    scope: Stack,
+    name: str,
+    runtime: lambda_.Runtime = lambda_.Runtime.NODEJS_20_X,
+) -> lambda_.Version:
+    iam_role_name = f"{config['prefix']}-lambda-{name}"
+    iam_role = iam.Role(
+        scope,
+        f"iam-role-lambda-{name}",
+        role_name=iam_role_name,
+        assumed_by=iam.CompositePrincipal(
+            iam.ServicePrincipal("lambda.amazonaws.com"),
+            iam.ServicePrincipal("edgelambda.amazonaws.com"),
+        ),
+        inline_policies={
+            f"{iam_role_name}-policy": iam.PolicyDocument(
+                statements=[
+                    iam.PolicyStatement(
+                        actions=[
+                            "logs:CreateLogGroup",
+                            "logs:CreateLogStream",
+                            "logs:PutLogEvents",
+                        ],
+                        resources=["arn:aws:logs:*:*:*"],
+                    )
+                ]
+            )
+        },
+    )
+    add_tags(iam_role)
+
+    resource = lambda_.Function(
+        scope,
+        f"lambda-function-edge-{name}",
+        function_name=f"{config['prefix']}-{name}",
+        runtime=runtime,
+        handler="index.handler",
+        code=lambda_.Code.from_asset(f"resource-files/lambda-edge/{name}"),
+        role=iam_role,
+        current_version_options=lambda_.VersionOptions(
+            removal_policy=RemovalPolicy.RETAIN
+        ),
+    )
+
+    version = resource.current_version
+    add_tags(resource)
+    return version
+
+
 def create_lambda_function(
     scope: Stack,
     name: str,
@@ -174,7 +224,7 @@ def create_apigateway(
     proxy_resource.add_method("ANY", lambda_integration)
     proxy_resource.add_cors_preflight(
         allow_origins=[
-            f"https://{config['cloudfront']['domain']['distribution']['name']}.{config['cloudfront']['domain']['distribution']['zone_name']}",
+            f"https://{config['cloudfront']['domain']['dist']['name']}.{config['cloudfront']['domain']['dist']['zone_name']}",
             "http://localhost:3000",
         ]
     )
@@ -229,15 +279,45 @@ def create_cloudfront(
     acm_certificate: acm.Certificate,
     hosted_zone: route53.HostedZone,
     domain_name: str,
+    # lambda_edge_version_redirect_to_prerender: lambda_.Version,
+    # lambda_edge_version_set_prerender_header: lambda_.Version,
 ) -> cloudfront.Distribution:
+    cache_policy = cloudfront.CachePolicy(
+        scope,
+        f"cloudfront-cache-policy-{name}",
+        cache_policy_name=f"prerender-cache-policy-{name}",
+        header_behavior=cloudfront.CacheHeaderBehavior.allow_list(
+            "X-Prerender-Cachebuster",
+            "X-Prerender-Token",
+            "X-Prerender-Host",
+            "X-Query-String",
+        ),
+        min_ttl=Duration.seconds(31536000),
+        max_ttl=Duration.seconds(31536000),
+        default_ttl=Duration.seconds(31536000),
+    )
     resource = cloudfront.Distribution(
         scope,
         f"cloudfront-distribution-{name}",
         certificate=acm_certificate,
         domain_names=[domain_name],
         default_behavior=cloudfront.BehaviorOptions(
-            origin=cloudfront_origins.S3Origin(bucket),
+            origin=cloudfront_origins.S3Origin(
+                bucket,
+                custom_headers={"X-Prerender-Token": os.environ.get("PRERENDER_TOKEN")},
+            ),
             viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+            cache_policy=cache_policy,
+            # edge_lambdas=[
+            #     cloudfront.EdgeLambda(
+            #         function_version=lambda_edge_version_set_prerender_header,
+            #         event_type=cloudfront.LambdaEdgeEventType.VIEWER_REQUEST,
+            #     ),
+            #     cloudfront.EdgeLambda(
+            #         function_version=lambda_edge_version_redirect_to_prerender,
+            #         event_type=cloudfront.LambdaEdgeEventType.ORIGIN_REQUEST,
+            #     ),
+            # ],
         ),
         default_root_object="index.html",
         error_responses=[
