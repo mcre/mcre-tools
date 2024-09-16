@@ -1,4 +1,6 @@
 import os
+import string
+
 from aws_cdk import (
     Stack,
     Tags,
@@ -107,6 +109,7 @@ def create_dynamodb_primary_table(scope: Stack) -> dynamodb.Table:
 def create_lambda_edge_function_version(
     scope: Stack,
     name: str,
+    replaces: dict = {},
     runtime: lambda_.Runtime = lambda_.Runtime.NODEJS_20_X,
 ) -> lambda_.Version:
     iam_role_name = f"{config['prefix']}-lambda-{name}"
@@ -135,19 +138,31 @@ def create_lambda_edge_function_version(
     )
     add_tags(iam_role)
 
+    class AtTemplate(string.Template):
+        delimiter = "@"
+
+    work_dir = f"work/{name}"
+    os.makedirs(work_dir, exist_ok=True)
+    code_path = f"{work_dir}/index.js"
+    with open(f"resource-files/lambda-edge/{name}/index.js", "r") as template_file:
+        template_content = template_file.read()
+    template = AtTemplate(template_content)
+    code_content = template.substitute(replaces)
+    with open(code_path, "w") as lambda_file:
+        lambda_file.write(code_content)
+
     resource = lambda_.Function(
         scope,
         f"lambda-function-edge-{name}",
         function_name=f"{config['prefix']}-{name}",
         runtime=runtime,
         handler="index.handler",
-        code=lambda_.Code.from_asset(f"resource-files/lambda-edge/{name}"),
+        code=lambda_.Code.from_asset(work_dir),
         role=iam_role,
         current_version_options=lambda_.VersionOptions(
             removal_policy=RemovalPolicy.RETAIN
         ),
     )
-
     version = resource.current_version
     add_tags(resource)
     return version
@@ -279,8 +294,8 @@ def create_cloudfront(
     acm_certificate: acm.Certificate,
     hosted_zone: route53.HostedZone,
     domain_name: str,
-    # lambda_edge_version_redirect_to_prerender: lambda_.Version,
-    # lambda_edge_version_set_prerender_header: lambda_.Version,
+    lambda_edge_version_redirect_to_prerender: lambda_.Version,
+    lambda_edge_version_set_prerender_header: lambda_.Version,
 ) -> cloudfront.Distribution:
     cache_policy = cloudfront.CachePolicy(
         scope,
@@ -302,22 +317,19 @@ def create_cloudfront(
         certificate=acm_certificate,
         domain_names=[domain_name],
         default_behavior=cloudfront.BehaviorOptions(
-            origin=cloudfront_origins.S3Origin(
-                bucket,
-                custom_headers={"X-Prerender-Token": os.environ.get("PRERENDER_TOKEN")},
-            ),
+            origin=cloudfront_origins.S3Origin(bucket),
             viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
             cache_policy=cache_policy,
-            # edge_lambdas=[
-            #     cloudfront.EdgeLambda(
-            #         function_version=lambda_edge_version_set_prerender_header,
-            #         event_type=cloudfront.LambdaEdgeEventType.VIEWER_REQUEST,
-            #     ),
-            #     cloudfront.EdgeLambda(
-            #         function_version=lambda_edge_version_redirect_to_prerender,
-            #         event_type=cloudfront.LambdaEdgeEventType.ORIGIN_REQUEST,
-            #     ),
-            # ],
+            edge_lambdas=[
+                cloudfront.EdgeLambda(
+                    function_version=lambda_edge_version_set_prerender_header,
+                    event_type=cloudfront.LambdaEdgeEventType.VIEWER_REQUEST,
+                ),
+                cloudfront.EdgeLambda(
+                    function_version=lambda_edge_version_redirect_to_prerender,
+                    event_type=cloudfront.LambdaEdgeEventType.ORIGIN_REQUEST,
+                ),
+            ],
         ),
         default_root_object="index.html",
         error_responses=[

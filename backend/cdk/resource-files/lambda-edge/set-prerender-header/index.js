@@ -6,7 +6,7 @@ exports.handler = (event, context, callback) => {
   const host = headers['host']
   if (user_agent && host) {
     var prerender =
-      /googlebot|Google-InspectionTool|adsbot\-google|Feedfetcher\-Google|bingbot|yandex|baiduspider|Facebot|facebookexternalhit|twitterbot|rogerbot|linkedinbot|embedly|quora link preview|showyoubot|outbrain|pinterest|slackbot|vkShare|W3C_Validator|redditbot|applebot|whatsapp|flipboard|tumblr|bitlybot|skypeuripreview|nuzzel|discordbot|google page speed|qwantify|pinterestbot|bitrix link preview|xing\-contenttabreceiver|chrome\-lighthouse|telegrambot/i.test(
+      /googlebot|Google\-InspectionTool|adsbot\-google|Feedfetcher\-Google|bingbot|yandex|baiduspider|Facebot|facebookexternalhit|twitterbot|rogerbot|linkedinbot|embedly|quora link preview|showyoubot|outbrain|pinterest|slackbot|vkShare|W3C_Validator|redditbot|applebot|whatsapp|flipboard|tumblr|bitlybot|skypeuripreview|nuzzel|discordbot|google page speed|qwantify|pinterestbot|bitrix link preview|xing\-contenttabreceiver|chrome\-lighthouse|telegrambot/i.test(
         user_agent[0].value
       )
     prerender = prerender || /_escaped_fragment_/.test(request.querystring)
@@ -16,6 +16,9 @@ exports.handler = (event, context, callback) => {
         request.uri
       )
     if (prerender) {
+      headers['x-prerender-token'] = [
+        { key: 'X-Prerender-Token', value: '@{PRERENDER_TOKEN}' }
+      ]
       headers['x-prerender-host'] = [
         { key: 'X-Prerender-Host', value: host[0].value }
       ]

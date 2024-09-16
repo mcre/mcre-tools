@@ -1,3 +1,4 @@
+import os
 from aws_cdk import (
     App,
     Environment,
@@ -70,7 +71,7 @@ lambda_api = create_lambda_function(
     },
     layers=lambda_layers,
 )
-lambda_functions = [lambda_api]
+github_actions_lambda_deploy_targets = [lambda_api]
 
 # API-Gateway
 acm_api, hosted_zone_api, domain_name_api = create_acm_certificate(
@@ -81,6 +82,8 @@ create_apigateway(stack, "api", lambda_api, acm_api, hosted_zone_api, domain_nam
 
 # ===== USリージョン =====
 # CloudFront関係はUSリージョンにある必要がある
+# 仮にCloudFrontを東京リージョン置いた場合はLambda Edgeのコード更新時にエラーが発生するうえに戻せなくなり、スタックが壊れるので、やってはいけない。
+#  https://github.com/aws/aws-cdk/issues/28200
 
 stack_us = Stack(
     app,
@@ -98,12 +101,14 @@ acm_distribution, hosted_zone_distribution, domain_name_distribution = (
 )
 
 # Lambda
-# lambda_edge_version_redirect_to_prerender = create_lambda_edge_function_version(
-#     stack_us, "redirect-to-prerender"
-# )
-# lambda_edge_version_set_prerender_header = create_lambda_edge_function_version(
-#     stack_us, "set-prerender-header"
-# )
+lambda_edge_version_redirect_to_prerender = create_lambda_edge_function_version(
+    stack_us, "redirect-to-prerender"
+)
+lambda_edge_version_set_prerender_header = create_lambda_edge_function_version(
+    stack_us,
+    "set-prerender-header",
+    {"PRERENDER_TOKEN": os.environ["PRERENDER_TOKEN"]},
+)
 
 # CloudFront
 cloudfront_distribution = create_cloudfront(
@@ -113,8 +118,8 @@ cloudfront_distribution = create_cloudfront(
     acm_distribution,
     hosted_zone_distribution,
     domain_name_distribution,
-    # lambda_edge_version_redirect_to_prerender,
-    # lambda_edge_version_set_prerender_header,
+    lambda_edge_version_redirect_to_prerender,
+    lambda_edge_version_set_prerender_header,
 )
 
 # ===== 終了処理 =====
@@ -130,7 +135,8 @@ policies = [
     iam.PolicyStatement(
         actions=["lambda:UpdateFunctionCode"],
         resources=[
-            lambda_function.function_arn for lambda_function in lambda_functions
+            lambda_function.function_arn
+            for lambda_function in github_actions_lambda_deploy_targets
         ],
     ),
     iam.PolicyStatement(
@@ -150,7 +156,10 @@ CfnOutput(
     stack,
     "LambdaFunctions",
     value=",".join(
-        [lambda_function.function_name for lambda_function in lambda_functions]
+        [
+            lambda_function.function_name
+            for lambda_function in github_actions_lambda_deploy_targets
+        ]
     ),
 )
 
