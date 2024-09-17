@@ -32,15 +32,6 @@
   </v-container>
   <v-container>
     <v-row justify="center">
-      <v-col cols="12" sm="8" md="6" class="text-end ma-0">
-        <v-chip>
-          {{ !isModified || loading ? "-" : answers.length }} 候補
-        </v-chip>
-      </v-col>
-    </v-row>
-  </v-container>
-  <v-container>
-    <v-row justify="center">
       <v-col cols="auto">
         <table>
           <tr>
@@ -50,6 +41,7 @@
               <jukugo-character-field
                 v-model="inputs.top"
                 @compositionend="fetchData"
+                @input="fetchDataIfEmpty(inputs.top)"
               />
             </td>
             <td></td>
@@ -74,6 +66,7 @@
               <jukugo-character-field
                 v-model="inputs.left"
                 @compositionend="fetchData"
+                @input="fetchDataIfEmpty(inputs.left)"
               />
             </td>
             <td>
@@ -86,6 +79,7 @@
             </td>
             <td>
               <v-text-field
+                v-show="!hideAnswer"
                 :value="selectedAnswer"
                 class="centered-input"
                 placeholder="？"
@@ -96,6 +90,13 @@
                 tabindex="-1"
                 :loading="loading"
               />
+              <v-icon
+                size="x-large"
+                v-show="hideAnswer"
+                @click="toggleHideAnswer"
+              >
+                mdi-blur
+              </v-icon>
             </td>
             <td>
               <jukugo-arrow-button
@@ -109,6 +110,7 @@
               <jukugo-character-field
                 v-model="inputs.right"
                 @compositionend="fetchData"
+                @input="fetchDataIfEmpty(inputs.right)"
               />
             </td>
           </tr>
@@ -133,6 +135,7 @@
               <jukugo-character-field
                 v-model="inputs.bottom"
                 @compositionend="fetchData"
+                @input="fetchDataIfEmpty(inputs.bottom)"
               />
             </td>
             <td></td>
@@ -142,7 +145,14 @@
       </v-col>
     </v-row>
   </v-container>
-  <v-container v-if="isModified">
+  <v-container v-if="isModified && !hideAnswer">
+    <v-row justify="center">
+      <v-col cols="12" sm="8" md="6" class="text-end ma-0">
+        <v-chip>
+          {{ !isModified || loading ? "-" : answers.length }} 候補
+        </v-chip>
+      </v-col>
+    </v-row>
     <v-row justify="center">
       <v-col cols="12" sm="8" md="6">
         <v-list-item>
@@ -226,11 +236,21 @@
     </v-row>
   </v-container>
   <v-fab
+    active
+    :icon="hideAnswer ? 'mdi-eye' : 'mdi-eye-off'"
+    size="small"
+    @click="toggleHideAnswer"
+    app
+    location="bottom end"
+  />
+  <v-fab
     :active="isModified"
+    size="small"
     icon="mdi-eraser"
     @click="resetInputs"
     app
     location="bottom end"
+    class="mb-12"
   />
 </template>
 
@@ -260,6 +280,7 @@ const loading = computed(() => inProgress.value.size > 0);
 const positions = ["top", "bottom", "left", "right"] as const;
 const inputs = ref(Object.fromEntries(positions.map((pos) => [pos, ""])));
 const arrows = ref(Object.fromEntries(positions.map((pos) => [pos, true])));
+const hideAnswer = ref(false);
 const selectedAnswerId = ref(0);
 const answers = ref<
   {
@@ -272,6 +293,7 @@ const answers = ref<
 >([]);
 
 const selectedAnswer = computed(() => {
+  updateQueryString();
   if (loading.value) return "";
   if (answers.value.length <= 0) {
     if (isModified.value) return "×";
@@ -325,11 +347,22 @@ const fetchData = () => {
         } finally {
           inProgress.value.delete(key);
         }
-      } else {
-        updateAnswers();
       }
+    } else {
+      updateAnswers();
     }
   });
+};
+
+const fetchDataIfEmpty = (value: string) => {
+  if (value === "") {
+    fetchData();
+  }
+};
+
+const toggleHideAnswer = () => {
+  hideAnswer.value = !hideAnswer.value;
+  updateQueryString();
 };
 
 const updateAnswers = () => {
@@ -399,6 +432,18 @@ const updateQueryString = () => {
       query.id = selectedAnswerId.value.toString();
   }
 
+  if (hideAnswer.value) query.h = "1";
+
+  /* aに答えをいれる方法
+  if (
+    isModified &&
+    inProgress.value.size == 0 && // loadingを使うとうまく動かないので
+    answers.value[selectedAnswerId.value]
+  ) {
+    query.a = answers.value[selectedAnswerId.value].character;
+  }
+  */
+
   router.push({ query });
 };
 
@@ -420,6 +465,8 @@ const initializeFromQueryString = () => {
   arrows.value.right = route.query.ar === "0" ? false : true;
   arrows.value.bottom = route.query.ab === "0" ? false : true;
   arrows.value.left = route.query.al === "0" ? false : true;
+
+  hideAnswer.value = route.query.h === "1" ? true : false;
 
   fetchData();
 
