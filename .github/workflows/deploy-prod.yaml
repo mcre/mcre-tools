@@ -7,10 +7,15 @@ on:
       - .github/workflows/**
       - backend/cdk/**
       - backend/lambda/**
+      - bin/**
+      - public/**
       - src/**
       - index.html
-      - package.json
+      - LICENSE
+      - openapi.yaml
       - package-lock.json
+      - package.json
+      - README.md
   workflow_dispatch:
 
 permissions:
