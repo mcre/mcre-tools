@@ -20,7 +20,6 @@ while ((match = regex.exec(fileContent)) !== null) {
 }
 
 const excludedRoutes = ['/not-found']
-
 const filteredRoutes = routes.filter(route => !excludedRoutes.includes(route))
 
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
@@ -34,5 +33,13 @@ const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
   .join('')}
 </urlset>`
 
-const outputPath = path.resolve(__dirname, '../public/sitemap.xml')
-fs.writeFileSync(outputPath, sitemap)
+const sitemapOutputPath = path.resolve(__dirname, '../public/sitemap.xml')
+fs.writeFileSync(sitemapOutputPath, sitemap)
+
+const robotsTxt = `User-agent: *
+Disallow:
+
+Sitemap: ${domain}/sitemap.xml`
+
+const robotsTxtOutputPath = path.resolve(__dirname, '../public/robots.txt')
+fs.writeFileSync(robotsTxtOutputPath, robotsTxt)
