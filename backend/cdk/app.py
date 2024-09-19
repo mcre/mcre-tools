@@ -36,6 +36,9 @@ stack = Stack(
 # DynamoDB
 dynamodb_primary_table = create_dynamodb_primary_table(stack)
 
+# S3
+bucket_ogp = create_s3_bucket(stack, "ogp", public_read_access=True)
+
 # Lambda
 ## Lambda IAM Policy
 policy_dynamodb_primary_rw = iam.PolicyStatement(
@@ -50,6 +53,14 @@ policy_dynamodb_primary_rw = iam.PolicyStatement(
     resources=[
         dynamodb_primary_table.table_arn,
         f"{dynamodb_primary_table.table_arn}/*",
+    ],
+)
+
+policy_s3_ogp_rw = iam.PolicyStatement(
+    actions=["s3:GetObject", "s3:PutObject", "s3:DeleteObject", "s3:ListBucket"],
+    resources=[
+        f"arn:aws:s3:::{bucket_ogp.bucket_name}",
+        f"arn:aws:s3:::{bucket_ogp.bucket_name}/*",
     ],
 )
 
@@ -71,14 +82,39 @@ lambda_api = create_lambda_function(
     },
     layers=lambda_layers,
 )
-github_actions_lambda_deploy_targets = [lambda_api]
+
+lambda_ogp = create_lambda_function(
+    stack,
+    "ogp",
+    policies=[policy_s3_ogp_rw],
+    environment={
+        "S3_OGP_BUCKET_NAME": bucket_ogp.bucket_name,
+        "DOMAIN_NAME_DISTRIBUTION": f'{config["cloudfront"]["domain"]["dist"]["name"]}.{config["cloudfront"]["domain"]["dist"]["zone_name"]}',
+    },
+    layers=lambda_layers,
+)
+
+github_actions_lambda_deploy_targets = [lambda_api, lambda_ogp]
 
 # API-Gateway
-acm_api, hosted_zone_api, domain_name_api = create_acm_certificate(
+acm_result_api = create_acm_certificate(
     stack, "api", config["api-gateway"]["domain"]["api"]
 )
-create_apigateway(stack, "api", lambda_api, acm_api, hosted_zone_api, domain_name_api)
+create_apigateway(
+    stack,
+    "api",
+    lambda_api,
+    acm_result_api,
+    cors_allow_origins=[
+        f"https://{config['cloudfront']['domain']['dist']['name']}.{config['cloudfront']['domain']['dist']['zone_name']}",
+        "http://localhost:3000",
+    ],
+)
 
+acm_result_ogp = create_acm_certificate(
+    stack, "ogp", config["api-gateway"]["domain"]["ogp"]
+)
+create_apigateway(stack, "ogp", lambda_ogp, acm_result_ogp)
 
 # ===== USリージョン =====
 # CloudFront関係はUSリージョンにある必要がある
@@ -96,8 +132,8 @@ stack_us = Stack(
 bucket_distribution = create_s3_bucket(stack_us, "dist")
 
 # ACM
-acm_distribution, hosted_zone_distribution, domain_name_distribution = (
-    create_acm_certificate(stack_us, "dist", config["cloudfront"]["domain"]["dist"])
+acm_result_dist = create_acm_certificate(
+    stack_us, "dist", config["cloudfront"]["domain"]["dist"]
 )
 
 # Lambda
@@ -115,9 +151,7 @@ cloudfront_distribution = create_cloudfront(
     stack_us,
     "dist",
     bucket_distribution,
-    acm_distribution,
-    hosted_zone_distribution,
-    domain_name_distribution,
+    acm_result_dist,
     lambda_edge_version_redirect_to_prerender,
     lambda_edge_version_set_prerender_header,
 )
@@ -150,7 +184,8 @@ iam_role_github_actions = create_iam_role_github_actions(stack, policies)
 
 # 後続処理で参照するパラメータを出力する処理
 CfnOutput(stack, "Prefix", value=config["prefix"])
-CfnOutput(stack, "DomainNameApi", value=domain_name_api)
+CfnOutput(stack, "DomainNameApi", value=acm_result_api["domain_name"])
+CfnOutput(stack, "DomainNameOgp", value=acm_result_ogp["domain_name"])
 CfnOutput(stack, "IamRoleGithubActions", value=iam_role_github_actions.role_arn)
 CfnOutput(
     stack,
@@ -163,7 +198,7 @@ CfnOutput(
     ),
 )
 
-CfnOutput(stack_us, "DomainNameDistribution", value=domain_name_distribution)
+CfnOutput(stack_us, "DomainNameDistribution", value=acm_result_dist["domain_name"])
 CfnOutput(stack_us, "BucketDistribution", value=bucket_distribution.bucket_name)
 CfnOutput(
     stack_us, "CloudfrontDistribution", value=cloudfront_distribution.distribution_id

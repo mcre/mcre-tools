@@ -28,6 +28,10 @@
     "api": {
       "memory": 128,
       "timeout_in_seconds": 60
+    },
+    "ogp": {
+      "memory": 128,
+      "timeout_in_seconds": 120
     }
   },
   "api-gateway": {
@@ -37,12 +41,21 @@
         "zone_name": "mcre.info",
         "base_path": "v1",
         "hosted_zone_id": "Z330CBZA3E00YU"
+      },
+      "ogp": {
+        "name": "tools-ogp",
+        "zone_name": "mcre.info",
+        "hosted_zone_id": "Z330CBZA3E00YU"
       }
     }
   },
   "s3": {
     "dist": {
       "deletion_protection": false
+    },
+    "ogp": {
+      "deletion_protection": false,
+      "remove_days": 360
     }
   },
   "cloudfront": {

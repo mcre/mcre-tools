@@ -29,6 +29,7 @@ jobs:
       PREFIX: ${{ steps.output-step.outputs.PREFIX }}
       DOMAIN_NAME_DISTRIBUTION: ${{ steps.output-step.outputs.DOMAIN_NAME_DISTRIBUTION }}
       DOMAIN_NAME_API: ${{ steps.output-step.outputs.DOMAIN_NAME_API }}
+      DOMAIN_NAME_OGP: ${{ steps.output-step.outputs.DOMAIN_NAME_OGP }}
       CLOUDFRONT_DISTRIBUTION: ${{ steps.output-step.outputs.CLOUDFRONT_DISTRIBUTION }}
       BUCKET_DISTRIBUTION: ${{ steps.output-step.outputs.BUCKET_DISTRIBUTION }}
       LAMBDA_FUNCTIONS: ${{ steps.output-step.outputs.LAMBDA_FUNCTIONS }}
@@ -63,12 +64,14 @@ jobs:
           STACK_NAME_US=$(jq -r 'keys[1]' cdk-outputs.json)
           PREFIX=$(jq -r --arg STACK_NAME "$STACK_NAME" '.[$STACK_NAME].Prefix' cdk-outputs.json)
           DOMAIN_NAME_API=$(jq -r --arg STACK_NAME "$STACK_NAME" '.[$STACK_NAME].DomainNameApi' cdk-outputs.json)
+          DOMAIN_NAME_OGP=$(jq -r --arg STACK_NAME "$STACK_NAME" '.[$STACK_NAME].DomainNameOgp' cdk-outputs.json)
           LAMBDA_FUNCTIONS=$(jq -r --arg STACK_NAME "$STACK_NAME" '.[$STACK_NAME].LambdaFunctions' cdk-outputs.json)
           CLOUDFRONT_DISTRIBUTION=$(jq -r --arg STACK_NAME_US "$STACK_NAME_US" '.[$STACK_NAME_US].CloudfrontDistribution' cdk-outputs.json)
           BUCKET_DISTRIBUTION=$(jq -r --arg STACK_NAME_US "$STACK_NAME_US" '.[$STACK_NAME_US].BucketDistribution' cdk-outputs.json)
           DOMAIN_NAME_DISTRIBUTION=$(jq -r --arg STACK_NAME_US "$STACK_NAME_US" '.[$STACK_NAME_US].DomainNameDistribution' cdk-outputs.json)
           echo "PREFIX=${PREFIX}" >> $GITHUB_OUTPUT
           echo "DOMAIN_NAME_API=${DOMAIN_NAME_API}" >> $GITHUB_OUTPUT
+          echo "DOMAIN_NAME_OGP=${DOMAIN_NAME_OGP}" >> $GITHUB_OUTPUT
           echo "CLOUDFRONT_DISTRIBUTION=${CLOUDFRONT_DISTRIBUTION}" >> $GITHUB_OUTPUT
           echo "LAMBDA_FUNCTIONS=${LAMBDA_FUNCTIONS}" >> $GITHUB_OUTPUT
           echo "BUCKET_DISTRIBUTION=${BUCKET_DISTRIBUTION}" >> $GITHUB_OUTPUT
@@ -122,6 +125,7 @@ jobs:
         run: |
           echo "VITE_DISTRIBUTION_DOMAIN_NAME=${{ needs.deploy-cdk.outputs.DOMAIN_NAME_DISTRIBUTION }}" >> .env.production
           echo "VITE_API_DOMAIN_NAME=${{ needs.deploy-cdk.outputs.DOMAIN_NAME_API }}" >> .env.production
+          echo "VITE_OGP_DOMAIN_NAME=${{ needs.deploy-cdk.outputs.DOMAIN_NAME_OGP }}" >> .env.production
 
       - name: npm ci, build
         run: |

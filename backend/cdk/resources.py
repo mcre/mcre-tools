@@ -1,5 +1,6 @@
 import os
 import string
+from typing import Dict, Union
 
 from aws_cdk import (
     Stack,
@@ -31,7 +32,7 @@ def add_tags(resource) -> None:
 
 def create_acm_certificate(
     scope: Stack, name: str, domain_config: dict
-) -> tuple[acm.Certificate, route53.HostedZone, str]:
+) -> Dict[str, Union[acm.Certificate, route53.HostedZone, str]]:
     existing_hosted_zone = route53.HostedZone.from_hosted_zone_attributes(
         scope,
         f"hosted-zone-{name}",
@@ -46,7 +47,12 @@ def create_acm_certificate(
         validation=acm.CertificateValidation.from_dns(existing_hosted_zone),
     )
     add_tags(resource)
-    return (resource, existing_hosted_zone, domain_name)
+
+    return {
+        "certificate": resource,
+        "hosted_zone": existing_hosted_zone,
+        "domain_name": domain_name,
+    }
 
 
 def create_dynamodb_primary_table(scope: Stack) -> dynamodb.Table:
@@ -222,9 +228,8 @@ def create_apigateway(
     scope: Stack,
     name: str,
     target_lambda: lambda_.Function,
-    acm_certificate: acm.Certificate,
-    hosted_zone: route53.HostedZone,
-    domain_name: str,
+    acm_result: Dict[str, Union[acm.Certificate, route53.HostedZone, str]],
+    cors_allow_origins: list = [],
 ) -> apigateway.RestApi:
     resource = apigateway.RestApi(
         scope,
@@ -237,37 +242,35 @@ def create_apigateway(
     lambda_integration = apigateway.LambdaIntegration(target_lambda)
     proxy_resource = resource.root.add_resource("{proxy+}")
     proxy_resource.add_method("ANY", lambda_integration)
-    proxy_resource.add_cors_preflight(
-        allow_origins=[
-            f"https://{config['cloudfront']['domain']['dist']['name']}.{config['cloudfront']['domain']['dist']['zone_name']}",
-            "http://localhost:3000",
-        ]
-    )
+
+    if len(cors_allow_origins) > 0:
+        proxy_resource.add_cors_preflight(allow_origins=cors_allow_origins)
 
     custom_domain = apigateway.DomainName(
         scope,
         f"api-gateway-domain-{name}",
-        domain_name=domain_name,
-        certificate=acm_certificate,
+        domain_name=acm_result["domain_name"],
+        certificate=acm_result["certificate"],
         endpoint_type=apigateway.EndpointType.REGIONAL,
         security_policy=apigateway.SecurityPolicy.TLS_1_2,
     )
     add_tags(custom_domain)
 
+    domain_config = config["api-gateway"]["domain"][name]
     apigateway.BasePathMapping(
         scope,
         f"base-path-mapping-{name}",
         domain_name=custom_domain,
         rest_api=resource,
         stage=resource.deployment_stage,
-        base_path=config["api-gateway"]["domain"][name]["base_path"],
+        base_path=domain_config["base_path"] if "base_path" in domain_config else None,
     )
 
     route53.ARecord(
         scope,
         f"api-gateway-a-record-{name}",
-        record_name=domain_name.split(".")[0],
-        zone=hosted_zone,
+        record_name=acm_result["domain_name"].split(".")[0],
+        zone=acm_result["hosted_zone"],
         target=route53.RecordTarget.from_alias(
             route53_targets.ApiGatewayDomain(custom_domain)
         ),
@@ -275,14 +278,37 @@ def create_apigateway(
     return resource
 
 
-def create_s3_bucket(scope: Stack, name: str) -> s3.Bucket:
-    dp = config["s3"][name]["deletion_protection"]
+def create_s3_bucket(scope: Stack, name: str, public_read_access=False) -> s3.Bucket:
+    props = config["s3"][name]
+
+    lifecycle_rules = []
+    if "remove_days" in props:
+        lifecycle_rules.append(
+            s3.LifecycleRule(
+                id=f"s3-bucket-{name}-lifecycle-rule",
+                expiration=Duration.days(props["remove_days"]),
+                enabled=True,
+            )
+        )
+
     resource = s3.Bucket(
         scope,
         f"s3-bucket-{name}",
         bucket_name=f"{config['prefix']}-{name}",
-        removal_policy=RemovalPolicy.RETAIN if dp else RemovalPolicy.DESTROY,
+        removal_policy=(
+            RemovalPolicy.RETAIN
+            if props["deletion_protection"]
+            else RemovalPolicy.DESTROY
+        ),
+        public_read_access=public_read_access,
+        block_public_access=(
+            s3.BlockPublicAccess.BLOCK_ACLS
+            if public_read_access
+            else s3.BlockPublicAccess.BLOCK_ALL
+        ),
+        lifecycle_rules=lifecycle_rules,
     )
+
     add_tags(resource)
     return resource
 
@@ -291,9 +317,7 @@ def create_cloudfront(
     scope: Stack,
     name: str,
     bucket: s3.Bucket,
-    acm_certificate: acm.Certificate,
-    hosted_zone: route53.HostedZone,
-    domain_name: str,
+    acm_result: Dict[str, Union[acm.Certificate, route53.HostedZone, str]],
     lambda_edge_version_redirect_to_prerender: lambda_.Version,
     lambda_edge_version_set_prerender_header: lambda_.Version,
 ) -> cloudfront.Distribution:
@@ -314,8 +338,8 @@ def create_cloudfront(
     resource = cloudfront.Distribution(
         scope,
         f"cloudfront-distribution-{name}",
-        certificate=acm_certificate,
-        domain_names=[domain_name],
+        certificate=acm_result["certificate"],
+        domain_names=[acm_result["domain_name"]],
         default_behavior=cloudfront.BehaviorOptions(
             origin=cloudfront_origins.S3Origin(bucket),
             viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
@@ -345,8 +369,8 @@ def create_cloudfront(
     route53.ARecord(
         scope,
         f"cloudfront-a-record-{name}",
-        record_name=domain_name.split(".")[0],
-        zone=hosted_zone,
+        record_name=acm_result["domain_name"].split(".")[0],
+        zone=acm_result["hosted_zone"],
         target=route53.RecordTarget.from_alias(
             route53_targets.CloudFrontTarget(resource)
         ),
