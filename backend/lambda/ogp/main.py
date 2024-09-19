@@ -106,7 +106,7 @@ def get_jukugo(query_strings):
     if u.is_exists_in_s3(bucket_name, image_key):
         return u.redirect_response(image_url)
 
-    u.upload_public_image_to_s3(
+    u.upload_image_to_s3(
         bucket_name,
         image_key,
         generate_jukugo_image(params),

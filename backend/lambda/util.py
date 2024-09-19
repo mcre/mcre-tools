@@ -53,14 +53,13 @@ def redirect_response(url: str):
 # --- s3 functions ---
 
 
-def upload_public_image_to_s3(bucket_name, image_key, image_bytes):
+def upload_image_to_s3(bucket_name, image_key, image_bytes):
     s3 = boto3.client("s3")
     s3.put_object(
         Bucket=bucket_name,
         Key=image_key,
         Body=image_bytes,
         ContentType="image/png",
-        ACL="public-read",
     )
 
 
