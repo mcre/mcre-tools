@@ -18,30 +18,32 @@ def generate_jukugo_image(params):
 
     font = ImageFont.truetype(font_name, size=22)
     fill = (0, 0, 0)
-    x_left, x_center, x_right = 25, 117, 210
-    y_top, y_center, y_bottom = 29, 129, 229
+    xl, xc, xr = 25, 117, 210  # x left, x center, x right
+    yt, yc, yb = 29, 129, 229  # y top, y center, y bottom
 
     xo, yo = -11, -17  # string x offset, y offset
 
-    draw.text((x_center + xo, y_top + yo), params["top"], font=font, fill=fill)
-    draw.text((x_right + xo, y_center + yo), params["right"], font=font, fill=fill)
-    draw.text((x_center + xo, y_bottom + yo), params["bottom"], font=font, fill=fill)
-    draw.text((x_left + xo, y_center + yo), params["left"], font=font, fill=fill)
+    if params["top"]:
+        draw.text((xc + xo, yt + yo), params["top"], font=font, fill=fill)
+    if params["right"]:
+        draw.text((xr + xo, yc + yo), params["right"], font=font, fill=fill)
+    if params["bottom"]:
+        draw.text((xc + xo, yb + yo), params["bottom"], font=font, fill=fill)
+    if params["left"]:
+        draw.text((xl + xo, yc + yo), params["left"], font=font, fill=fill)
     if params["hide"]:
-        draw.text((x_center + xo, y_center + yo), "？", font=font, fill=fill)
+        draw.text((xc + xo, yc + yo), "？", font=font, fill=fill)
     else:
-        if params["answer"] != "":
-            draw.text(
-                (x_center + xo, y_center + yo), params["answer"], font=font, fill=fill
-            )
+        if params["answer"]:
+            draw.text((xc + xo, yc + yo), params["answer"], font=font, fill=fill)
 
     r = 10  # 半径的な
     xo, yo = 47, 50  # crop x offset, y offset
     squares = {
-        "top": (x_center - r, y_top - r + yo, x_center + r, y_top + r + yo),
-        "right": (x_right - r - xo, y_center - r, x_right + r - xo, y_center + r),
-        "bottom": (x_center - r, y_bottom - r - yo, x_center + r, y_bottom + r - yo),
-        "left": (x_left - r + xo, y_center - r, x_left + r + xo, y_center + r),
+        "top": (xc - r, yt - r + yo, xc + r, yt + r + yo),
+        "right": (xr - r - xo, yc - r, xr + r - xo, yc + r),
+        "bottom": (xc - r, yb - r - yo, xc + r, yb + r - yo),
+        "left": (xl - r + xo, yc - r, xl + r + xo, yc + r),
     }
     if not params["array_top"]:
         s = squares["top"]
@@ -87,9 +89,9 @@ def get_jukugo(query_strings):
         "right": q.get("r"),
         "bottom": q.get("b"),
         "left": q.get("l"),
-        "array_top": q.get("at") != "0",
+        "arrayt": q.get("at") != "0",
         "array_right": q.get("ar") != "0",
-        "array_bottom": q.get("ab") != "0",
+        "arrayb": q.get("ab") != "0",
         "array_left": q.get("al") != "0",
         "hide": q.get("h") == "1",
         "answer": q.get("a"),
