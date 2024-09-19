@@ -95,7 +95,7 @@ def get_jukugo(query_strings):
         "answer": q.get("a"),
     }
 
-    bucket_name = os.getenv("DYNAMO_DB_PRIMARY_TABLE_NAME")
+    bucket_name = os.getenv("S3_OGP_BUCKET_NAME")
 
     hash_key = hashlib.md5(json.dumps(params).encode()).hexdigest()
     image_key = f"jukugo/{hash_key}.png"
