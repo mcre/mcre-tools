@@ -174,6 +174,17 @@ def create_lambda_edge_function_version(
     return version
 
 
+def create_lambda_layer(scope: Stack, name: str, zip_name: str):
+    resource = lambda_.LayerVersion(
+        scope,
+        f"lambda-layer-{name}",
+        layer_version_name=f"{config['prefix']}-{name}",
+        code=lambda_.Code.from_asset(f"layers/{zip_name}.zip"),
+        compatible_runtimes=[lambda_.Runtime.PYTHON_3_12],
+    )
+    return resource
+
+
 def create_lambda_function(
     scope: Stack,
     name: str,

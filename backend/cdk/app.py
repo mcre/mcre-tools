@@ -12,6 +12,7 @@ from aws_cdk import (
 from resources import (
     create_acm_certificate,
     create_dynamodb_primary_table,
+    create_lambda_layer,
     create_lambda_edge_function_version,
     create_lambda_function,
     create_apigateway,
@@ -65,13 +66,12 @@ policy_s3_ogp_rw = iam.PolicyStatement(
 )
 
 ## Lambda Function
-lambda_layers = [
-    lambda_.LayerVersion.from_layer_version_arn(
-        stack,
-        "lambda-layers-powertools",
-        "arn:aws:lambda:ap-northeast-1:017000801446:layer:AWSLambdaPowertoolsPythonV2:78",
-    )
-]
+layer_pillow = create_lambda_layer(stack, "pillow", "Pillow-10.4.0")
+layer_powertools = lambda_.LayerVersion.from_layer_version_arn(
+    stack,
+    "lambda-layer-powertools",
+    "arn:aws:lambda:ap-northeast-1:017000801446:layer:AWSLambdaPowertoolsPythonV2:78",
+)
 
 lambda_api = create_lambda_function(
     stack,
@@ -80,7 +80,7 @@ lambda_api = create_lambda_function(
     environment={
         "DYNAMO_DB_PRIMARY_TABLE_NAME": dynamodb_primary_table.table_name,
     },
-    layers=lambda_layers,
+    layers=[layer_powertools],
 )
 
 lambda_ogp = create_lambda_function(
@@ -91,7 +91,7 @@ lambda_ogp = create_lambda_function(
         "S3_OGP_BUCKET_NAME": bucket_ogp.bucket_name,
         "DOMAIN_NAME_DISTRIBUTION": f'{config["cloudfront"]["domain"]["dist"]["name"]}.{config["cloudfront"]["domain"]["dist"]["zone_name"]}',
     },
-    layers=lambda_layers,
+    layers=[layer_powertools, layer_pillow],
 )
 
 github_actions_lambda_deploy_targets = [lambda_api, lambda_ogp]
