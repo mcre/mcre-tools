@@ -101,7 +101,7 @@ def get_jukugo(query_strings):
 
     hash_key = hashlib.md5(json.dumps(params).encode()).hexdigest()
     image_key = f"jukugo/{hash_key}.png"
-    image_url = f"https://{bucket_name}.ap-northeast-1.s3.amazonaws.com/{image_key}"
+    image_url = f"https://{bucket_name}.s3.amazonaws.com/{image_key}"
 
     if u.is_exists_in_s3(bucket_name, image_key):
         return u.redirect_response(image_url)
