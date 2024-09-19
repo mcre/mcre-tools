@@ -69,7 +69,7 @@ def is_exists_in_s3(bucket_name, image_key):
     try:
         s3.head_object(Bucket=bucket_name, Key=image_key)
         return True
-    except s3.exceptions.NoSuchKey as e:
+    except s3.exceptions.ClientError:
         return False
 
 
