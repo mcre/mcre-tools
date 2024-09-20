@@ -11,5 +11,6 @@ declare module 'vue' {
     JukugoCharacterField: typeof import('./components/JukugoCharacterField.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    XShareButton: typeof import('./components/XShareButton.vue')['default']
   }
 }

@@ -147,6 +147,13 @@
       </v-col>
     </v-row>
   </v-container>
+  <v-container>
+    <v-row justify="center">
+      <v-col cols="auto">
+        <x-share-button />
+      </v-col>
+    </v-row>
+  </v-container>
   <v-container v-if="isModified && !hideAnswer">
     <v-row justify="center">
       <v-col cols="12" sm="8" md="6" class="text-end ma-0">
@@ -261,6 +268,7 @@ import { useUtil } from "@/composables/util";
 
 import JukugoCharacterField from "@/components/JukugoCharacterField.vue";
 import JukugoArrowButton from "@/components/JukugoArrowButton.vue";
+import XShareButton from "@/components/XShareButton.vue";
 
 import aspida from "@aspida/fetch";
 import api from "@/apis/$api";

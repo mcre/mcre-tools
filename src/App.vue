@@ -1,12 +1,15 @@
 <template>
   <v-app>
-    <v-app-bar flat>
+    <v-app-bar flat density="comfortable">
       <template v-slot:prepend>
         <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer" />
       </template>
       <v-app-bar-title>
-        <v-btn to="/" variant="text" :active="false">mcre tools</v-btn>
+        <v-btn to="/" variant="text" :active="false">MCRE TOOLS</v-btn>
       </v-app-bar-title>
+      <template v-slot:append>
+        <x-share-button class="mr-1" />
+      </template>
     </v-app-bar>
 
     <v-navigation-drawer
@@ -37,6 +40,7 @@
 
 <script lang="ts" setup>
 import tools from "@/consts/tools";
+import XShareButton from "./components/XShareButton.vue";
 
 const drawer = ref(false);
 </script>
