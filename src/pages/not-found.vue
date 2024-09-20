@@ -17,5 +17,5 @@
 import { useUtil } from "@/composables/util";
 
 const util = useUtil();
-util.setTitle("このページは存在しません");
+util.setTitle("このページは存在しません", undefined, undefined, false);
 </script>

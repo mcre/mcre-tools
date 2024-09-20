@@ -2,7 +2,8 @@ export const useUtil = () => {
   const setTitle = (
     title?: string | null,
     favicon: string = "favicon",
-    description: string = "便利ツールやジョークツールなど、いろいろ置いていきます。"
+    description: string = "便利ツールやジョークツールなど、いろいろ置いていきます。",
+    robots: boolean = true
   ) => {
     const site = import.meta.env.VITE_APP_TITLE;
     let newTitle = "";
@@ -12,6 +13,15 @@ export const useUtil = () => {
       newTitle = site;
     }
     document.title = newTitle;
+
+    const robotsMeta = document.querySelector("meta[id='robots']");
+    if (robotsMeta) {
+      if (robots) {
+        robotsMeta.setAttribute("content", "all");
+      } else {
+        robotsMeta.setAttribute("content", "noindex, nofollow, noarchive");
+      }
+    }
 
     const favicon16 = document.querySelector("link[id='favicon-16']");
     if (favicon16) favicon16.setAttribute("href", `/img/${favicon}/16.png`);

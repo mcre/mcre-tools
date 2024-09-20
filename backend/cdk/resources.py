@@ -371,7 +371,13 @@ def create_cloudfront(
             cloudfront.ErrorResponse(
                 http_status=403,
                 response_http_status=200,
-                response_page_path="/",
+                response_page_path="/index.html",
+                ttl=Duration.seconds(0),
+            ),
+            cloudfront.ErrorResponse(
+                http_status=404,
+                response_http_status=404,
+                response_page_path="/404.html",
                 ttl=Duration.seconds(0),
             ),
         ],
