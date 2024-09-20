@@ -82,7 +82,6 @@
                 v-show="!hideAnswer"
                 :value="selectedAnswer"
                 class="centered-input"
-                placeholder="？"
                 maxlength="1"
                 variant="solo"
                 hide-details
@@ -90,13 +89,16 @@
                 tabindex="-1"
                 :loading="loading"
               />
-              <v-icon
-                size="x-large"
+              <v-text-field
                 v-show="hideAnswer"
-                @click="toggleHideAnswer"
-              >
-                mdi-blur
-              </v-icon>
+                value="？"
+                class="centered-input"
+                maxlength="1"
+                variant="solo-filled"
+                hide-details
+                readonly
+                tabindex="-1"
+              />
             </td>
             <td>
               <jukugo-arrow-button
