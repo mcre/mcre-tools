@@ -436,17 +436,30 @@ const updateQueryString = () => {
 
   if (hideAnswer.value) query.h = "1";
 
-  /* aに答えをいれる方法
+  router.push({ query });
+  updateOgp();
+};
+
+const updateOgp = () => {
+  let answer = "";
   if (
     isModified &&
-    inProgress.value.size == 0 && // loadingを使うとうまく動かないので
-    answers.value[selectedAnswerId.value]
+    inProgress.value.size == 0 // loadingを使うとうまく動かないので
   ) {
-    query.a = answers.value[selectedAnswerId.value].character;
+    if (answers.value[selectedAnswerId.value]) {
+      answer = answers.value[selectedAnswerId.value].character;
+    } else {
+      answer = "×";
+    }
+    answer = encodeURIComponent(answer);
   }
-  */
-
-  router.push({ query });
+  let path = "";
+  if (route.fullPath == route.name) {
+    path = route.fullPath;
+  } else {
+    path = `${route.fullPath}&a=${answer}`;
+  }
+  util.updateOgp(path);
 };
 
 const initializeFromQueryString = () => {

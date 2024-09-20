@@ -28,10 +28,10 @@ export const useUtil = () => {
     const ogURl = document.querySelector("meta[id='og-url']");
     if (ogURl) ogURl.setAttribute("content", document.documentURI);
 
-    const ogSiteName = document.querySelector("meta[id='og-site-name']");
-    if (ogSiteName)
-      if (title) ogSiteName.setAttribute("content", title);
-      else ogSiteName.setAttribute("content", site);
+    const ogTitle = document.querySelector("meta[id='og-title']");
+    if (ogTitle)
+      if (title) ogTitle.setAttribute("content", title);
+      else ogTitle.setAttribute("content", site);
 
     const ogImage = document.querySelector("meta[id='og-image']");
     if (ogImage)
@@ -46,6 +46,18 @@ export const useUtil = () => {
     if (ogDescription) ogDescription.setAttribute("content", description);
   };
 
+  const updateOgp = (ogImagePath: string) => {
+    const ogURl = document.querySelector("meta[id='og-url']");
+    if (ogURl) ogURl.setAttribute("content", document.documentURI);
+
+    const ogImage = document.querySelector("meta[id='og-image']");
+    if (ogImage)
+      ogImage.setAttribute(
+        "content",
+        `https://${import.meta.env.VITE_OGP_DOMAIN_NAME}${ogImagePath}`
+      );
+  };
+
   const isKanji = (character: any): boolean => {
     if (typeof character !== "string") return false;
     const regex = new RegExp("^[\u4e00-\u9fff]$");
@@ -54,6 +66,7 @@ export const useUtil = () => {
 
   return {
     setTitle,
+    updateOgp,
     isKanji,
   };
 };

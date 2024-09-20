@@ -17,7 +17,10 @@ def parse_request(event: dict) -> Tuple[str, int, str, dict]:
     api = event.get("pathParameters", {}).get("proxy", None)
     method = event.get("httpMethod", None)
     api_parts = [item for item in api.split("/") if len(item) > 0]
-    return method, len(api_parts), api_parts, event.get("queryStringParameters", {})
+    qsp = event.get("queryStringParameters", {})
+    if qsp is None:
+        qsp = {}
+    return method, len(api_parts), api_parts, qsp
 
 
 def decode(encoded_string: str) -> str:
