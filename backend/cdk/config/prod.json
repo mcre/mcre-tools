@@ -30,8 +30,8 @@
       "timeout_in_seconds": 60
     },
     "ogp": {
-      "memory": 128,
-      "timeout_in_seconds": 120
+      "memory": 512,
+      "timeout_in_seconds": 30
     }
   },
   "api-gateway": {
