@@ -1,5 +1,5 @@
 <template>
-  <v-btn color="black" variant="flat" :href="shareUrl" target="_blank">
+  <v-btn color="black" variant="flat" @click="updateAndOpenShareUrl">
     <template v-slot:prepend>
       <img
         src="@/assets/x.svg"
@@ -13,9 +13,15 @@
   </v-btn>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { useRoute } from "vue-router";
+
 const route = useRoute();
-const shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(
-  window.location.origin + route.fullPath
-)}`;
+
+const updateAndOpenShareUrl = (): void => {
+  const shareUrl: string = `https://twitter.com/intent/tweet?url=${encodeURIComponent(
+    window.location.origin + route.fullPath
+  )}`;
+  window.open(shareUrl, "_blank");
+};
 </script>
