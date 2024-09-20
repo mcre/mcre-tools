@@ -16,12 +16,12 @@ def generate_jukugo_image(params):
 
     font_name = "assets/fonts/NotoSansJP-Light.ttf"
 
-    font = ImageFont.truetype(font_name, size=22)
+    font = ImageFont.truetype(font_name, size=50)
     fill = (0, 0, 0)
-    xl, xc, xr = 25, 117, 210  # x left, x center, x right
-    yt, yc, yb = 29, 129, 229  # y top, y center, y bottom
+    xl, xc, xr = 43, 203, 363  # x left, x center, x right
+    yt, yc, yb = 50, 223, 398  # y top, y center, y bottom
 
-    xo, yo = -11, -17  # string x offset, y offset
+    xo, yo = -25, -37  # string x offset, y offset
 
     if params["top"]:
         draw.text((xc + xo, yt + yo), params["top"], font=font, fill=fill)
@@ -37,8 +37,8 @@ def generate_jukugo_image(params):
         if params["answer"]:
             draw.text((xc + xo, yc + yo), params["answer"], font=font, fill=fill)
 
-    r = 10  # 半径的な
-    xo, yo = 47, 50  # crop x offset, y offset
+    r = 20  # 半径的な
+    xo, yo = 80, 86  # crop x offset, y offset
     squares = {
         "top": (xc - r, yt - r + yo, xc + r, yt + r + yo),
         "right": (xr - r - xo, yc - r, xr + r - xo, yc + r),
@@ -58,19 +58,21 @@ def generate_jukugo_image(params):
         s = squares["left"]
         base_img.paste(reverse_arrows_img.crop(s), (s[0], s[1]))
 
-    padding = 30
-    new_width = base_img.width + padding * 2
-    new_height = base_img.height + padding * 2
+    new_width = 1200
+    new_height = 630
     new_img = Image.new("RGBA", (new_width, new_height), (255, 255, 255, 255))
 
-    new_img.paste(base_img, (padding, padding))
+    paste_x = (new_width - base_img.width) // 2
+    paste_y = (new_height - base_img.height) // 2
 
-    footer_font = ImageFont.truetype(font_name, size=12)
+    new_img.paste(base_img, (paste_x, paste_y))
+
+    footer_font = ImageFont.truetype(font_name, size=30)
     footer_text = f"https://{os.getenv('DOMAIN_NAME_DISTRIBUTION')}/jukugo"
     bbox = draw.textbbox((0, 0), footer_text, font=footer_font)
     text_width = bbox[2] - bbox[0]
     footer_x = (new_width - text_width) // 2
-    footer_y = new_height - 20
+    footer_y = new_height - 50
 
     new_draw = ImageDraw.Draw(new_img)
     new_draw.text((footer_x, footer_y), footer_text, font=footer_font, fill=fill)

@@ -33,29 +33,39 @@ export const useUtil = () => {
       if (title) ogTitle.setAttribute("content", title);
       else ogTitle.setAttribute("content", site);
 
+    const imageFullPath = `https://${
+      import.meta.env.VITE_DISTRIBUTION_DOMAIN_NAME
+    }/img/${favicon}/180.png`;
+
     const ogImage = document.querySelector("meta[id='og-image']");
-    if (ogImage)
-      ogImage.setAttribute(
-        "content",
-        `https://${
-          import.meta.env.VITE_DISTRIBUTION_DOMAIN_NAME
-        }/img/${favicon}/180.png`
-      );
+    if (ogImage) ogImage.setAttribute("content", imageFullPath);
 
     const ogDescription = document.querySelector("meta[id='og-description']");
     if (ogDescription) ogDescription.setAttribute("content", description);
+
+    const twCard = document.querySelector("meta[id='tw-card']");
+    if (twCard) twCard.setAttribute("content", "summary");
+
+    const twImage = document.querySelector("meta[id='tw-image']");
+    if (twImage) twImage.setAttribute("content", imageFullPath);
   };
 
-  const updateOgp = (ogImagePath: string) => {
+  const updateOgp = (imagePath: string) => {
+    const imageFullPath = `https://${
+      import.meta.env.VITE_OGP_DOMAIN_NAME
+    }${imagePath}`;
+
     const ogURl = document.querySelector("meta[id='og-url']");
     if (ogURl) ogURl.setAttribute("content", document.documentURI);
 
     const ogImage = document.querySelector("meta[id='og-image']");
-    if (ogImage)
-      ogImage.setAttribute(
-        "content",
-        `https://${import.meta.env.VITE_OGP_DOMAIN_NAME}${ogImagePath}`
-      );
+    if (ogImage) ogImage.setAttribute("content", imageFullPath);
+
+    const twCard = document.querySelector("meta[id='tw-card']");
+    if (twCard) twCard.setAttribute("content", "summary_large_image");
+
+    const twImage = document.querySelector("meta[id='tw-image']");
+    if (twImage) twImage.setAttribute("content", imageFullPath);
   };
 
   const isKanji = (character: any): boolean => {
