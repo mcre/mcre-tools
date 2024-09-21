@@ -9,8 +9,9 @@ configのenvを変更することにより、AWSアカウントや同じアカ�
 
 下記は手動で作成する。
 
+- Route53ドメインとHostedZone
 - Open ID Connect Provider
-  - AWSアカウント上に複数の同じProviderを使用することができないため。
+  - AWSアカウント上に複数の同じProviderを作成することができないため。
 
 ## Github Actionsの権限について
 

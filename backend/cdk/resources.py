@@ -335,7 +335,7 @@ def create_cloudfront(
     cache_policy = cloudfront.CachePolicy(
         scope,
         f"cloudfront-cache-policy-{name}",
-        cache_policy_name=f"prerender-cache-policy-{name}",
+        cache_policy_name=f"{config['prefix']}-{name}-prerender-cache-policy",
         header_behavior=cloudfront.CacheHeaderBehavior.allow_list(
             "X-Prerender-Cachebuster",
             "X-Prerender-Token",
@@ -352,7 +352,7 @@ def create_cloudfront(
         certificate=acm_result["certificate"],
         domain_names=[acm_result["domain_name"]],
         default_behavior=cloudfront.BehaviorOptions(
-            origin=cloudfront_origins.S3Origin(bucket),
+            origin=cloudfront_origins.S3BucketOrigin.with_origin_access_control(bucket),
             viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
             cache_policy=cache_policy,
             edge_lambdas=[
