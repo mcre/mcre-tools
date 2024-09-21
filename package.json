@@ -11,11 +11,9 @@
     "sitemap:build": "node ./bin/updateSitemap.js"
   },
   "dependencies": {
-    "@aspida/axios": "^1.14.0",
     "@aspida/fetch": "^1.14.0",
     "@mdi/font": "7.4.47",
     "aspida": "^1.14.0",
-    "axios": "^1.7.7",
     "core-js": "^3.37.1",
     "dayjs": "^1.11.13",
     "roboto-fontface": "*",
@@ -39,7 +37,6 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.4.0",
     "eslint-plugin-vue": "^9.27.0",
-    "pinia": "^2.1.7",
     "sass": "1.77.6",
     "typescript": "^5.4.2",
     "unplugin-auto-import": "^0.17.6",
