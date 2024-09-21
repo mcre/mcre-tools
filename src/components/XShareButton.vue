@@ -2,7 +2,7 @@
   <v-btn color="black" variant="flat" @click="updateAndOpenShareUrl">
     <template v-slot:prepend>
       <img
-        src="@/assets/x.svg"
+        src="@/assets/images/x.svg"
         alt="X icon"
         class="icon"
         width="16"
@@ -19,9 +19,10 @@ import { useRoute } from "vue-router";
 const route = useRoute();
 
 const updateAndOpenShareUrl = (): void => {
+  const text = "#McreTools\n";
   const shareUrl: string = `https://twitter.com/intent/tweet?url=${encodeURIComponent(
     window.location.origin + route.fullPath
-  )}`;
+  )}&text=${encodeURIComponent(text)}`;
   window.open(shareUrl, "_blank");
 };
 </script>
