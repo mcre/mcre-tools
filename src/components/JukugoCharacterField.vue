@@ -14,8 +14,6 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
-import { useUtil } from "@/composables/util";
 const util = useUtil();
 
 const model = defineModel<string>();

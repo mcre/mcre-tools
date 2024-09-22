@@ -1,10 +1,6 @@
 <template>
   <v-btn
-    :icon="
-      model
-        ? `mdi-arrow-${props.forward}-thick`
-        : `mdi-arrow-${props.reverse}-thick`
-    "
+    :icon="model ? `mdi-arrow-${forward}-thick` : `mdi-arrow-${reverse}-thick`"
     variant="text"
     tabindex="-1"
     size="small"
@@ -16,7 +12,7 @@
 type Direction = "up" | "down" | "left" | "right";
 const model = defineModel<boolean>();
 
-const props = defineProps<{
+defineProps<{
   forward: Direction;
   reverse: Direction;
 }>();

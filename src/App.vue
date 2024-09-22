@@ -39,8 +39,5 @@
 </template>
 
 <script lang="ts" setup>
-import tools from "@/consts/tools";
-import XShareButton from "./components/XShareButton.vue";
-
 const drawer = ref(false);
 </script>

@@ -14,8 +14,6 @@
 </template>
 
 <script lang="ts" setup>
-import { useUtil } from "@/composables/util";
-
 const util = useUtil();
 util.setTitle("このページは存在しません", undefined, undefined, false);
 </script>

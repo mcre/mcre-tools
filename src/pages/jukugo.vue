@@ -266,12 +266,6 @@
 </template>
 
 <script lang="ts" setup>
-import { useUtil } from "@/composables/util";
-
-import JukugoCharacterField from "@/components/JukugoCharacterField.vue";
-import JukugoArrowButton from "@/components/JukugoArrowButton.vue";
-import XShareButton from "@/components/XShareButton.vue";
-
 import aspida from "@aspida/fetch";
 import api from "@/apis/$api";
 import { JukugoSearchResponse } from "@/apis/@types/index";
@@ -280,8 +274,6 @@ import dayjs from "dayjs";
 
 const route = useRoute();
 const router = useRouter();
-
-import tools from "@/consts/tools";
 const tool = tools.jukugo;
 
 const util = useUtil();
