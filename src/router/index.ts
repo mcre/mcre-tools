@@ -17,6 +17,17 @@ const router = createRouter({
       component: NotFound,
     },
   ],
+  scrollBehavior(to, from, savedPosition) {
+    return new Promise((resolve) => {
+      nextTick(() => {
+        if (to.hash) {
+          resolve({ el: to.hash });
+        } else if (from.path != to.path) {
+          return { top: 0 };
+        }
+      });
+    });
+  },
 });
 
 // Workaround for https://github.com/vitejs/vite/issues/11804
