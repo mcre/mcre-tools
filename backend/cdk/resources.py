@@ -247,6 +247,7 @@ def create_apigateway(
         f"api-gateway-{name}",
         rest_api_name=f"{config['prefix']}-{name}",
         endpoint_types=[apigateway.EndpointType.REGIONAL],
+        min_compression_size=Size.bytes(0),
     )
     add_tags(resource)
 
