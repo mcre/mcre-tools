@@ -22,7 +22,7 @@
         <v-card
           :title="tool.title"
           :subtitle="tool.descriptionShort"
-          :to="tool.to"
+          :to="tool.path"
         >
           <template v-slot:prepend>
             <v-avatar :image="`/img/${tool.iconDir}/32.png`" size="24" />
@@ -96,5 +96,5 @@
 
 <script lang="ts" setup>
 const util = useUtil();
-util.setTitle();
+util.setToolTitle();
 </script>

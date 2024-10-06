@@ -13,9 +13,6 @@ import { fileURLToPath, URL } from "node:url";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    VueRouter({
-      dts: "src/typed-router.d.ts",
-    }),
     AutoImport({
       imports: [
         "vue",
@@ -63,5 +60,13 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+  },
+  build: {
+    rollupOptions: {
+      external: ["./bin", "./tools", "./backend"],
+    },
+  },
+  ssr: {
+    noExternal: ["vuetify", "aspida", "@aspida/fetch"],
   },
 });

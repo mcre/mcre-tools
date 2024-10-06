@@ -7,9 +7,7 @@ import { createVuetify } from "vuetify";
 
 export default createVuetify({
   theme: {
-    defaultTheme: window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light",
+    defaultTheme: "light",
     themes: {
       light: {},
       dark: {},

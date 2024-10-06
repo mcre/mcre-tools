@@ -123,15 +123,18 @@ jobs:
 
       - name: Write CDK outputs to .env.production
         run: |
-          echo "VITE_DISTRIBUTION_DOMAIN_NAME=${{ needs.deploy-cdk.outputs.DOMAIN_NAME_DISTRIBUTION }}" >> .env.production
-          echo "VITE_API_DOMAIN_NAME=${{ needs.deploy-cdk.outputs.DOMAIN_NAME_API }}" >> .env.production
-          echo "VITE_OGP_DOMAIN_NAME=${{ needs.deploy-cdk.outputs.DOMAIN_NAME_OGP }}" >> .env.production
+          sed -i 's/^VITE_DISTRIBUTION_DOMAIN_NAME=.*/VITE_DISTRIBUTION_DOMAIN_NAME=${{ needs.deploy-cdk.outputs.DOMAIN_NAME_DISTRIBUTION }}/' .env.production
+          sed -i 's/^VITE_API_DOMAIN_NAME=.*/VITE_API_DOMAIN_NAME=${{ needs.deploy-cdk.outputs.DOMAIN_NAME_API }}/' .env.production
+          sed -i 's/^VITE_OGP_DOMAIN_NAME=.*/VITE_OGP_DOMAIN_NAME=${{ needs.deploy-cdk.outputs.DOMAIN_NAME_OGP }}/' .env.production
+
+      - name: Log .env.production changes
+        run: |
+          echo "Updated .env.production:"
+          cat .env.production
 
       - name: npm ci, build
         run: |
-          export NODE_ENV=development
           npm ci
-          export NODE_ENV=production
           npm run build --if-present
 
       - name: Configure AWS credentials

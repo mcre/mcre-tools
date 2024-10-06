@@ -277,7 +277,7 @@ const router = useRouter();
 const tool = tools.jukugo;
 
 const util = useUtil();
-util.setTitle(tool.title, tool.iconDir, tool.description);
+util.setToolTitle(tool);
 
 let initializing = true;
 const loading = computed(() => inProgress.value.size > 0);
@@ -461,7 +461,7 @@ const updateOgp = () => {
   } else {
     path = `${route.fullPath}&a=${answer}`;
   }
-  util.updateOgp(path);
+  util.updateOgp(tool, path);
 };
 
 const initializeFromQueryString = () => {

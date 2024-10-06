@@ -21,7 +21,7 @@
         <v-list-item
           :title="tool.title"
           :subtitle="tool.descriptionShort"
-          :to="tool.to"
+          :to="tool.path"
         >
           <template v-slot:prepend>
             <v-avatar :image="`/img/${tool.iconDir}/32.png`" size="24" />
@@ -40,4 +40,16 @@
 
 <script lang="ts" setup>
 const drawer = ref(false);
+import { useTheme } from "vuetify";
+
+onMounted(() => {
+  if (!import.meta.env.SSR) {
+    const theme = useTheme();
+    const currentTheme = window.matchMedia("(prefers-color-scheme: dark)")
+      .matches
+      ? "dark"
+      : "light";
+    theme.global.name.value = currentTheme;
+  }
+});
 </script>

@@ -1,81 +1,109 @@
+import { useHead } from '@unhead/vue'
+import { Tool } from '@/consts/tools'
+
 export const useUtil = () => {
-  const setTitle = (
-    title?: string | null,
-    favicon: string = "favicon",
-    description: string = "便利ツールやジョークツールなど、いろいろ置いていきます。",
-    robots: boolean = true
+  const setToolTitle = (
+    tool?: Tool,
   ) => {
     const site = import.meta.env.VITE_APP_TITLE;
-    let newTitle = "";
-    if (title) {
-      newTitle = title + " - " + site;
+
+    let path: string;
+    let title: string;
+    let iconDir: string;
+    let description : string;
+
+    if (tool) {
+      path = tool.path
+      title = tool.title + " - " + site
+      iconDir = tool.iconDir
+      description = tool.description
     } else {
-      newTitle = site;
-    }
-    document.title = newTitle;
-
-    const robotsMeta = document.querySelector("meta[id='robots']");
-    if (robotsMeta) {
-      if (robots) {
-        robotsMeta.setAttribute("content", "all");
-      } else {
-        robotsMeta.setAttribute("content", "noindex, nofollow, noarchive");
-      }
+      path = "/"
+      title = site
+      iconDir = "favicon"
+      description = "便利ツールやジョークツールなど、いろいろ置いていきます。"
     }
 
-    const favicon16 = document.querySelector("link[id='favicon-16']");
-    if (favicon16) favicon16.setAttribute("href", `/img/${favicon}/16.png`);
-
-    const favicon32 = document.querySelector("link[id='favicon-32']");
-    if (favicon32) favicon32.setAttribute("href", `/img/${favicon}/32.png`);
-
-    const favicon180 = document.querySelector("link[id='favicon-180']");
-    if (favicon180) favicon180.setAttribute("href", `/img/${favicon}/180.png`);
-
-    const metaDescription = document.querySelector("meta[id='description']");
-    if (metaDescription) metaDescription.setAttribute("content", description);
-
-    const ogURl = document.querySelector("meta[id='og-url']");
-    if (ogURl) ogURl.setAttribute("content", document.documentURI);
-
-    const ogTitle = document.querySelector("meta[id='og-title']");
-    if (ogTitle)
-      if (title) ogTitle.setAttribute("content", title);
-      else ogTitle.setAttribute("content", site);
-
-    const imageFullPath = `https://${
-      import.meta.env.VITE_DISTRIBUTION_DOMAIN_NAME
-    }/img/${favicon}/180.png`;
-
-    const ogImage = document.querySelector("meta[id='og-image']");
-    if (ogImage) ogImage.setAttribute("content", imageFullPath);
-
-    const ogDescription = document.querySelector("meta[id='og-description']");
-    if (ogDescription) ogDescription.setAttribute("content", description);
-
-    const twCard = document.querySelector("meta[id='tw-card']");
-    if (twCard) twCard.setAttribute("content", "summary");
-
-    const twImage = document.querySelector("meta[id='tw-image']");
-    if (twImage) twImage.setAttribute("content", imageFullPath);
+    const distUrl = `https://${import.meta.env.VITE_DISTRIBUTION_DOMAIN_NAME}`
+    useHead({
+      title: title,
+      link: [
+        {
+          id: 'favicon-16',
+          href: `/img/${iconDir}/16.png`,
+        },
+        {
+          id: 'favicon-32',
+          href: `/img/${iconDir}/32.png`,
+        },
+        {
+          id: 'favicon-180',
+          href: `/img/${iconDir}/180.png`,
+        },
+      ],
+      meta: [
+        {
+          id: "description",
+          content: description,
+        },
+        {
+          id: "og-title",
+          content: title,
+        },
+        {
+          id: "og-url",
+          content: `${distUrl}${path}`,
+        },
+        {
+          id: "og-image",
+          content: `${distUrl}/img/${iconDir}/180.png`,
+        },
+        {
+          id: "og-description",
+          content: description,
+        },
+        {
+          id: "tw-card",
+          content: "summary",
+        },
+        {
+          id: "tw-image",
+          content: `${distUrl}/img/${iconDir}/180.png`,
+        }
+      ]
+    })
   };
 
-  const updateOgp = (imagePath: string) => {
-    const imageFullPath = `https://${
-      import.meta.env.VITE_OGP_DOMAIN_NAME
-    }${imagePath}`;
+  const updateOgp = (tool: Tool, ogpImagePath: string) => {
+    const distUrl = `https://${import.meta.env.VITE_DISTRIBUTION_DOMAIN_NAME}`
+    const ogpUrl = `https://${import.meta.env.VITE_OGP_DOMAIN_NAME}`
 
-    const ogURl = document.querySelector("meta[id='og-url']");
-    if (ogURl) ogURl.setAttribute("content", document.documentURI);
+    const imageFullPath = `${ogpUrl}${ogpImagePath}`;
 
-    const ogImage = document.querySelector("meta[id='og-image']");
-    if (ogImage) ogImage.setAttribute("content", imageFullPath);
+    let currentUrl = `${distUrl}${tool.path}`
+    if (!import.meta.env.SSR)
+      currentUrl = document.documentURI
 
-    const twCard = document.querySelector("meta[id='tw-card']");
-    if (twCard) twCard.setAttribute("content", "summary_large_image");
-
-    const twImage = document.querySelector("meta[id='tw-image']");
-    if (twImage) twImage.setAttribute("content", imageFullPath);
+    useHead({
+      meta: [
+        {
+          id: "og-url",
+          content: currentUrl,
+        },
+        {
+          id: "og-image",
+          content: imageFullPath,
+        },
+        {
+          id: "tw-card",
+          content: "summary_large_image",
+        },
+        {
+          id: "tw-image",
+          content: imageFullPath,
+        }
+      ]
+    })
   };
 
   const isKanji = (character: any): boolean => {
@@ -85,7 +113,7 @@ export const useUtil = () => {
   };
 
   return {
-    setTitle,
+    setToolTitle,
     updateOgp,
     isKanji,
   };

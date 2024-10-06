@@ -2,21 +2,21 @@ const fs = require('fs')
 const path = require('path')
 const dotenv = require('dotenv')
 
-const typedRouterPath = path.resolve(__dirname, '../src/typed-router.d.ts')
-const fileContent = fs.readFileSync(typedRouterPath, 'utf8')
-
 const envFile =
   process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development'
 dotenv.config({ path: path.resolve(__dirname, `../${envFile}`) })
 
 const domain = `https://${process.env.VITE_DISTRIBUTION_DOMAIN_NAME}`
 
+const typedRouterPath = path.resolve(__dirname, '../src/router/index.ts')
+const fileContent = fs.readFileSync(typedRouterPath, 'utf8')
+
 const routes = []
-const regex = /^\s*'\/[^']*'/gm
+const regex = /path:\s*['"`]([^'"`]+)['"`]/gm
 let match
 
 while ((match = regex.exec(fileContent)) !== null) {
-  routes.push(match[0].replace(/'/g, '').trim())
+  routes.push(match[1].trim())
 }
 
 const excludedRoutes = ['/not-found']

@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "npm run api:build && concurrently \"vite\" \"npm run api:watch\"",
-    "build": "npm run sitemap:build && vue-tsc --noEmit && vite build",
+    "build": "npm run sitemap:build && vue-tsc --noEmit && vite-ssg build",
     "preview": "vite preview",
     "lint": "eslint . --fix --ignore-path .gitignore",
     "api:build": "rm -rf ./tmp-apis && npx openapi2aspida -o=./tmp-apis/ && rsync -a --delete ./tmp-apis/ ./src/apis/ && rm -rf ./tmp-apis",
@@ -23,6 +23,7 @@
   "devDependencies": {
     "@babel/types": "^7.24.7",
     "@types/node": "^20.14.10",
+    "@unhead/vue": "^1.11.7",
     "@vitejs/plugin-vue": "^5.0.5",
     "@vue/eslint-config-typescript": "^13.0.0",
     "chokidar-cli": "^3.0.0",
@@ -45,7 +46,8 @@
     "unplugin-vue-router": "^0.10.0",
     "vite": "^5.3.3",
     "vite-plugin-vuetify": "^2.0.3",
-    "vue-router": "^4.4.0",
+    "vite-ssg": "^0.23.8",
+    "vue-router": "^4.4.5",
     "vue-tsc": "^2.0.26"
   }
 }
