@@ -326,37 +326,36 @@ const apiClient = api(aspida(fetch, { baseURL }));
 const apiResults: Record<string, JukugoSearchResponse> = {};
 const inProgress = ref(new Set<string>());
 
-const fetchData = () => {
+const fetchData = async () => {
   if (!initializing) selectedAnswerId.value = 0;
   updateQueryString();
-  positions.forEach(async (pos) => {
+
+  const fetchPromises = positions.map(async (pos) => {
     const input = inputs.value[pos];
     const arrow = arrows.value[pos];
 
     if (input && util.isKanji(input)) {
       const key = `${input}-${arrow}`;
-
       if (!apiResults[key] && !inProgress.value.has(key)) {
         inProgress.value.add(key);
         const direction = arrow ? "right_search" : "left_search";
-
         try {
           const result: JukugoSearchResponse = await apiClient.v1.jukugo
             ._character(input)
             [direction].$get();
           apiResults[key] = result;
-          updateAnswers();
         } catch (error) {
           console.error(`${pos}のfetchに失敗`);
         } finally {
           inProgress.value.delete(key);
         }
       }
-    } else {
-      updateAnswers();
     }
   });
+  await Promise.all(fetchPromises);
+  updateAnswers();
 };
+
 
 const fetchDataIfEmpty = (value: string) => {
   if (value === "") {
