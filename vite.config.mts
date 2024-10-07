@@ -2,9 +2,10 @@
 import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
 import Fonts from "unplugin-fonts/vite";
+import Pages from 'vite-plugin-pages'
 import Vue from "@vitejs/plugin-vue";
-import VueRouter from "unplugin-vue-router/vite";
 import Vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
+import 'vite-ssg' // ssgOptionsのために必要
 
 // Utilities
 import { defineConfig } from "vite";
@@ -40,6 +41,9 @@ export default defineConfig({
         configFile: "src/styles/settings.scss",
       },
     }),
+    Pages({
+      extensions: ['vue'],
+    }),
     Fonts({
       google: {
         families: [
@@ -68,5 +72,10 @@ export default defineConfig({
   },
   ssr: {
     noExternal: ["vuetify", "aspida", "@aspida/fetch"],
+  },
+  ssgOptions: {
+    script: "defer",
+    formatting: "minify",
+    dirStyle: 'nested',
   },
 });
