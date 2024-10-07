@@ -1,9 +1,9 @@
 import { useHead } from '@unhead/vue'
-import { Tool } from '@/consts/tools'
+import { ToolParams } from '@/router/index'
 
 export const useUtil = () => {
   const setToolTitle = (
-    tool?: Tool,
+    toolParams?: ToolParams,
   ) => {
     const site = import.meta.env.VITE_APP_TITLE;
 
@@ -12,11 +12,11 @@ export const useUtil = () => {
     let iconDir: string;
     let description : string;
 
-    if (tool) {
-      path = tool.path
-      title = tool.title + " - " + site
-      iconDir = tool.iconDir
-      description = tool.description
+    if (toolParams) {
+      path = toolParams.path
+      title = toolParams.title + " - " + site
+      iconDir = toolParams.iconDir
+      description = toolParams.description
     } else {
       path = "/"
       title = site
@@ -42,6 +42,10 @@ export const useUtil = () => {
         },
       ],
       meta: [
+        {
+          id: "robots",
+          content: "all",
+        },
         {
           id: "description",
           content: description,
@@ -74,13 +78,13 @@ export const useUtil = () => {
     })
   };
 
-  const updateOgp = (tool: Tool, ogpImagePath: string) => {
+  const updateOgp = (toolParams: ToolParams, ogpImagePath: string) => {
     const distUrl = `https://${import.meta.env.VITE_DISTRIBUTION_DOMAIN_NAME}`
     const ogpUrl = `https://${import.meta.env.VITE_OGP_DOMAIN_NAME}`
 
     const imageFullPath = `${ogpUrl}${ogpImagePath}`;
 
-    let currentUrl = `${distUrl}${tool.path}`
+    let currentUrl = `${distUrl}${toolParams.path}`
     if (!import.meta.env.SSR)
       currentUrl = document.documentURI
 

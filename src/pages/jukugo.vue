@@ -12,16 +12,16 @@
   <v-container>
     <v-row class="align-center">
       <v-col cols="auto">
-        <v-avatar :image="`/img/${tool.iconDir}/32.png`" size="32" />
+        <v-avatar :image="`/img/${tool.params.iconDir}/32.png`" size="32" />
       </v-col>
       <v-col>
-        <h1>{{ tool.title }}</h1>
+        <h1>{{ tool.params.title }}</h1>
       </v-col>
     </v-row>
     <v-row>
       <v-col cols="12">
         <p>
-          {{ tool.description }}
+          {{ tool.params.description }}
         </p>
         <p class="text-caption">
           <span class="text-decoration-underline">矢印</span>
@@ -277,7 +277,7 @@ const router = useRouter();
 const tool = tools.jukugo;
 
 const util = useUtil();
-util.setToolTitle(tool);
+util.setToolTitle(tool.params);
 
 let initializing = true;
 const loading = computed(() => inProgress.value.size > 0);
@@ -450,7 +450,7 @@ const updateQueryString = () => {
   if (route.fullPath != route.name) {
     path = `${route.fullPath}`;
   }
-  util.updateOgp(tool, path);
+  util.updateOgp(tool.params, path);
 };
 
 const initializeFromQueryString = () => {

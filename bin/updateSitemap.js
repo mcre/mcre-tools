@@ -19,7 +19,7 @@ while ((match = regex.exec(fileContent)) !== null) {
   routes.push(match[1].trim())
 }
 
-const excludedRoutes = ['/not-found']
+const excludedRoutes = ['/:pathMatch(.*)*']
 const filteredRoutes = routes.filter(route => !excludedRoutes.includes(route))
 
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>

@@ -20,12 +20,12 @@
     <v-row>
       <v-col cols="12" v-for="(tool, key) in tools" :key="key">
         <v-card
-          :title="tool.title"
-          :subtitle="tool.descriptionShort"
-          :to="tool.path"
+          :title="tool.params.title"
+          :subtitle="tool.params.descriptionShort"
+          :to="tool.params.path"
         >
           <template v-slot:prepend>
-            <v-avatar :image="`/img/${tool.iconDir}/32.png`" size="24" />
+            <v-avatar :image="`/img/${tool.params.iconDir}/32.png`" size="24" />
           </template>
         </v-card>
       </v-col>
