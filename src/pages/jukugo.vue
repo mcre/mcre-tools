@@ -431,35 +431,25 @@ const updateQueryString = () => {
 
   if (initializing && route.query.id) {
     query.id = route.query.id.toString();
-  } else {
-    if (selectedAnswerId.value && selectedAnswerId.value != 0)
-      query.id = selectedAnswerId.value.toString();
+  } else if (selectedAnswerId.value && selectedAnswerId.value != 0) {
+    query.id = selectedAnswerId.value.toString();
   }
 
   if (hideAnswer.value) query.h = "1";
 
-  router.push({ query });
-  updateOgp();
-};
-
-const updateOgp = () => {
-  let answer = "";
-  if (
-    isModified &&
-    inProgress.value.size == 0 // loadingを使うとうまく動かないので
-  ) {
-    if (answers.value[selectedAnswerId.value]) {
-      answer = answers.value[selectedAnswerId.value].character;
-    } else {
-      answer = "×";
-    }
-    answer = encodeURIComponent(answer);
+  if (isModified && inProgress.value.size == 0 && !hideAnswer.value) {
+    query.a = answers.value[selectedAnswerId.value]
+      ? answers.value[selectedAnswerId.value].character
+      : "×";;
   }
-  let path = "";
-  if (route.fullPath == route.name) {
-    path = route.fullPath;
-  } else {
-    path = `${route.fullPath}&a=${answer}`;
+
+  // URLクエリの更新
+  router.push({ query });
+
+  // OGPの更新
+  let path = route.fullPath;
+  if (route.fullPath != route.name) {
+    path = `${route.fullPath}`;
   }
   util.updateOgp(tool, path);
 };
