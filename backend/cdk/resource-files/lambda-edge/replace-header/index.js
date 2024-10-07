@@ -5,6 +5,11 @@ exports.handler = async (event) => {
     const queryString = request.querystring;
 
     const response = event.Records[0].cf.response;
+
+    console.log('Request URI:', request.uri);
+    console.log('Query string:', queryString);
+    console.log('Response body (before):', response.body);
+
     if (!queryString) {
       return response;
     }
@@ -23,6 +28,8 @@ exports.handler = async (event) => {
     body = body.replace(/(<meta[^>]+id="og-image"[^>]+content=")[^"]+("[^>]*>)/, `$1${ogpUrl}$2`);
     body = body.replace(/(<meta[^>]+id="tw-card"[^>]+content=")[^"]+("[^>]*>)/, '$1summary_large_image$2');
     body = body.replace(/(<meta[^>]+id="tw-image"[^>]+content=")[^"]+("[^>]*>)/, `$1${ogpUrl}$2`);
+
+    console.log('Response body (after):', body);
 
     response.body = body;
 
