@@ -330,8 +330,8 @@ def create_cloudfront(
     name: str,
     bucket: s3.Bucket,
     acm_result: Dict[str, Union[acm.Certificate, route53.HostedZone, str]],
-    lambda_edge_version_redirect_to_prerender: lambda_.Version,
-    lambda_edge_version_set_prerender_header: lambda_.Version,
+    lambda_edge_version_origin_request: lambda_.Version,
+    lambda_edge_version_viewer_request: lambda_.Version,
     lambda_edge_version_origin_response: lambda_.Version,
 ) -> cloudfront.Distribution:
     cache_policy = cloudfront.CachePolicy(
@@ -359,11 +359,11 @@ def create_cloudfront(
             cache_policy=cache_policy,
             edge_lambdas=[
                 cloudfront.EdgeLambda(
-                    function_version=lambda_edge_version_set_prerender_header,
+                    function_version=lambda_edge_version_viewer_request,
                     event_type=cloudfront.LambdaEdgeEventType.VIEWER_REQUEST,
                 ),
                 cloudfront.EdgeLambda(
-                    function_version=lambda_edge_version_redirect_to_prerender,
+                    function_version=lambda_edge_version_origin_request,
                     event_type=cloudfront.LambdaEdgeEventType.ORIGIN_REQUEST,
                 ),
                 cloudfront.EdgeLambda(

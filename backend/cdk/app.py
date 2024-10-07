@@ -150,6 +150,9 @@ lambda_edge_version_replace_header = create_lambda_edge_function_version(
     "replace-header",
     {"DOMAIN_NAME_OGP": acm_result_ogp["domain_name"]},
 )
+lambda_edge_version_directory_index = create_lambda_edge_function_version(
+    stack_us, "directory-index"
+)
 
 # CloudFront
 cloudfront_distribution = create_cloudfront(
@@ -158,7 +161,7 @@ cloudfront_distribution = create_cloudfront(
     bucket_distribution,
     acm_result_dist,
     lambda_edge_version_redirect_to_prerender,
-    lambda_edge_version_set_prerender_header,
+    lambda_edge_version_directory_index,
     lambda_edge_version_replace_header,
 )
 
