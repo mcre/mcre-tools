@@ -436,7 +436,7 @@ const updateQueryString = () => {
 
   if (hideAnswer.value) query.h = "1";
 
-  if (isModified && inProgress.value.size == 0 && !hideAnswer.value) {
+  if (isModified.value && inProgress.value.size == 0 && !hideAnswer.value) {
     query.a = answers.value[selectedAnswerId.value]
       ? answers.value[selectedAnswerId.value].character
       : "×";;
