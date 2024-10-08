@@ -1,10 +1,11 @@
 import { createVuetify } from "vuetify";
 import "vuetify/styles";
-import { mdi } from "vuetify/iconsets/mdi-svg";
+import { aliases, mdi } from "vuetify/iconsets/mdi-svg";
 
 export default createVuetify({
   icons: {
     defaultSet: "mdi",
+    aliases,
     sets: {
       mdi,
     },

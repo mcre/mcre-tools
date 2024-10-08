@@ -2,10 +2,16 @@
   <v-app>
     <v-app-bar flat density="comfortable">
       <template v-slot:prepend>
-        <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer" />
+        <v-app-bar-nav-icon
+          variant="text"
+          @click.stop="drawer = !drawer"
+          aria-label="メニューを開閉する"
+        />
       </template>
       <v-app-bar-title>
-        <v-btn to="/" variant="text" :active="false">MCRE TOOLS</v-btn>
+        <v-btn to="/" variant="text" :active="false" aria-label="トップページへ"
+          >MCRE TOOLS</v-btn
+        >
       </v-app-bar-title>
       <template v-slot:append>
         <x-share-button class="mr-1" />
@@ -17,7 +23,7 @@
       v-for="(tool, key) in tools"
       :key="key"
     >
-      <v-list lines="two">
+      <v-list lines="two" :role="null">
         <v-list-item
           :title="tool.params.title"
           :subtitle="tool.params.descriptionShort"
