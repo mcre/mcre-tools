@@ -12,7 +12,14 @@
   <v-container>
     <v-row class="align-center">
       <v-col cols="auto">
-        <v-avatar :image="`/img/${tool.params.iconDir}/32.png`" size="32" />
+        <v-avatar size="32">
+          <img
+            :src="`/img/${tool.params.iconDir}/32.png`"
+            alt=""
+            width="32"
+            height="32"
+          />
+        </v-avatar>
       </v-col>
       <v-col>
         <h1>{{ tool.params.title }}</h1>
@@ -169,21 +176,21 @@
         <v-list-item>
           <template v-slot:prepend>
             <v-avatar size="40">
-              <v-icon>mdi-help-box-outline</v-icon>
+              <v-icon>{{ mdiHelpBoxOutline }}</v-icon>
             </v-avatar>
           </template>
           <v-row>
             <v-col cols="3" class="text-center">
-              <v-icon>mdi-gamepad-circle-up</v-icon>
+              <v-icon>{{ mdiGamepadCircleUp }}</v-icon>
             </v-col>
             <v-col cols="3" class="text-center">
-              <v-icon>mdi-gamepad-circle-right</v-icon>
+              <v-icon>{{ mdiGamepadCircleRight }}</v-icon>
             </v-col>
             <v-col cols="3" class="text-center">
-              <v-icon>mdi-gamepad-circle-down</v-icon>
+              <v-icon>{{ mdiGamepadCircleDown }}</v-icon>
             </v-col>
             <v-col cols="3" class="text-center">
-              <v-icon>mdi-gamepad-circle-left</v-icon>
+              <v-icon>{{ mdiGamepadCircleLeft }}</v-icon>
             </v-col>
           </v-row>
         </v-list-item>
@@ -248,7 +255,7 @@
   </v-container>
   <v-fab
     active
-    :icon="hideAnswer ? 'mdi-eye' : 'mdi-eye-off'"
+    :icon="hideAnswer ? mdiEye : mdiEyeOff"
     size="small"
     @click="toggleHideAnswer"
     app
@@ -257,7 +264,7 @@
   <v-fab
     :active="isModified"
     size="small"
-    icon="mdi-eraser"
+    :icon="mdiEraser"
     @click="resetInputs"
     app
     location="bottom end"
@@ -278,6 +285,17 @@ const tool = tools.jukugo;
 
 const util = useUtil();
 util.setToolTitle(tool.params);
+
+import {
+  mdiEye,
+  mdiEyeOff,
+  mdiEraser,
+  mdiHelpBoxOutline,
+  mdiGamepadCircleUp,
+  mdiGamepadCircleRight,
+  mdiGamepadCircleDown,
+  mdiGamepadCircleLeft,
+} from "@mdi/js";
 
 let initializing = true;
 const loading = computed(() => inProgress.value.size > 0);
@@ -356,7 +374,6 @@ const fetchData = async () => {
   updateAnswers();
 };
 
-
 const fetchDataIfEmpty = (value: string) => {
   if (value === "") {
     fetchData();
@@ -390,16 +407,19 @@ const updateAnswers = () => {
 
   answers.value = commonResults
     .map((item) => {
-      const costs = resultSets.reduce((obj, { position, results }) => {
-        const cost =
-          results.find((res) => res.character === item.character)?.cost || 0;
-        obj[position] = cost;
-        return obj;
-      }, {} as { [key in (typeof positions)[number]]?: number });
+      const costs = resultSets.reduce(
+        (obj, { position, results }) => {
+          const cost =
+            results.find((res) => res.character === item.character)?.cost || 0;
+          obj[position] = cost;
+          return obj;
+        },
+        {} as { [key in (typeof positions)[number]]?: number },
+      );
 
       const totalCost = Object.values(costs).reduce(
         (sum, cost) => sum + (cost || 0),
-        0
+        0,
       );
 
       return {
@@ -439,7 +459,7 @@ const updateQueryString = () => {
   if (isModified.value && inProgress.value.size == 0 && !hideAnswer.value) {
     query.a = answers.value[selectedAnswerId.value]
       ? answers.value[selectedAnswerId.value].character
-      : "×";;
+      : "×";
   }
 
   // URLクエリの更新

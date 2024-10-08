@@ -1,6 +1,6 @@
 <template>
   <v-btn
-    :icon="model ? `mdi-arrow-${forward}-thick` : `mdi-arrow-${reverse}-thick`"
+    :icon="model ? forwardIcon : reverseIcon"
     variant="text"
     tabindex="-1"
     size="small"
@@ -9,11 +9,30 @@
 </template>
 
 <script lang="ts" setup>
-type Direction = "up" | "down" | "left" | "right";
-const model = defineModel<boolean>();
+import {
+  mdiArrowUpThick,
+  mdiArrowDownThick,
+  mdiArrowLeftThick,
+  mdiArrowRightThick,
+} from "@mdi/js";
+import { computed } from "vue";
 
-defineProps<{
+type Direction = "up" | "down" | "left" | "right";
+
+const props = defineProps<{
   forward: Direction;
   reverse: Direction;
 }>();
+
+const model = defineModel<boolean>();
+
+const iconMap: Record<Direction, string> = {
+  up: mdiArrowUpThick,
+  down: mdiArrowDownThick,
+  left: mdiArrowLeftThick,
+  right: mdiArrowRightThick,
+};
+
+const forwardIcon = computed(() => iconMap[props.forward]);
+const reverseIcon = computed(() => iconMap[props.reverse]);
 </script>

@@ -1,10 +1,6 @@
-/**
- * src/styles/settings.scss
- *
- * Configures SASS variables and Vuetify overwrites
- */
+$custom-font-family: 'Roboto Flex Variable', sans-serif;
 
-// https://vuetifyjs.com/features/sass-variables/`
-// @use 'vuetify/settings' with (
-//   $color-pack: false
-// );
+@use 'vuetify/settings' with (
+  $body-font-family: $custom-font-family,
+  $heading-font-family: $custom-font-family
+);

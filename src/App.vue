@@ -24,7 +24,14 @@
           :to="tool.params.path"
         >
           <template v-slot:prepend>
-            <v-avatar :image="`/img/${tool.params.iconDir}/32.png`" size="24" />
+            <v-avatar size="24">
+              <img
+                :src="`/img/${tool.params.iconDir}/32.png`"
+                alt=""
+                width="24"
+                height="24"
+              />
+            </v-avatar>
           </template>
         </v-list-item>
       </v-list>

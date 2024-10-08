@@ -14,7 +14,9 @@
   <v-container>
     <v-row>
       <v-col cols="12">
-        <h2><v-icon start>mdi-toolbox</v-icon>ツール一覧</h2>
+        <h2>
+          <v-icon start> {{ mdiToolbox }} </v-icon>ツール一覧
+        </h2>
       </v-col>
     </v-row>
     <v-row>
@@ -25,7 +27,14 @@
           :to="tool.params.path"
         >
           <template v-slot:prepend>
-            <v-avatar :image="`/img/${tool.params.iconDir}/32.png`" size="24" />
+            <v-avatar size="24">
+              <img
+                :src="`/img/${tool.params.iconDir}/32.png`"
+                alt=""
+                width="24"
+                height="24"
+              />
+            </v-avatar>
           </template>
         </v-card>
       </v-col>
@@ -34,7 +43,12 @@
   <v-container>
     <v-row>
       <v-col cols="12">
-        <h2><v-icon start class="mb-1">mdi-scale-balance</v-icon>利用規約</h2>
+        <h2>
+          <v-icon start class="mb-1">
+            {{ mdiScaleBalance }}
+          </v-icon>
+          利用規約
+        </h2>
       </v-col>
     </v-row>
     <v-row>
@@ -52,7 +66,10 @@
     <v-row>
       <v-col cols="12">
         <h2>
-          <v-icon start class="mb-1">mdi-information-outline</v-icon>参考情報
+          <v-icon start class="mb-1">
+            {{ mdiInformationOutline }}
+          </v-icon>
+          参考情報
         </h2>
       </v-col>
     </v-row>
@@ -63,7 +80,7 @@
           href="https://mcre.info"
           target="_blank"
           rel="noopener noreferrer"
-          icon="mdi-account-circle"
+          :icon="mdiAccountCircle"
           size="small"
         />
         作者について
@@ -74,7 +91,7 @@
           href="https://github.com/mcre/mcre-tools"
           target="_blank"
           rel="noopener noreferrer"
-          icon="mdi-github"
+          :icon="mdiGithub"
           size="small"
         />
         ソースコード・要望
@@ -85,7 +102,7 @@
           href="https://github.com/mcre/mcre-tools/blob/main/LICENSE"
           target="_blank"
           rel="noopener noreferrer"
-          icon="mdi-certificate-outline"
+          :icon="mdiCertificateOutline"
           size="small"
         />
         ライセンスに関して
@@ -97,4 +114,13 @@
 <script lang="ts" setup>
 const util = useUtil();
 util.setToolTitle();
+
+import {
+  mdiToolbox,
+  mdiScaleBalance,
+  mdiAccountCircle,
+  mdiInformationOutline,
+  mdiGithub,
+  mdiCertificateOutline,
+} from "@mdi/js";
 </script>

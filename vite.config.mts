@@ -1,7 +1,6 @@
 // Plugins
 import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
-import Fonts from "unplugin-fonts/vite";
 import Vue from "@vitejs/plugin-vue";
 import Vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
 import "vite-ssg";
@@ -40,16 +39,6 @@ export default defineConfig({
         configFile: "src/styles/settings.scss",
       },
     }),
-    Fonts({
-      google: {
-        families: [
-          {
-            name: "Roboto",
-            styles: "wght@100;300;400;500;700;900",
-          },
-        ],
-      },
-    }),
   ],
   define: { "process.env": {} },
   resolve: {
@@ -73,5 +62,8 @@ export default defineConfig({
     script: "defer",
     formatting: "minify",
     dirStyle: "nested",
+    crittersOptions: {
+      preload: "media",
+    },
   },
 });
