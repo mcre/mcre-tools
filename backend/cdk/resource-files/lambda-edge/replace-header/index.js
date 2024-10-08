@@ -10,6 +10,10 @@ exports.handler = async (event) => {
     console.log('Query string:', queryString);
     console.log('Response body (before):', response.body);
 
+    console.log(JSON.stringify(event.Records[0]))
+
+    return response;
+    /*
     if (!queryString) {
       return response;
     }
@@ -34,4 +38,5 @@ exports.handler = async (event) => {
     response.body = body;
 
     return response;
+    */
 };
