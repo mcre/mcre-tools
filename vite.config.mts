@@ -3,7 +3,6 @@ import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
 import Vue from "@vitejs/plugin-vue";
 import Vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
-import purgecss from "vite-plugin-purgecss";
 import "vite-ssg";
 
 // Utilities
@@ -33,17 +32,11 @@ export default defineConfig({
     Vue({
       template: { transformAssetUrls },
     }),
+    // https://github.com/vuetifyjs/vuetify-loader/tree/master/packages/vite-plugin#readme
     Vuetify({
       autoImport: true,
       styles: {
         configFile: "src/styles/settings.scss",
-      },
-    }),
-    purgecss({
-      content: ["dist/**/*.html"],
-      safelist: {
-        standard: [/-(leave|enter|appear)(|-(to|from|active))$/, /^(?!(|.*?:)cursor-move).+-move$/, /^router-link(|-exact)-active$/, /^scale/, /^fade/, /^v-/],
-        greedy: [/data-v-.*/],
       },
     }),
   ],
