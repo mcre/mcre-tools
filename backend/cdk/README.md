@@ -21,16 +21,6 @@ Github Actions自体でもCDKのDeployを行っているが、そのためのIAM
 
 - Variables
   - `AWS_IAM_ROLE_ARN` CDKのiam-role-github-actions
-- Secrets
-  - `PRERENDER_TOKEN` prerender.ioのトークン
-
-## ローカルの環境変数
-
-`./config/_secrets.sh` として下記のような内容を保存することで、ローカルから実行できる。
-
-```
-export PRERENDER_TOKEN="***"
-```
 
 ## 仮想環境
 

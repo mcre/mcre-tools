@@ -137,25 +137,6 @@ acm_result_dist = create_acm_certificate(
 )
 
 # Lambda
-# あとで消す
-lambda_edge_version_redirect_to_prerender = create_lambda_edge_function_version(
-    stack_us, "redirect-to-prerender"
-)
-lambda_edge_version_set_prerender_header = create_lambda_edge_function_version(
-    stack_us,
-    "set-prerender-header",
-    {"PRERENDER_TOKEN": os.environ["PRERENDER_TOKEN"]},
-)
-lambda_edge_version_replace_header = create_lambda_edge_function_version(
-    stack_us,
-    "replace-header",
-    {"DOMAIN_NAME_OGP": acm_result_ogp["domain_name"]},
-)
-lambda_edge_version_directory_index = create_lambda_edge_function_version(
-    stack_us, "directory-index"
-)
-
-# 残す
 lambda_edge_version_response_to_bot_with_directory_index = (
     create_lambda_edge_function_version(
         stack_us,
