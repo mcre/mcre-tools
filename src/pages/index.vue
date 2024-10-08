@@ -29,7 +29,7 @@
           <template v-slot:prepend>
             <v-avatar size="24">
               <img
-                :src="`/img/${tool.params.iconDir}/32.png`"
+                :src="`/img/${tool.params.iconDir}/24.png`"
                 alt=""
                 width="24"
                 height="24"

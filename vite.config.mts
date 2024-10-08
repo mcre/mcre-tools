@@ -47,6 +47,13 @@ export default defineConfig({
     },
     extensions: [".js", ".json", ".jsx", ".mjs", ".ts", ".tsx", ".vue"],
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        api: "modern-compiler",
+      },
+    },
+  },
   server: {
     port: 3000,
   },
@@ -59,11 +66,12 @@ export default defineConfig({
     noExternal: ["vuetify", "aspida", "@aspida/fetch"],
   },
   ssgOptions: {
-    script: "defer",
+    script: "async defer",
     formatting: "minify",
     dirStyle: "nested",
     crittersOptions: {
       preload: "media",
+      pruneSource: true,
     },
   },
 });

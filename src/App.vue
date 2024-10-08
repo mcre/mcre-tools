@@ -9,9 +9,14 @@
         />
       </template>
       <v-app-bar-title>
-        <v-btn to="/" variant="text" :active="false" aria-label="トップページへ"
-          >MCRE TOOLS</v-btn
+        <v-btn
+          to="/"
+          variant="text"
+          :active="false"
+          aria-label="トップページへ移動"
         >
+          MCRE TOOLS
+        </v-btn>
       </v-app-bar-title>
       <template v-slot:append>
         <x-share-button class="mr-1" />
@@ -32,7 +37,7 @@
           <template v-slot:prepend>
             <v-avatar size="24">
               <img
-                :src="`/img/${tool.params.iconDir}/32.png`"
+                :src="`/img/${tool.params.iconDir}/24.png`"
                 alt=""
                 width="24"
                 height="24"
@@ -43,7 +48,7 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-main>
+    <v-main style="--v-layout-top: 56px">
       <v-container max-width="1140">
         <router-view />
       </v-container>
