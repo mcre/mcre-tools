@@ -1,5 +1,6 @@
 {
   "prefix": "mcre-tools",
+  "app_title": "MCRE TOOLS",
   "account_id": "118834186871",
   "cdk_identifier": "hnb659fds",
   "tags": [{ "key": "project", "value": "mcre-tools" }],

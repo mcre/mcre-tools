@@ -1,6 +1,6 @@
 import { RouterOptions } from "vite-ssg";
-import Index from '@/pages/index.vue';
-import NotFound from '@/pages/not-found.vue';
+import Index from "@/pages/index.vue";
+import NotFound from "@/pages/not-found.vue";
 
 export type ToolParams = {
   title: string;
@@ -19,9 +19,9 @@ type Tools = {
   [key: string]: Tool;
 };
 
+import Jukugo from "@/pages/jukugo.vue";
 
-import Jukugo from '@/pages/jukugo.vue';
-
+// CDKからtoolsの定義を文字列として読み込んでLambda@Edgeに埋め込んでいるの更新する場合は注意
 export const tools: Tools = {
   jukugo: {
     component: Jukugo,
@@ -35,7 +35,6 @@ export const tools: Tools = {
     },
   },
 };
-
 
 export const routerOptions: RouterOptions = {
   routes: [

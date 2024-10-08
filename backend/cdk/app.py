@@ -1,4 +1,5 @@
 import os
+import re
 from aws_cdk import (
     App,
     Environment,
@@ -137,11 +138,21 @@ acm_result_dist = create_acm_certificate(
 )
 
 # Lambda
+router_file_path = os.path.join(os.getcwd(), "../../src/router/index.ts")
+with open(router_file_path, "r", encoding="utf-8") as f:
+    router_content = f.read()
+tools_definition = re.search(
+    r"const\s+?tools:\s+?Tools\s+?=\s+?({.*?});", router_content, re.DOTALL
+).group(1)
+tools_definition = re.sub(r"(component:\s+?[^,]+,)", r"// \1", tools_definition)
+
 lambda_edge_version_response_to_bot_with_directory_index = (
     create_lambda_edge_function_version(
         stack_us,
         "response-to-bot-with-directory-index",
         {
+            "APP_TITLE": config["app_title"],
+            "TOOLS_DEFINITION": tools_definition,
             "DOMAIN_NAME_OGP": acm_result_ogp["domain_name"],
             "DOMAIN_NAME_DIST": acm_result_dist["domain_name"],
         },
@@ -185,6 +196,7 @@ iam_role_github_actions = create_iam_role_github_actions(stack, policies)
 
 # 後続処理で参照するパラメータを出力する処理
 CfnOutput(stack, "Prefix", value=config["prefix"])
+CfnOutput(stack, "AppTitle", value=config["app_title"])
 CfnOutput(stack, "DomainNameApi", value=acm_result_api["domain_name"])
 CfnOutput(stack, "DomainNameOgp", value=acm_result_ogp["domain_name"])
 CfnOutput(stack, "IamRoleGithubActions", value=iam_role_github_actions.role_arn)

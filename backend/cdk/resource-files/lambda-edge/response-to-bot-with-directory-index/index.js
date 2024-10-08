@@ -9,20 +9,8 @@ const BOTS = [
   'PlurkBot',
 ];
 
-const SITE_NAME = 'MCRE TOOLS';
-const TOOLS = {
-  jukugo: {
-    component: "Jukugo",
-    params: {
-      title: "熟語パズル",
-      path: "/jukugo",
-      iconDir: "jukugo",
-      descriptionShort: "和同開珎を自動で解きます",
-      description:
-        "上下左右4つの漢字から真ん中の漢字を当てるパズル、いわゆる「和同開珎」を自動で解くツール（ソルバー）です。",
-    },
-  },
-};
+const SITE_NAME = '@{APP_TITLE}';
+const TOOLS = @{TOOLS_DEFINITION};
 
 const generateContent = ({tool, requestUrl, imageUrl}) => {
   return `
