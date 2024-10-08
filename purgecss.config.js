@@ -8,11 +8,12 @@ module.exports = {
       /^router-link(|-exact)-active$/,
       /^scale/,
       /^fade/,
-      /^v-/,
+      /button/,
+      /input/,
+      /select/,
+      /textarea/
     ],
-    greedy: [
-      /data-v-.*/,
-    ],
+    greedy: [/data-v-.*/, /^v-/]
   },
-  output: 'dist/assets/',
-};
+  output: 'dist/assets/'
+}
