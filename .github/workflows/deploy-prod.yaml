@@ -145,13 +145,25 @@ jobs:
           role-to-assume: ${{ vars.AWS_IAM_ROLE_ARN }}
           aws-region: ap-northeast-1
 
-      - name: Sync with S3
-        uses: kevin-romer/s3-sync-action@master
-        with:
-          args: --follow-symlinks --delete
-        env:
-          AWS_S3_BUCKET: ${{  needs.deploy-cdk.outputs.BUCKET_DISTRIBUTION }}
-          SOURCE_DIR: dist
+      - name: Sync /img with S3 (Cache-Control)
+        run: |
+          aws s3 sync dist/img s3://${{ needs.deploy-cdk.outputs.BUCKET_DISTRIBUTION }}/img \
+            --follow-symlinks \
+            --delete \
+            --cache-control "max-age=31536000"
+      - name: Sync /assets with S3 (Cache-Control)
+        run: |
+          aws s3 sync dist/assets s3://${{ needs.deploy-cdk.outputs.BUCKET_DISTRIBUTION }}/assets \
+            --follow-symlinks \
+            --delete \
+            --cache-control "max-age=31536000"
+      - name: Sync other files with S3 (No Cache-Control)
+        run: |
+          aws s3 sync dist s3://${{ needs.deploy-cdk.outputs.BUCKET_DISTRIBUTION }} \
+            --exclude "img/*" \
+            --exclude "assets/*" \
+            --follow-symlinks \
+            --delete
 
       - name: Invalidate CloudFront
         uses: badsyntax/github-action-aws-cloudfront@master

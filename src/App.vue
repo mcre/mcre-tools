@@ -35,12 +35,12 @@
           :to="tool.params.path"
         >
           <template v-slot:prepend>
-            <v-avatar size="24">
+            <v-avatar size="32">
               <img
-                :src="`/img/${tool.params.iconDir}/24.png`"
+                :src="`/img/${tool.params.iconDir}/32.png`"
                 alt=""
-                width="24"
-                height="24"
+                width="32"
+                height="32"
               />
             </v-avatar>
           </template>
