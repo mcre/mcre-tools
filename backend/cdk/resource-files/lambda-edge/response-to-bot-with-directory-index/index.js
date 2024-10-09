@@ -8,6 +8,7 @@ const BOTS = [
   'Slackbot-LinkExpanding',
   'PlurkBot',
   'notebot',
+  'Iframely/1.3.1', // Notion
 ];
 
 const SITE_NAME = '@{APP_TITLE}';
