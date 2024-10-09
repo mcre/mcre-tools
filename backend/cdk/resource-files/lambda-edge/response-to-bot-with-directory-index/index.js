@@ -49,7 +49,7 @@ exports.handler = async (event) => {
   const queryString = request.querystring;
   const userAgent = request.headers['user-agent'][0].value;
 
-  console.log(userAgent);
+  console.log('URL: ' + uri + ', UA: ' + userAgent + ', QS: ' + queryString);
 
   const isBot = BOTS.some((v) => userAgent.includes(v));
   if (isBot && queryString) {
