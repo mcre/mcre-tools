@@ -7,6 +7,7 @@ const BOTS = [
   'SkypeUriPreview',
   'Slackbot-LinkExpanding',
   'PlurkBot',
+  'notebot',
 ];
 
 const SITE_NAME = '@{APP_TITLE}';
@@ -30,6 +31,7 @@ const generateContent = ({tool, requestUrl, imageUrl}) => {
       <meta property="og:url" content="${requestUrl}" />
       <meta property="og:image" content="${imageUrl}" />
       <meta property="og:description" content="${tool.description}" />
+      <meta name="note:card" content="summary_large_image" />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:image" content="${imageUrl}" />
       <meta name="robots" content="all">
@@ -46,6 +48,8 @@ exports.handler = async (event) => {
   const uri = request.uri;
   const queryString = request.querystring;
   const userAgent = request.headers['user-agent'][0].value;
+
+  console.log(userAgent);
 
   const isBot = BOTS.some((v) => userAgent.includes(v));
   if (isBot && queryString) {
