@@ -1,7 +1,7 @@
 import { mount } from "@vue/test-utils";
 import { describe, it, expect } from "vitest";
 import { ref, nextTick } from "vue";
-import { find, findComponent } from "@/tests/helpers";
+import { find, findComponent } from "@/tests/vitest/helpers";
 import JukugoCharacterField from "@/components/JukugoCharacterField.vue";
 
 describe("JukugoCharacterField", () => {

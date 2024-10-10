@@ -1,6 +1,6 @@
 import { mount } from "@vue/test-utils";
 import { describe, it } from "vitest";
-import { findComponent, expectIconToBe } from "@/tests/helpers";
+import { findComponent, expectIconToBe } from "@/tests/vitest/helpers";
 import JukugoArrowButton from "@/components/JukugoArrowButton.vue";
 import {
   mdiArrowUpThick,

@@ -16,8 +16,8 @@ export default defineConfig({
         inline: ["vuetify"],
       },
     },
-    include: ["src/tests/**/*.spec.ts"],
-    setupFiles: "src/tests/setup.ts",
+    include: ["src/tests/vitest/**/*.spec.ts"],
+    setupFiles: "src/tests/vitest/setup.ts",
     env: dotenv.config({ path: ".env.production" }).parsed,
   },
   plugins: [
