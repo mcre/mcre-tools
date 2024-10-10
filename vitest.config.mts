@@ -2,6 +2,7 @@ import { defineConfig } from "vitest/config";
 import vue from "@vitejs/plugin-vue";
 import Vuetify from "vite-plugin-vuetify";
 import { resolve } from "path";
+import dotenv from "dotenv";
 
 import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
@@ -17,6 +18,7 @@ export default defineConfig({
     },
     include: ["src/tests/**/*.spec.ts"],
     setupFiles: "src/tests/setup.ts",
+    env: dotenv.config({ path: ".env.production" }).parsed,
   },
   plugins: [
     vue(),
