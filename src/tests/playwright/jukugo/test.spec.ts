@@ -1,4 +1,4 @@
-import { test, Page } from "@playwright/test";
+import { test, expect, Page } from "@playwright/test";
 
 const positions = ["top", "left", "right", "bottom"] as const;
 
@@ -14,16 +14,8 @@ async function jukugoTest(
     if (input?.reverse) await page.locator(`#arrow-${pos}`).click();
   }
 
-  await page.waitForFunction(
-    (expected) => {
-      const answerField = document.querySelector("#answer") as HTMLInputElement;
-      return answerField && answerField.value === expected;
-    },
-    expectedAnswer,
-    { timeout: 10000 },
-  );
-
-  await page.screenshot({ path: `tmp.png` });
+  const answer = page.locator("#answer");
+  await expect(answer).toHaveValue(expectedAnswer);
 }
 
 test("正常系テスト「老」", async ({ page }) => {

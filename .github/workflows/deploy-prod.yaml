@@ -36,10 +36,19 @@ jobs:
         run: |
           npm ci
           npx playwright install --with-deps
+      - name: Start preview
+        run: |
+          npm run build
+          npm run preview -- --port 3000 &
+          npx wait-on http://localhost:3000  # サーバーが起動するまで待機
       - name: Run Vitest
         run: npm run test:once
       - name: Run Playwright
         run: npm run test:e2e
+      - name: Stop Vite server
+        if: always()
+        run: |
+          kill $(lsof -t -i:3000) || echo "Server already stopped"
 
   deploy-cdk:
     runs-on: ubuntu-latest
