@@ -5,6 +5,7 @@
     "dev": "npm run api:build && concurrently \"vite\" \"npm run api:watch\"",
     "test": "vitest",
     "test:once": "vitest run",
+    "test:e2e": "playwright test",
     "prebuild": "npm run sitemap:build",
     "build": "vue-tsc --noEmit && vite-ssg build",
     "postbuild": "purgecss --config ./purgecss.config.js",
@@ -26,6 +27,7 @@
   "devDependencies": {
     "@babel/types": "^7.24.7",
     "@mdi/js": "^7.4.47",
+    "@playwright/test": "^1.48.0",
     "@types/node": "^20.14.10",
     "@unhead/vue": "^1.11.7",
     "@vitejs/plugin-vue": "^5.0.5",

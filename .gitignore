@@ -1,11 +1,13 @@
 .DS_Store
 node_modules
-.vite-ssg-temp
-
 /dist
 /public/sitemap.xml
 /public/robots.txt
+
+# work
 work/
+.vite-ssg-temp
+.last-run.json
 
 # local env files
 .env.local

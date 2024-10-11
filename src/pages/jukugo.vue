@@ -47,6 +47,7 @@
               <td></td>
               <td>
                 <jukugo-character-field
+                  id="input-top"
                   v-model="inputs.top"
                   @compositionend="fetchData"
                   @input="fetchDataIfEmpty(inputs.top)"
@@ -60,6 +61,7 @@
               <td></td>
               <td>
                 <jukugo-arrow-button
+                  id="arrow-top"
                   v-model="arrows.top"
                   forward="down"
                   reverse="up"
@@ -72,6 +74,7 @@
             <tr>
               <td>
                 <jukugo-character-field
+                  id="input-left"
                   v-model="inputs.left"
                   @compositionend="fetchData"
                   @input="fetchDataIfEmpty(inputs.left)"
@@ -79,6 +82,7 @@
               </td>
               <td>
                 <jukugo-arrow-button
+                  id="arrow-left"
                   v-model="arrows.left"
                   forward="right"
                   reverse="left"
@@ -87,6 +91,7 @@
               </td>
               <td>
                 <v-text-field
+                  id="answer"
                   v-show="!hideAnswer"
                   :value="selectedAnswer"
                   class="centered-input"
@@ -98,6 +103,7 @@
                   :loading="loading"
                 />
                 <v-text-field
+                  id="answer-hide"
                   v-show="hideAnswer"
                   value="？"
                   class="centered-input"
@@ -110,6 +116,7 @@
               </td>
               <td>
                 <jukugo-arrow-button
+                  id="arrow-right"
                   v-model="arrows.right"
                   forward="left"
                   reverse="right"
@@ -118,6 +125,7 @@
               </td>
               <td>
                 <jukugo-character-field
+                  id="input-right"
                   v-model="inputs.right"
                   @compositionend="fetchData"
                   @input="fetchDataIfEmpty(inputs.right)"
@@ -129,6 +137,7 @@
               <td></td>
               <td>
                 <jukugo-arrow-button
+                  id="arrow-bottom"
                   v-model="arrows.bottom"
                   forward="up"
                   reverse="down"
@@ -143,6 +152,7 @@
               <td></td>
               <td>
                 <jukugo-character-field
+                  id="input-bottom"
                   v-model="inputs.bottom"
                   @compositionend="fetchData"
                   @input="fetchDataIfEmpty(inputs.bottom)"
