@@ -9,7 +9,7 @@ describe("JukugoCharacterField", () => {
     return mount(JukugoCharacterField, {
       props: {
         modelValue: modelValueRef.value,
-        "onUpdate:modelValue": (val) => {
+        "onUpdate:modelValue": (val: string) => {
           modelValueRef.value = val;
         },
       },

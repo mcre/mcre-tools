@@ -18,14 +18,8 @@ const emits = defineEmits(["input", "update:typing"]);
 
 const util = useUtil();
 
-const props = defineProps({
-  typing: {
-    type: Boolean,
-    required: true,
-  },
-});
-
 const isKanjiValid = ref(true);
+const typing = ref(false);
 
 const validateKanji = (value: string) => {
   if (!value || value === "") {
@@ -42,27 +36,29 @@ const slice = (str: string) => {
   return str;
 };
 
-const processInput = (event: Event) => {
+const processInput = async (event: Event) => {
   const input = event.target as HTMLInputElement;
   const sliced = slice(input.value);
   model.value = sliced;
-  input.value = sliced;
   validateKanji(sliced);
-  nextTick();
-  if (isKanjiValid.value) emits("input");
+  await nextTick();
+  emits("input");
 };
 
 const handleCompositionStart = () => {
+  typing.value = true;
   emits("update:typing", true);
 };
 
 const handleCompositionEnd = (event: Event) => {
+  typing.value = false;
   emits("update:typing", false);
   processInput(event);
 };
 
-const handleInput = (event: Event) => {
-  if (!props.typing) {
+const handleInput = async (event: Event) => {
+  await nextTick();
+  if (!typing.value) {
     processInput(event);
   }
 };

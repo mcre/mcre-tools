@@ -50,7 +50,6 @@
                   id="input-top"
                   v-model="inputs.top"
                   @input="fetchData"
-                  :typing="typing"
                   @update:typing="typing = $event"
                 />
               </td>
@@ -78,7 +77,6 @@
                   id="input-left"
                   v-model="inputs.left"
                   @input="fetchData"
-                  :typing="typing"
                   @update:typing="typing = $event"
                 />
               </td>
@@ -130,7 +128,6 @@
                   id="input-right"
                   v-model="inputs.right"
                   @input="fetchData"
-                  :typing="typing"
                   @update:typing="typing = $event"
                 />
               </td>
@@ -158,7 +155,6 @@
                   id="input-bottom"
                   v-model="inputs.bottom"
                   @input="fetchData"
-                  :typing="typing"
                   @update:typing="typing = $event"
                 />
               </td>
