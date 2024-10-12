@@ -6,6 +6,7 @@
     "test": "vitest",
     "test:once": "vitest run",
     "test:e2e": "playwright test",
+    "test:e2e:debug": "playwright test --config=playwright.debug.config.ts",
     "prebuild": "npm run sitemap:build",
     "build": "vue-tsc --noEmit && vite-ssg build",
     "postbuild": "purgecss --config ./purgecss.config.js",
