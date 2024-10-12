@@ -5,7 +5,7 @@
     variant="outlined"
     hide-details
     :error="!isKanjiValid"
-    @compositionstart="isComposing = true"
+    @compositionstart="handleCompositionStart"
     @compositionend="handleCompositionEnd"
     @input="handleInput"
     min-width="48px"
@@ -13,10 +13,18 @@
 </template>
 
 <script lang="ts" setup>
+const model = defineModel<string>();
+const emits = defineEmits(["input", "update:typing"]);
+
 const util = useUtil();
 
-const model = defineModel<string>();
-const isComposing = ref(false);
+const props = defineProps({
+  typing: {
+    type: Boolean,
+    required: true,
+  },
+});
+
 const isKanjiValid = ref(true);
 
 const validateKanji = (value: string) => {
@@ -40,15 +48,21 @@ const processInput = (event: Event) => {
   model.value = sliced;
   input.value = sliced;
   validateKanji(sliced);
+  nextTick();
+  if (isKanjiValid.value) emits("input");
+};
+
+const handleCompositionStart = () => {
+  emits("update:typing", true);
 };
 
 const handleCompositionEnd = (event: Event) => {
-  isComposing.value = false;
+  emits("update:typing", false);
   processInput(event);
 };
 
 const handleInput = (event: Event) => {
-  if (!isComposing.value) {
+  if (!props.typing) {
     processInput(event);
   }
 };

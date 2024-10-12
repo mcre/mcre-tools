@@ -49,8 +49,9 @@
                 <jukugo-character-field
                   id="input-top"
                   v-model="inputs.top"
-                  @compositionend="fetchData"
-                  @input="fetchDataIfEmpty(inputs.top)"
+                  @input="fetchData"
+                  :typing="typing"
+                  @update:typing="typing = $event"
                 />
               </td>
               <td></td>
@@ -76,8 +77,9 @@
                 <jukugo-character-field
                   id="input-left"
                   v-model="inputs.left"
-                  @compositionend="fetchData"
-                  @input="fetchDataIfEmpty(inputs.left)"
+                  @input="fetchData"
+                  :typing="typing"
+                  @update:typing="typing = $event"
                 />
               </td>
               <td>
@@ -93,7 +95,7 @@
                 <v-text-field
                   id="answer"
                   v-show="!hideAnswer"
-                  :value="selectedAnswer"
+                  :value="loading ? '' : selectedAnswer"
                   class="centered-input"
                   maxlength="1"
                   variant="solo"
@@ -127,8 +129,9 @@
                 <jukugo-character-field
                   id="input-right"
                   v-model="inputs.right"
-                  @compositionend="fetchData"
-                  @input="fetchDataIfEmpty(inputs.right)"
+                  @input="fetchData"
+                  :typing="typing"
+                  @update:typing="typing = $event"
                 />
               </td>
             </tr>
@@ -154,8 +157,9 @@
                 <jukugo-character-field
                   id="input-bottom"
                   v-model="inputs.bottom"
-                  @compositionend="fetchData"
-                  @input="fetchDataIfEmpty(inputs.bottom)"
+                  @input="fetchData"
+                  :typing="typing"
+                  @update:typing="typing = $event"
                 />
               </td>
               <td></td>
@@ -209,7 +213,7 @@
             <v-list-item
               @click="
                 selectedAnswerId = index;
-                updateQueryString();
+                updateSelectedAnswer();
               "
               :active="selectedAnswerId === index"
               v-if="!loading"
@@ -264,6 +268,7 @@
     </v-row>
   </v-container>
   <v-fab
+    id="button-hide"
     active
     :icon="hideAnswer ? mdiEye : mdiEyeOff"
     size="small"
@@ -272,6 +277,7 @@
     location="bottom end"
   />
   <v-fab
+    id="button-reset"
     :active="isModified"
     size="small"
     :icon="mdiEraser"
@@ -309,11 +315,13 @@ import {
 
 let initializing = true;
 const loading = computed(() => inProgress.value.size > 0);
+const typing = ref(false);
 const positions = ["top", "bottom", "left", "right"] as const;
 const inputs = ref(Object.fromEntries(positions.map((pos) => [pos, ""])));
 const arrows = ref(Object.fromEntries(positions.map((pos) => [pos, true])));
 const hideAnswer = ref(false);
 const selectedAnswerId = ref(0);
+const selectedAnswer = ref("");
 const answers = ref<
   {
     character: string;
@@ -323,17 +331,6 @@ const answers = ref<
     };
   }[]
 >([]);
-
-const selectedAnswer = computed(() => {
-  updateQueryString();
-  if (loading.value) return "";
-  if (answers.value.length <= 0) {
-    if (isModified.value) return "×";
-    else return "";
-  }
-  if (isModified.value && answers.value.length <= 0) return "×";
-  return answers.value[selectedAnswerId.value].character;
-});
 
 const isModified = computed(() => {
   const hasInput = Object.values(inputs.value).some((input) => input !== "");
@@ -347,6 +344,7 @@ const resetInputs = () => {
   answers.value = [];
   selectedAnswerId.value = 0;
   router.push({ query: {} });
+  updateSelectedAnswer();
 };
 
 const baseURL = `https://${import.meta.env.VITE_API_DOMAIN_NAME}`;
@@ -382,12 +380,6 @@ const fetchData = async () => {
   });
   await Promise.all(fetchPromises);
   updateAnswers();
-};
-
-const fetchDataIfEmpty = (value: string) => {
-  if (value === "") {
-    fetchData();
-  }
 };
 
 const toggleHideAnswer = () => {
@@ -443,6 +435,22 @@ const updateAnswers = () => {
   if (answers.value.length === 0) {
     answers.value = [];
   }
+  updateSelectedAnswer();
+};
+
+const updateSelectedAnswer = () => {
+  updateQueryString();
+  let result = "";
+  if (loading.value) result = "";
+  else if (answers.value.length <= 0) {
+    if (isModified.value) result = "×";
+    else result = "";
+  } else if (isModified.value && answers.value.length <= 0) {
+    result = "";
+  } else {
+    result = answers.value[selectedAnswerId.value].character;
+  }
+  selectedAnswer.value = result;
 };
 
 const updateQueryString = () => {
