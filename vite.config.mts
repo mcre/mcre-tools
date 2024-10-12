@@ -57,7 +57,7 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      external: ["./bin", "./tools", "./backend"],
+      external: ["./bin", "./tools", "./backend", "./src/tests"],
     },
   },
   ssr: {
