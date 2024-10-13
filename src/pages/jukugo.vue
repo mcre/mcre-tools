@@ -173,10 +173,10 @@
       </v-col>
     </v-row>
   </v-container>
-  <v-container v-if="isModified && !hideAnswer">
+  <v-container v-if="isModified && !hideAnswer" id="list-answers">
     <v-row justify="center">
       <v-col cols="12" sm="8" md="6" class="text-end ma-0">
-        <v-chip>
+        <v-chip id="num-of-answers">
           {{ !isModified || loading ? "-" : answers.length }} 候補
         </v-chip>
       </v-col>

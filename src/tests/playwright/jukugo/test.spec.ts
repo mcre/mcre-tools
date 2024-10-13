@@ -5,6 +5,7 @@ const positions = ["top", "left", "right", "bottom"] as const;
 async function jukugoTest(
   page: Page,
   expectedAnswer: string,
+  expectedNumOfAnswers: number,
   inputs: { c: string; reverse?: boolean }[],
 ) {
   for (let i = 0; i < positions.length; i++) {
@@ -14,14 +15,22 @@ async function jukugoTest(
     if (input?.reverse) await page.locator(`#arrow-${pos}`).click();
   }
   const answer = page.locator("#answer");
+  const numOfAnswers = page.locator("#num-of-answers div");
+
+  // 読込中
+  await expect(answer).toHaveValue(""); // 一時的に空欄になる
+  await expect(numOfAnswers).toHaveText(`- 候補`);
+
+  // 読み込み完了
   await expect(answer).toHaveValue(expectedAnswer);
+  await expect(numOfAnswers).toHaveText(`${expectedNumOfAnswers} 候補`);
 }
 
 test.describe.parallel("並列テスト", () => {
   test("「老」", async ({ page }) => {
     await page.goto("/jukugo");
 
-    await jukugoTest(page, "老", [
+    await jukugoTest(page, "老", 3, [
       { c: "長" },
       { c: "海" },
       { c: "化", reverse: true },
@@ -32,11 +41,22 @@ test.describe.parallel("並列テスト", () => {
   test("「海」", async ({ page }) => {
     await page.goto("/jukugo");
 
-    await jukugoTest(page, "海", [
+    await jukugoTest(page, "海", 2, [
       { c: "近" },
       { c: "禁", reverse: true },
       { c: "原", reverse: true },
       { c: "運", reverse: true },
+    ]);
+  });
+
+  test("「×」", async ({ page }) => {
+    await page.goto("/jukugo");
+
+    await jukugoTest(page, "×", 0, [
+      { c: "近" },
+      { c: "禁" },
+      { c: "原" },
+      { c: "運" },
     ]);
   });
 
@@ -59,14 +79,14 @@ test.describe.parallel("並列テスト", () => {
   test("「老」逐次＋リセット", async ({ page }) => {
     await page.goto("/jukugo");
 
-    await jukugoTest(page, "崎", [{ c: "長" }]);
-    await jukugoTest(page, "野", [{ c: "長" }, { c: "海" }]);
-    await jukugoTest(page, "老", [
+    await jukugoTest(page, "崎", 489, [{ c: "長" }]);
+    await jukugoTest(page, "野", 150, [{ c: "長" }, { c: "海" }]);
+    await jukugoTest(page, "老", 22, [
       { c: "長" },
       { c: "海" },
       { c: "化", reverse: true },
     ]);
-    await jukugoTest(page, "老", [
+    await jukugoTest(page, "老", 3, [
       { c: "長" },
       { c: "海" },
       { c: "化" }, // すでにreverse済みなので何もしない
@@ -81,5 +101,41 @@ test.describe.parallel("並列テスト", () => {
     );
     const answer = page.locator("#answer");
     await expect(answer).toHaveValue("");
+  });
+
+  test("「老」＋HIDE", async ({ page }) => {
+    await page.goto("/jukugo");
+    await jukugoTest(page, "老", 3, [
+      { c: "長" },
+      { c: "海" },
+      { c: "化", reverse: true },
+      { c: "舗", reverse: true },
+    ]);
+
+    // ==== hideボタンを押す ====
+    await page.locator("#button-hide button").click();
+
+    // answerなどが表示されない
+    await expect(page.locator("#answer")).not.toBeVisible();
+    await expect(page.locator("#num-of-answers")).not.toBeVisible();
+    await expect(page.locator("#list-answers")).not.toBeVisible();
+
+    // answer-hideが表示される
+    await expect(page.locator("#answer-hide")).toBeVisible();
+
+    // ==== もう一回hideボタンを押す ====
+    await page.locator("#button-hide button").click();
+
+    // answerなどが表示されてる
+    const answer = page.locator("#answer");
+    await expect(answer).toBeVisible();
+    await expect(page.locator("#num-of-answers")).toBeVisible();
+    await expect(page.locator("#list-answers")).toBeVisible();
+
+    // answer-hideが表示されてない
+    await expect(page.locator("#answer-hide")).not.toBeVisible();
+
+    // answerが「老」かどうか
+    await expect(answer).toHaveValue("老");
   });
 });
