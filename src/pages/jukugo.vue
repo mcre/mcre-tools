@@ -310,7 +310,7 @@ import {
 } from "@mdi/js";
 
 let initializing = true;
-const loading = computed(() => inProgress.value.size > 0);
+const loading = ref(false);
 const typing = ref(false);
 const positions = ["top", "bottom", "left", "right"] as const;
 const inputs = ref(Object.fromEntries(positions.map((pos) => [pos, ""])));
@@ -374,13 +374,16 @@ const fetchData = async () => {
       }
     }
   });
+
+  loading.value = true;
   await Promise.all(fetchPromises);
   updateAnswers();
+  loading.value = false;
 };
 
 const toggleHideAnswer = () => {
   hideAnswer.value = !hideAnswer.value;
-  updateQueryString();
+  updateSelectedAnswer();
 };
 
 const updateAnswers = () => {
@@ -437,8 +440,7 @@ const updateAnswers = () => {
 const updateSelectedAnswer = () => {
   updateQueryString();
   let result = "";
-  if (loading.value) result = "";
-  else if (answers.value.length <= 0) {
+  if (answers.value.length <= 0) {
     if (isModified.value) result = "×";
     else result = "";
   } else if (isModified.value && answers.value.length <= 0) {
@@ -470,7 +472,7 @@ const updateQueryString = () => {
 
   if (hideAnswer.value) query.h = "1";
 
-  if (isModified.value && inProgress.value.size == 0 && !hideAnswer.value) {
+  if (isModified.value && !loading.value && !hideAnswer.value) {
     query.a = answers.value[selectedAnswerId.value]
       ? answers.value[selectedAnswerId.value].character
       : "×";
@@ -519,7 +521,7 @@ const initializeFromQueryString = () => {
       } else {
         selectedAnswerId.value = 0;
       }
-      updateQueryString();
+      updateSelectedAnswer();
       unwatch();
     }
   });
