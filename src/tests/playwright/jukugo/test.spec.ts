@@ -28,7 +28,6 @@ async function jukugoTest(
 
   if (expectedQueryParams) {
     // クエリパラメータのチェック
-    await page.waitForTimeout(500); // 必要に応じて調整
     const url = new URL(page.url());
     const actualParams = Object.fromEntries(url.searchParams.entries());
 
@@ -36,7 +35,7 @@ async function jukugoTest(
   }
 }
 
-test.describe.parallel("並列テスト", () => {
+test.describe.parallel("jukugo", () => {
   test("「老」", async ({ page }) => {
     await page.goto("/jukugo");
 
@@ -155,7 +154,7 @@ test.describe.parallel("並列テスト", () => {
     await expect(answer).toHaveValue("");
   });
 
-  test("「老」＋HIDE", async ({ page }) => {
+  test("「老」＋ HIDE", async ({ page }) => {
     await page.goto("/jukugo");
     await jukugoTest(
       page,
@@ -231,5 +230,58 @@ test.describe.parallel("並列テスト", () => {
 
     // answerが「老」かどうか
     await expect(answer).toHaveValue("老");
+  });
+
+  test("「老」＋リストのチェック", async ({ page }) => {
+    await page.goto("/jukugo");
+
+    await jukugoTest(
+      page,
+      "老",
+      3,
+      [
+        { c: "長" },
+        { c: "海" },
+        { c: "化", reverse: true },
+        { c: "舗", reverse: true },
+      ],
+      {
+        t: "長",
+        l: "海",
+        r: "化",
+        b: "舗",
+        ar: "0",
+        ab: "0",
+        a: "老",
+      },
+    );
+
+    await expect(page.locator("#list-answers")).toBeVisible();
+    const items = page.locator("#list-answers .v-list-item");
+
+    // 数を確認
+    await expect(items).toHaveCount(3 + 1);
+
+    // リスト内の2個目をクリックして選択
+    const selectItem = 1;
+    await items.nth(selectItem + 1).click();
+
+    // クリックの反映を確認
+    await expect(page.locator("#answer")).toHaveValue("本");
+    await expect(items.nth(selectItem + 1)).toHaveClass(/v-list-item--active/);
+
+    // クエリパラメータの更新を確認
+    const url = new URL(page.url());
+    const actualParams = Object.fromEntries(url.searchParams.entries());
+    expect(actualParams).toEqual({
+      t: "長",
+      l: "海",
+      r: "化",
+      b: "舗",
+      ar: "0",
+      ab: "0",
+      a: "本",
+      id: `${selectItem}`,
+    });
   });
 });
