@@ -351,8 +351,6 @@ const inProgress = ref(new Set<string>());
 
 const fetchData = async () => {
   if (!initializing) selectedAnswerId.value = 0;
-  updateQueryString();
-
   const fetchPromises = positions.map(async (pos) => {
     const input = inputs.value[pos];
     const arrow = arrows.value[pos];
@@ -376,10 +374,12 @@ const fetchData = async () => {
     }
   });
 
+  updateQueryString();
   updating.value = true;
   await Promise.all(fetchPromises);
   updateAnswers();
   updating.value = false;
+  updateQueryString();
 };
 
 const toggleHideAnswer = () => {

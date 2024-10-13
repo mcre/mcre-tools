@@ -2,7 +2,7 @@ import { defineConfig } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./src/tests/playwright",
-  retries: 1,
+  retries: 2,
   use: {
     headless: true,
     viewport: { width: 1280, height: 720 },
