@@ -310,7 +310,8 @@ import {
 } from "@mdi/js";
 
 let initializing = true;
-const loading = ref(false);
+const updating = ref(false);
+const loading = computed(() => inProgress.value.size > 0 || updating.value);
 const typing = ref(false);
 const positions = ["top", "bottom", "left", "right"] as const;
 const inputs = ref(Object.fromEntries(positions.map((pos) => [pos, ""])));
@@ -375,10 +376,10 @@ const fetchData = async () => {
     }
   });
 
-  loading.value = true;
+  updating.value = true;
   await Promise.all(fetchPromises);
   updateAnswers();
-  loading.value = false;
+  updating.value = false;
 };
 
 const toggleHideAnswer = () => {
@@ -512,7 +513,7 @@ const initializeFromQueryString = () => {
 
   fetchData();
 
-  const unwatch = watch(loading, (newVal) => {
+  const unwatch = watch(updating, (newVal) => {
     if (!newVal) {
       initializing = false;
       const id = Number(route.query.id);
