@@ -99,6 +99,50 @@ test.describe.parallel("jukugo", () => {
     );
   });
 
+  test("矢印ボタンの動作チェック", async ({ page }) => {
+    await page.goto("/jukugo");
+
+    await jukugoTest(
+      page,
+      "海",
+      2,
+      [
+        { c: "近" },
+        { c: "禁", reverse: true },
+        { c: "原", reverse: true },
+        { c: "運", reverse: true },
+      ],
+      {
+        t: "近",
+        l: "禁",
+        r: "原",
+        b: "運",
+        al: "0",
+        ar: "0",
+        ab: "0",
+        a: "海",
+      },
+    );
+
+    await page.locator("#arrow-top").click();
+
+    await expect(page.locator("#answer")).toHaveValue("国");
+
+    const url = new URL(page.url());
+    const actualParams = Object.fromEntries(url.searchParams.entries());
+    expect(actualParams).toEqual({
+      t: "近",
+      l: "禁",
+      r: "原",
+      b: "運",
+      at: "0",
+      al: "0",
+      ar: "0",
+      ab: "0",
+      a: "国",
+    });
+  });
+
   test("「老」クエリパラメータ直接指定", async ({ page }) => {
     await page.goto(
       "/jukugo?t=%E9%95%B7&r=%E5%8C%96&b=%E8%88%97&l=%E6%B5%B7&ar=0&ab=0&a=%E8%80%81",
