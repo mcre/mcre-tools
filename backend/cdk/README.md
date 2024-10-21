@@ -49,14 +49,12 @@ source .venv/bin/activate
 CDK から CloudFormation Template をつくる。
 
 ```
-source ./config/_secrets.sh
 cdk --profile m_cre-super-user synth
 ```
 
 synth が通ったあとはデプロイする
 
 ```
-source ./config/_secrets.sh
 cdk --profile m_cre-super-user deploy --all
 ```
 

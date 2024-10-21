@@ -1,31 +1,42 @@
-import { useHead } from "@unhead/vue";
-import { ToolParams } from "@/router/index";
+import { useI18n } from "vue-i18n";
+import { computed } from "vue";
 
-export const useUtil = () => {
-  const setToolTitle = (toolParams?: ToolParams) => {
-    const site = import.meta.env.VITE_APP_TITLE;
+export const useHeaderUtil = () => {
+  const { t, locale, availableLocales, fallbackLocale } = useI18n();
+  const i18nUtil = useI18nUtil();
 
-    let path: string;
-    let title: string;
-    let iconDir: string;
-    let description: string;
-
-    if (toolParams) {
-      path = toolParams.path;
-      title = toolParams.title + " - " + site;
-      iconDir = toolParams.iconDir;
-      description = toolParams.description;
-    } else {
-      path = "/";
-      title = site;
-      iconDir = "favicon";
-      description = "便利ツールやジョークツールなど、いろいろ置いていきます。";
-    }
+  const getHead = (tool?: string) => {
+    const site = computed(() => t("common.title"));
+    const localeName = computed(() => t("localeName"));
+    const localeValue = computed(() => locale.value);
+    const path = computed(() => (tool ? i18nUtil.path(tool) : "/"));
+    const ogUrl = computed(() => `${distUrl}${path.value}`);
+    const title = computed(() =>
+      tool ? `${t(`tools.${tool}.title`)} - ${site.value}` : site.value,
+    );
+    const iconDir = tool ? tool : "favicon";
+    const description = computed(() =>
+      tool ? t(`tools.${tool}.description`) : t(`common.description`),
+    );
 
     const distUrl = `https://${import.meta.env.VITE_DISTRIBUTION_DOMAIN_NAME}`;
-    useHead({
+
+    return {
+      htmlAttrs: {
+        lang: localeValue,
+      },
       title: title,
       link: [
+        ...availableLocales.map((lang) => ({
+          rel: "alternate",
+          hreflang: lang,
+          href: `${distUrl}/${lang}/${tool ? tool : ""}`,
+        })),
+        {
+          rel: "alternate",
+          hreflang: "x-default",
+          href: `${distUrl}/${fallbackLocale.value}/${tool ? tool : ""}`,
+        },
         {
           id: "favicon-16",
           href: `/img/${iconDir}/16.png`,
@@ -49,12 +60,20 @@ export const useUtil = () => {
           content: description,
         },
         {
+          id: "og-locale",
+          content: localeName,
+        },
+        {
+          id: "og-site-name",
+          content: site,
+        },
+        {
           id: "og-title",
           content: title,
         },
         {
           id: "og-url",
-          content: `${distUrl}${path}`,
+          content: ogUrl,
         },
         {
           id: "og-image",
@@ -77,23 +96,23 @@ export const useUtil = () => {
           content: `${distUrl}/img/${iconDir}/180.png`,
         },
       ],
-    });
+    };
   };
 
-  const updateOgp = (toolParams: ToolParams, ogpImagePath: string) => {
+  const getOgpHead = () => {
+    const route = useRoute();
+
     const distUrl = `https://${import.meta.env.VITE_DISTRIBUTION_DOMAIN_NAME}`;
     const ogpUrl = `https://${import.meta.env.VITE_OGP_DOMAIN_NAME}`;
 
-    const imageFullPath = `${ogpUrl}${ogpImagePath}`;
+    const imageFullPath = computed(() => `${ogpUrl}${route.fullPath}`);
+    const currentFullPath = computed(() => `${distUrl}${route.fullPath}`);
 
-    let currentUrl = `${distUrl}${toolParams.path}`;
-    if (!import.meta.env.SSR) currentUrl = document.documentURI;
-
-    useHead({
+    return {
       meta: [
         {
           id: "og-url",
-          content: currentUrl,
+          content: currentFullPath,
         },
         {
           id: "og-image",
@@ -112,18 +131,11 @@ export const useUtil = () => {
           content: imageFullPath,
         },
       ],
-    });
-  };
-
-  const isKanji = (character: any): boolean => {
-    if (typeof character !== "string") return false;
-    const regex = new RegExp("^[\u4e00-\u9fff]$");
-    return regex.test(character);
+    };
   };
 
   return {
-    setToolTitle,
-    updateOgp,
-    isKanji,
+    getHead,
+    getOgpHead,
   };
 };

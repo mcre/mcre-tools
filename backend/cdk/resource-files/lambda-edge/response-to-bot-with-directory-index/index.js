@@ -11,32 +11,32 @@ const BOTS = [
   'Iframely/1.3.1', // Notion
 ];
 
-const SITE_NAME = '@{APP_TITLE}';
-const TOOLS = @{TOOLS_DEFINITION};
+const LOCALES = @{LOCALES};
 
-const generateContent = ({tool, requestUrl, imageUrl}) => {
+const generateContent = ({ lang, toolName, toolMessages, requestUrl, imageUrl }) => {
+  const siteName = LOCALES[lang].common.title
   return `
     <!doctype html>
-    <html lang="ja">
+    <html lang="${lang}">
     <head>
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <link rel="icon" type="image/png" sizes="16x16" href="/img/${tool.iconDir}/16.png">
-      <link rel="icon" type="image/png" sizes="32x32" href="/img/${tool.iconDir}/32.png">
-      <link rel="apple-touch-icon" sizes="180x180" href="/img/${tool.iconDir}/180.png">
-      <meta name="description" content="${tool.description}">
+      <link rel="icon" type="image/png" sizes="16x16" href="/img/${toolName}/16.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/img/${toolName}/32.png">
+      <link rel="apple-touch-icon" sizes="180x180" href="/img/${toolName}/180.png">
+      <meta name="description" content="${toolMessages.description}">
       <meta property="og:type" content="website" />
-      <meta property="og:locale" content="ja_JP" />
-      <meta property="og:site_name" content="${SITE_NAME}" />
-      <meta property="og:title" content="${tool.title} - ${SITE_NAME}" />
+      <meta property="og:locale" content="${LOCALES[lang].localeName}" />
+      <meta property="og:site_name" content="${siteName}" />
+      <meta property="og:title" content="${toolMessages.title} - ${siteName}" />
       <meta property="og:url" content="${requestUrl}" />
       <meta property="og:image" content="${imageUrl}" />
-      <meta property="og:description" content="${tool.description}" />
+      <meta property="og:description" content="${toolMessages.description}" />
       <meta name="note:card" content="summary_large_image" />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:image" content="${imageUrl}" />
       <meta name="robots" content="all">
-      <title>${tool.title} - ${SITE_NAME}</title>
+      <title>${toolMessages.title} - ${siteName}</title>
     </head>
     <body>
     </body>
@@ -52,15 +52,23 @@ exports.handler = async (event) => {
 
   console.log('URL: ' + uri + ', UA: ' + userAgent + ', QS: ' + queryString);
 
+  let lang = 'ja';
+  const uriLang = uri.split('/')[1];
+  if (Object.keys(LOCALES).includes(uriLang)) {
+    lang = uriLang;
+  }
+
+  const tools = LOCALES[lang]["tools"]
+
   const isBot = BOTS.some((v) => userAgent.includes(v));
   if (isBot && queryString) {
-    const toolKey = Object.keys(TOOLS).find(key => uri.includes(TOOLS[key].params.path));
-    if (toolKey) {
-      const tool = TOOLS[toolKey].params;
+    const toolName = Object.keys(tools).find((tool) => uri.includes("/" + tool));
+    if (toolName) {
+      const toolMessages = tools[toolName];
       const imageUrl = `https://@{DOMAIN_NAME_OGP}${uri}?${queryString}`;
       const requestUrl = `${URL_DIST}${uri}?${queryString}`;
 
-      const body = generateContent({tool, requestUrl, imageUrl});
+      const body = generateContent({ lang, toolName, toolMessages, requestUrl, imageUrl });
 
       return {
         status: '200',

@@ -56,7 +56,6 @@ jobs:
       - run-tests
     outputs:
       PREFIX: ${{ steps.output-step.outputs.PREFIX }}
-      APP_TITLE: ${{ steps.output-step.outputs.APP_TITLE }}
       DOMAIN_NAME_DISTRIBUTION: ${{ steps.output-step.outputs.DOMAIN_NAME_DISTRIBUTION }}
       DOMAIN_NAME_API: ${{ steps.output-step.outputs.DOMAIN_NAME_API }}
       DOMAIN_NAME_OGP: ${{ steps.output-step.outputs.DOMAIN_NAME_OGP }}
@@ -91,7 +90,6 @@ jobs:
           STACK_NAME=$(jq -r 'keys[0]' cdk-outputs.json)
           STACK_NAME_US=$(jq -r 'keys[1]' cdk-outputs.json)
           PREFIX=$(jq -r --arg STACK_NAME "$STACK_NAME" '.[$STACK_NAME].Prefix' cdk-outputs.json)
-          APP_TITLE=$(jq -r --arg STACK_NAME "$STACK_NAME" '.[$STACK_NAME].AppTitle' cdk-outputs.json)
           DOMAIN_NAME_API=$(jq -r --arg STACK_NAME "$STACK_NAME" '.[$STACK_NAME].DomainNameApi' cdk-outputs.json)
           DOMAIN_NAME_OGP=$(jq -r --arg STACK_NAME "$STACK_NAME" '.[$STACK_NAME].DomainNameOgp' cdk-outputs.json)
           LAMBDA_FUNCTIONS=$(jq -r --arg STACK_NAME "$STACK_NAME" '.[$STACK_NAME].LambdaFunctions' cdk-outputs.json)
@@ -99,7 +97,6 @@ jobs:
           BUCKET_DISTRIBUTION=$(jq -r --arg STACK_NAME_US "$STACK_NAME_US" '.[$STACK_NAME_US].BucketDistribution' cdk-outputs.json)
           DOMAIN_NAME_DISTRIBUTION=$(jq -r --arg STACK_NAME_US "$STACK_NAME_US" '.[$STACK_NAME_US].DomainNameDistribution' cdk-outputs.json)
           echo "PREFIX=${PREFIX}" >> $GITHUB_OUTPUT
-          echo "APP_TITLE=${APP_TITLE}" >> $GITHUB_OUTPUT
           echo "DOMAIN_NAME_API=${DOMAIN_NAME_API}" >> $GITHUB_OUTPUT
           echo "DOMAIN_NAME_OGP=${DOMAIN_NAME_OGP}" >> $GITHUB_OUTPUT
           echo "CLOUDFRONT_DISTRIBUTION=${CLOUDFRONT_DISTRIBUTION}" >> $GITHUB_OUTPUT
@@ -156,7 +153,6 @@ jobs:
 
       - name: Write CDK outputs to .env.production
         run: |
-          sed -i 's/^VITE_APP_TITLE=.*/VITE_APP_TITLE=${{ needs.deploy-cdk.outputs.APP_TITLE }}/' .env.production
           sed -i 's/^VITE_DISTRIBUTION_DOMAIN_NAME=.*/VITE_DISTRIBUTION_DOMAIN_NAME=${{ needs.deploy-cdk.outputs.DOMAIN_NAME_DISTRIBUTION }}/' .env.production
           sed -i 's/^VITE_API_DOMAIN_NAME=.*/VITE_API_DOMAIN_NAME=${{ needs.deploy-cdk.outputs.DOMAIN_NAME_API }}/' .env.production
           sed -i 's/^VITE_OGP_DOMAIN_NAME=.*/VITE_OGP_DOMAIN_NAME=${{ needs.deploy-cdk.outputs.DOMAIN_NAME_OGP }}/' .env.production

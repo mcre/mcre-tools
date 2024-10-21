@@ -16,7 +16,7 @@
 const model = defineModel<string>();
 const emits = defineEmits(["input", "update:typing"]);
 
-const util = useUtil();
+const jukugoUtil = useJukugoUtil();
 
 const isKanjiValid = ref(true);
 const typing = ref(false);
@@ -25,7 +25,7 @@ const validateKanji = (value: string) => {
   if (!value || value === "") {
     isKanjiValid.value = true;
   } else {
-    isKanjiValid.value = util.isKanji(value);
+    isKanjiValid.value = jukugoUtil.isKanji(value);
   }
 };
 

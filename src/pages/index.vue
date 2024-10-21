@@ -2,12 +2,12 @@
   <v-container>
     <v-row>
       <v-col cols="12">
-        <h1>MCRE TOOLS</h1>
+        <h1>{{ $t("common.title") }}</h1>
       </v-col>
     </v-row>
     <v-row>
       <v-col cols="12">
-        <p>便利ツールやジョークツールなど、いろいろ置いていきます。</p>
+        <p>{{ $t("common.description") }}</p>
       </v-col>
     </v-row>
   </v-container>
@@ -15,25 +15,20 @@
     <v-row>
       <v-col cols="12">
         <h2>
-          <v-icon start> {{ mdiToolbox }} </v-icon>ツール一覧
+          <v-icon start> {{ mdiToolbox }} </v-icon>{{ $t("index.toolList") }}
         </h2>
       </v-col>
     </v-row>
     <v-row>
-      <v-col cols="12" v-for="(tool, key) in tools" :key="key">
+      <v-col cols="12" v-for="tool in tools" :key="tool">
         <v-card
-          :title="tool.params.title"
-          :subtitle="tool.params.descriptionShort"
-          :to="tool.params.path"
+          :title="$t(`tools.${tool}.title`)"
+          :subtitle="$t(`tools.${tool}.descriptionShort`)"
+          :to="i18nUtil.path(tool)"
         >
           <template v-slot:prepend>
             <v-avatar size="32">
-              <img
-                :src="`/img/${tool.params.iconDir}/32.png`"
-                alt=""
-                width="32"
-                height="32"
-              />
+              <img :src="`/img/${tool}/32.png`" alt="" width="32" height="32" />
             </v-avatar>
           </template>
         </v-card>
@@ -47,17 +42,17 @@
           <v-icon start class="mb-1">
             {{ mdiScaleBalance }}
           </v-icon>
-          利用規約
+          {{ $t("index.termsOfUse") }}
         </h2>
       </v-col>
     </v-row>
     <v-row>
       <v-col cols="12">
         <p>
-          当ウェブサイトで提供されるサービスやコンテンツは、あくまで参考としてご利用ください。その正確性や信頼性については保証いたしかねますので、利用者ご自身の判断と責任でご利用ください。
+          {{ $t("index.termsOfUseDescription1") }}
         </p>
         <p>
-          また、当サイトの利用に関連して生じた損害等に関して、運営者は一切の責任を負いません。予告なく内容の変更や提供の終了を行うことがありますので、あらかじめご了承ください。
+          {{ $t("index.termsOfUseDescription2") }}
         </p>
       </v-col>
     </v-row>
@@ -69,7 +64,7 @@
           <v-icon start class="mb-1">
             {{ mdiInformationOutline }}
           </v-icon>
-          参考情報
+          {{ $t("index.referenceInformation") }}
         </h2>
       </v-col>
     </v-row>
@@ -83,7 +78,7 @@
           :icon="mdiAccountCircle"
           size="small"
         />
-        作者について
+        {{ $t("index.aboutTheCreator") }}
       </v-col>
       <v-col cols="12" sm="4">
         <v-btn
@@ -94,7 +89,7 @@
           :icon="mdiGithub"
           size="small"
         />
-        ソースコード・要望
+        {{ $t("index.sourceCodes") }}
       </v-col>
       <v-col cols="12" sm="4">
         <v-btn
@@ -105,15 +100,18 @@
           :icon="mdiCertificateOutline"
           size="small"
         />
-        ライセンスに関して
+        {{ $t("index.aboutLicenses") }}
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script lang="ts" setup>
-const util = useUtil();
-util.setToolTitle();
+import { useHead } from "@unhead/vue";
+const headerUtil = useHeaderUtil();
+useHead(headerUtil.getHead());
+
+const i18nUtil = useI18nUtil();
 
 import {
   mdiToolbox,

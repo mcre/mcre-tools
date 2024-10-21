@@ -20,11 +20,11 @@ async function jukugoTest(
 
   // 読込中
   await expect(answer).toHaveValue(""); // 一時的に空欄になる
-  await expect(numOfAnswers).toHaveText(`- 候補`);
+  await expect(numOfAnswers).toHaveText(`候補数: -`);
 
   // 読み込み完了
   await expect(answer).toHaveValue(expectedAnswer);
-  await expect(numOfAnswers).toHaveText(`${expectedNumOfAnswers} 候補`);
+  await expect(numOfAnswers).toHaveText(`候補数: ${expectedNumOfAnswers}`);
 
   if (expectedQueryParams) {
     // クエリパラメータのチェック
@@ -37,7 +37,7 @@ async function jukugoTest(
 
 test.describe.parallel("jukugo", () => {
   test("「老」", async ({ page }) => {
-    await page.goto("/jukugo");
+    await page.goto("/ja/jukugo");
 
     await jukugoTest(
       page,
@@ -62,7 +62,7 @@ test.describe.parallel("jukugo", () => {
   });
 
   test("「海」", async ({ page }) => {
-    await page.goto("/jukugo");
+    await page.goto("/ja/jukugo");
 
     await jukugoTest(
       page,
@@ -88,7 +88,7 @@ test.describe.parallel("jukugo", () => {
   });
 
   test("「×」", async ({ page }) => {
-    await page.goto("/jukugo");
+    await page.goto("/ja/jukugo");
 
     await jukugoTest(
       page,
@@ -100,7 +100,7 @@ test.describe.parallel("jukugo", () => {
   });
 
   test("矢印ボタンの動作チェック", async ({ page }) => {
-    await page.goto("/jukugo");
+    await page.goto("/ja/jukugo");
 
     await jukugoTest(
       page,
@@ -145,7 +145,7 @@ test.describe.parallel("jukugo", () => {
 
   test("「老」クエリパラメータ直接指定", async ({ page }) => {
     await page.goto(
-      "/jukugo?t=%E9%95%B7&r=%E5%8C%96&b=%E8%88%97&l=%E6%B5%B7&ar=0&ab=0&a=%E8%80%81",
+      "/ja/jukugo?t=%E9%95%B7&r=%E5%8C%96&b=%E8%88%97&l=%E6%B5%B7&ar=0&ab=0&a=%E8%80%81",
     );
     const answer = page.locator("#answer");
     await expect(answer).toHaveValue("老");
@@ -153,14 +153,14 @@ test.describe.parallel("jukugo", () => {
 
   test("「老」ID含むクエリパラメータ直接指定", async ({ page }) => {
     await page.goto(
-      "/jukugo?t=%E9%95%B7&r=%E5%8C%96&b=%E8%88%97&l=%E6%B5%B7&ar=0&ab=0&id=1&a=%E8%80%81",
+      "/ja/jukugo?t=%E9%95%B7&r=%E5%8C%96&b=%E8%88%97&l=%E6%B5%B7&ar=0&ab=0&id=1&a=%E8%80%81",
     );
     const answer = page.locator("#answer");
     await expect(answer).toHaveValue("本");
   });
 
   test("「老」逐次＋リセット", async ({ page }) => {
-    await page.goto("/jukugo");
+    await page.goto("/ja/jukugo");
 
     await jukugoTest(page, "崎", 489, [{ c: "長" }], { t: "長", a: "崎" });
     await jukugoTest(page, "野", 150, [{ c: "長" }, { c: "海" }], {
@@ -199,7 +199,7 @@ test.describe.parallel("jukugo", () => {
   });
 
   test("「老」＋ HIDE", async ({ page }) => {
-    await page.goto("/jukugo");
+    await page.goto("/ja/jukugo");
     await jukugoTest(
       page,
       "老",
@@ -277,7 +277,7 @@ test.describe.parallel("jukugo", () => {
   });
 
   test("「老」＋リストのチェック", async ({ page }) => {
-    await page.goto("/jukugo");
+    await page.goto("/ja/jukugo");
 
     await jukugoTest(
       page,

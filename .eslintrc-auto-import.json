@@ -74,6 +74,9 @@
     "routerOptions": true,
     "DirectiveBinding": true,
     "MaybeRef": true,
-    "MaybeRefOrGetter": true
+    "MaybeRefOrGetter": true,
+    "useHeaderUtil": true,
+    "useJukugoUtil": true,
+    "useI18nUtil": true
   }
 }

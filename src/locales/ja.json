@@ -1,0 +1,34 @@
+{
+  "languageName": "日本語",
+  "localeName": "ja_JP",
+  "common": {
+    "title": "MCRE TOOLS",
+    "moveToHome": "トップページへ移動",
+    "toggleMenu": "メニューを開閉する",
+    "description": "便利ツールやジョークツールなど、いろいろ置いていきます。"
+  },
+  "index": {
+    "toolList": "ツール一覧",
+    "referenceInformation": "参考情報",
+    "aboutTheCreator": "作者について",
+    "sourceCodes": "ソースコード",
+    "aboutLicenses": "ライセンスに関して",
+    "termsOfUse": "利用規約",
+    "termsOfUseDescription1": "当ウェブサイトで提供されるサービスやコンテンツは、あくまで参考としてご利用ください。その正確性や信頼性については保証いたしかねますので、利用者ご自身の判断と責任でご利用ください。",
+    "termsOfUseDescription2": "また、当サイトの利用に関連して生じた損害等に関して、運営者は一切の責任を負いません。予告なく内容の変更や提供の終了を行うことがありますので、あらかじめご了承ください。"
+  },
+  "notFound": {
+    "title": "このページは存在しません",
+    "returnToHome": "トップページに戻る"
+  },
+  "tools": {
+    "jukugo": {
+      "title": "熟語パズル",
+      "descriptionShort": "和同開珎を自動で解きます",
+      "description": "上下左右4つの漢字から真ん中の漢字を当てるパズル、いわゆる「和同開珎」を自動で解くツール（ソルバー）です。",
+      "numOfCandidates": "候補数",
+      "transitionNotice": "こちらは「熟語パズル」の新しいサイトです。<br />旧サイトから転送されてきた場合は、ブックマークの変更をお願いします。",
+      "arrowDescription": "<span class=\"text-decoration-underline\">矢印</span>はタップすると逆向きに変更できます。"
+    }
+  }
+}

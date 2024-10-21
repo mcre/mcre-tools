@@ -1,12 +1,12 @@
 import { describe, it, expect, vi } from "vitest";
-import { useUtil } from "@/composables/util";
+import { useJukugoUtil } from "@/utils/jukugoUtil";
 
 vi.mock("@unhead/vue", () => ({
   useHead: vi.fn(),
 }));
 
-describe("useUtil composable", () => {
-  const { isKanji } = useUtil();
+describe("useJukugoUtil", () => {
+  const { isKanji } = useJukugoUtil();
 
   describe("isKanji", () => {
     it("何も入力していない場合はfalse", () => {

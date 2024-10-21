@@ -1,63 +1,56 @@
 import { RouterOptions } from "vite-ssg";
+import { availableLocales } from "@/plugins/i18n";
+
+import Layout from "@/layouts/default.vue";
+
 import Index from "@/pages/index.vue";
 import NotFound from "@/pages/not-found.vue";
 
-export type ToolParams = {
-  title: string;
-  path: string;
-  iconDir: string;
-  descriptionShort: string;
-  description: string;
-};
-
-export type Tool = {
-  component: Component;
-  params: ToolParams;
-};
-
-type Tools = {
-  [key: string]: Tool;
-};
-
 import Jukugo from "@/pages/jukugo.vue";
 
-// CDKからtoolsの定義を文字列として読み込んでLambda@Edgeに埋め込んでいるの更新する場合は注意
-export const tools: Tools = {
-  jukugo: {
-    component: Jukugo,
-    params: {
-      title: "熟語パズル",
-      path: "/jukugo",
-      iconDir: "jukugo",
-      descriptionShort: "和同開珎を自動で解きます",
-      description:
-        "上下左右4つの漢字から真ん中の漢字を当てるパズル、いわゆる「和同開珎」を自動で解くツール（ソルバー）です。",
-    },
-  },
+const toolsComponents: { [key: string]: Component } = {
+  jukugo: Jukugo,
+};
+export const tools = Object.keys(toolsComponents);
+
+const generateRoutes = () => {
+  const routes = [];
+
+  for (const locale of availableLocales) {
+    const children = [];
+    children.push({ path: "", component: Index });
+
+    for (const path in toolsComponents) {
+      if (toolsComponents.hasOwnProperty(path)) {
+        children.push({ path, component: toolsComponents[path] });
+      }
+    }
+
+    children.push({ path: ":pathMatch(.*)*", component: NotFound });
+    routes.push({
+      path: `/${locale}/`,
+      component: Layout,
+      children,
+    });
+  }
+
+  routes.push({
+    path: "/",
+    component: Layout,
+  });
+
+  return routes;
 };
 
 export const routerOptions: RouterOptions = {
-  routes: [
-    { path: "/", name: "index", component: Index },
-    ...Object.keys(tools).map((key) => ({
-      path: tools[key].params.path,
-      name: key,
-      component: tools[key].component,
-    })),
-    {
-      path: "/:pathMatch(.*)*",
-      component: NotFound,
-    },
-  ],
+  routes: generateRoutes(),
   scrollBehavior(to, from, savedPosition) {
     return new Promise((resolve) => {
-      nextTick(() => {
-        if (to.hash) {
-          resolve({ el: to.hash });
-        } else if (from.path != to.path) {
-          return { top: 0 };
-        }
-      });
+      if (to.hash) {
+        resolve({ el: to.hash });
+      } else if (from.path !== to.path) {
+        resolve({ top: 0 });
+      }
     });
   },
 };

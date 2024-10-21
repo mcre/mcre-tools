@@ -120,7 +120,11 @@ def get_jukugo(query_strings):
 def main(event, context):
     m, l, a, q = u.parse_request(event)
     try:
-        if m == "GET" and l == 1 and a[0] == "jukugo":
+        if m == "GET" and (l == 2 and a[1] == "jukugo"):
+            locale = a[0]  # 未使用
+            return get_jukugo(q)
+        elif m == "GET" and (l == 1 and a[0] == "jukugo"):
+            locale = "ja"  # 未使用
             return get_jukugo(q)
     except Exception as e:
         u.logger.exception("API処理中にエラー")

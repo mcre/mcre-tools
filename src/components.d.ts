@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     JukugoArrowButton: typeof import('./components/JukugoArrowButton.vue')['default']
     JukugoCharacterField: typeof import('./components/JukugoCharacterField.vue')['default']
+    LanguageSwitcher: typeof import('./components/LanguageSwitcher.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     XShareButton: typeof import('./components/XShareButton.vue')['default']

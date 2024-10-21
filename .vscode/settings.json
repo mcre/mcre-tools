@@ -8,6 +8,7 @@
     "botocore",
     "CBZA",
     "certificatemanager",
+    "changefreq",
     "compositionend",
     "compositionstart",
     "edgelambda",
@@ -20,6 +21,7 @@
     "ipadic",
     "jigyosyo",
     "jukugo",
+    "Kaichin",
     "materialdesignicons",
     "mebibytes",
     "mecab",
@@ -48,6 +50,7 @@
     "venv",
     "VITE",
     "vitest",
+    "Wado",
     "wght"
   ]
 }

@@ -3,8 +3,7 @@
     <v-row>
       <v-col cols="12">
         <v-alert variant="tonal" color="primary" density="comfortable">
-          こちらは「熟語パズル」の新しいサイトです。<br />
-          旧サイトから転送されてきた場合は、ブックマークの変更をお願いします。
+          <span v-html="$t(`tools.${tool}.transitionNotice`)" />
         </v-alert>
       </v-col>
     </v-row>
@@ -13,27 +12,19 @@
     <v-row class="align-center">
       <v-col cols="auto">
         <v-avatar size="32">
-          <img
-            :src="`/img/${tool.params.iconDir}/32.png`"
-            alt=""
-            width="32"
-            height="32"
-          />
+          <img :src="`/img/${tool}/32.png`" alt="" width="32" height="32" />
         </v-avatar>
       </v-col>
       <v-col>
-        <h1>{{ tool.params.title }}</h1>
+        <h1>{{ $t(`tools.${tool}.title`) }}</h1>
       </v-col>
     </v-row>
     <v-row>
       <v-col cols="12">
         <p>
-          {{ tool.params.description }}
+          {{ $t(`tools.${tool}.description`) }}
         </p>
-        <p class="text-caption">
-          <span class="text-decoration-underline">矢印</span>
-          はタップすると逆向きに変更できます。
-        </p>
+        <p class="text-caption" v-html="$t(`tools.${tool}.arrowDescription`)" />
       </v-col>
     </v-row>
   </v-container>
@@ -177,7 +168,8 @@
     <v-row justify="center">
       <v-col cols="12" sm="8" md="6" class="text-end ma-0">
         <v-chip id="num-of-answers">
-          {{ !isModified || loading ? "-" : answers.length }} 候補
+          {{ $t(`tools.${tool}.numOfCandidates`) }}:&nbsp;
+          {{ !isModified || loading ? "-" : answers.length }}
         </v-chip>
       </v-col>
     </v-row>
@@ -221,7 +213,7 @@
               </template>
               <v-row>
                 <v-col cols="3" class="text-center">
-                  <span v-if="inputs.top && util.isKanji(inputs.top)">
+                  <span v-if="inputs.top && jukugoUtil.isKanji(inputs.top)">
                     {{
                       arrows.top
                         ? `${inputs.top}${item.character}`
@@ -230,7 +222,7 @@
                   </span>
                 </v-col>
                 <v-col cols="3" class="text-center">
-                  <span v-if="inputs.right && util.isKanji(inputs.right)">
+                  <span v-if="inputs.right && jukugoUtil.isKanji(inputs.right)">
                     {{
                       arrows.right
                         ? `${inputs.right}${item.character}`
@@ -239,7 +231,9 @@
                   </span>
                 </v-col>
                 <v-col cols="3" class="text-center">
-                  <span v-if="inputs.bottom && util.isKanji(inputs.bottom)">
+                  <span
+                    v-if="inputs.bottom && jukugoUtil.isKanji(inputs.bottom)"
+                  >
                     {{
                       arrows.bottom
                         ? `${inputs.bottom}${item.character}`
@@ -248,7 +242,7 @@
                   </span>
                 </v-col>
                 <v-col cols="3" class="text-center">
-                  <span v-if="inputs.left && util.isKanji(inputs.left)">
+                  <span v-if="inputs.left && jukugoUtil.isKanji(inputs.left)">
                     {{
                       arrows.left
                         ? `${inputs.left}${item.character}`
@@ -293,10 +287,14 @@ import dayjs from "dayjs";
 
 const route = useRoute();
 const router = useRouter();
-const tool = tools.jukugo;
+const tool = "jukugo";
 
-const util = useUtil();
-util.setToolTitle(tool.params);
+import { useHead } from "@unhead/vue";
+const headerUtil = useHeaderUtil();
+useHead(headerUtil.getHead(tool));
+useHead(headerUtil.getOgpHead());
+
+const jukugoUtil = useJukugoUtil();
 
 import {
   mdiEye,
@@ -355,7 +353,7 @@ const fetchData = async () => {
     const input = inputs.value[pos];
     const arrow = arrows.value[pos];
 
-    if (input && util.isKanji(input)) {
+    if (input && jukugoUtil.isKanji(input)) {
       const key = `${input}-${arrow}`;
       if (!apiResults[key] && !inProgress.value.has(key)) {
         inProgress.value.add(key);
@@ -366,7 +364,7 @@ const fetchData = async () => {
             [direction].$get();
           apiResults[key] = result;
         } catch (error) {
-          console.error(`${pos}のfetchに失敗`);
+          console.error(`${pos} fetch fails`);
         } finally {
           inProgress.value.delete(key);
         }
@@ -455,10 +453,10 @@ const updateSelectedAnswer = () => {
 const updateQueryString = () => {
   const query: Record<string, string> = {};
 
-  if (util.isKanji(inputs.value.top)) query.t = inputs.value.top;
-  if (util.isKanji(inputs.value.right)) query.r = inputs.value.right;
-  if (util.isKanji(inputs.value.bottom)) query.b = inputs.value.bottom;
-  if (util.isKanji(inputs.value.left)) query.l = inputs.value.left;
+  if (jukugoUtil.isKanji(inputs.value.top)) query.t = inputs.value.top;
+  if (jukugoUtil.isKanji(inputs.value.right)) query.r = inputs.value.right;
+  if (jukugoUtil.isKanji(inputs.value.bottom)) query.b = inputs.value.bottom;
+  if (jukugoUtil.isKanji(inputs.value.left)) query.l = inputs.value.left;
 
   if (!arrows.value.top) query.at = "0";
   if (!arrows.value.right) query.ar = "0";
@@ -481,26 +479,19 @@ const updateQueryString = () => {
 
   // URLクエリの更新
   router.push({ query });
-
-  // OGPの更新
-  let path = route.fullPath;
-  if (route.fullPath != route.name) {
-    path = `${route.fullPath}`;
-  }
-  util.updateOgp(tool.params, path);
 };
 
 const initializeFromQueryString = () => {
-  inputs.value.top = util.isKanji(route.query.t)
+  inputs.value.top = jukugoUtil.isKanji(route.query.t)
     ? route.query.t?.toString() || ""
     : "";
-  inputs.value.right = util.isKanji(route.query.r)
+  inputs.value.right = jukugoUtil.isKanji(route.query.r)
     ? route.query.r?.toString() || ""
     : "";
-  inputs.value.bottom = util.isKanji(route.query.b)
+  inputs.value.bottom = jukugoUtil.isKanji(route.query.b)
     ? route.query.b?.toString() || ""
     : "";
-  inputs.value.left = util.isKanji(route.query.l)
+  inputs.value.left = jukugoUtil.isKanji(route.query.l)
     ? route.query.l?.toString() || ""
     : "";
 
