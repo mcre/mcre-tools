@@ -34,8 +34,9 @@ export const createApp = ViteSSG(
           next(); // そのまま進む
         } else {
           // ロケールがない場合、デフォルトにリダイレクト
+          const toPath = to.path == "/" ? "" : to.path;
           return next({
-            path: `/${defaultLocale}${to.path}`,
+            path: `/${defaultLocale}${toPath}`,
             query: to.query,
             hash: to.hash,
           });

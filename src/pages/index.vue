@@ -42,7 +42,7 @@
           <v-icon start class="mb-1">
             {{ mdiScaleBalance }}
           </v-icon>
-          {{ $t("index.termsOfUse") }}
+          <span id="termsOfUseTitle">{{ $t("index.termsOfUse") }}</span>
         </h2>
       </v-col>
     </v-row>

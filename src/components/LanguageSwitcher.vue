@@ -2,13 +2,19 @@
   <v-container>
     <v-menu offset-y>
       <template v-slot:activator="{ props }">
-        <v-btn :icon="mdiTranslate" size="small" v-bind="props" />
+        <v-btn
+          :icon="mdiTranslate"
+          size="small"
+          v-bind="props"
+          id="language-switcher-button"
+        />
       </template>
       <v-list>
         <v-list-item
           v-for="(lang, index) in availableLocales"
           :key="index"
           @click="changeLanguage(lang)"
+          :id="`language-option-${lang}`"
         >
           <v-list-item-title>
             {{ messages[lang]?.languageName }}
