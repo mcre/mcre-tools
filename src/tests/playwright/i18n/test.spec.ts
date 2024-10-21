@@ -34,6 +34,14 @@ test.describe("i18n", () => {
     await expect(page).toHaveURL("/ja/jukugo");
     await expect(page.locator("h1")).toHaveText("熟語パズル");
 
+    await page.goto(
+      "/jukugo?t=%E9%95%B7&r=%E5%8C%96&b=%E8%88%97&l=%E6%B5%B7&ar=0&ab=0&a=%E8%80%81",
+    );
+    await expect(page).toHaveURL(
+      "/ja/jukugo?t=%E9%95%B7&r=%E5%8C%96&b=%E8%88%97&l=%E6%B5%B7&ar=0&ab=0&a=%E8%80%81",
+    );
+    await expect(page.locator("h1")).toHaveText("熟語パズル");
+
     await page.goto("/");
     await expect(page).toHaveURL("/ja");
     await expect(page.locator("#termsOfUseTitle")).toHaveText("利用規約");
