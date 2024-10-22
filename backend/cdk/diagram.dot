@@ -1,0 +1,513 @@
+digraph "Diagram" {
+  splines = "ortho";
+  pad = "1.0";
+  nodesep = "0.60";
+  ranksep = "0.75";
+  fontname = "Sans-Serif";
+  fontsize = "15";
+  dpi = "200";
+  rankdir = "BT";
+  compound = "true";
+  fontcolor = "#222222";
+  edge [
+    color = "#D5871488",
+    penwidth = 2,
+    arrowhead = "dot",
+    arrowtail = "dot",
+  ];
+  node [
+    shape = "box",
+    style = "rounded",
+    fixedsize = true,
+    width = 1.7,
+    height = 1.7,
+    labelloc = "c",
+    imagescale = true,
+    fontname = "Sans-Serif",
+    fontsize = 8,
+    margin = 8,
+  ];
+  subgraph "App" {
+    subgraph "cluster-SubGraph.App" {
+      graph [
+        label = "App",
+        labelloc = "b",
+        labeljust = "l",
+        margin = "10",
+        fontsize = "16",
+        penwidth = "2",
+        pencolor = "#888888",
+        style = "filled,rounded",
+        fillcolor = "#f3f3f3",
+      ];
+      subgraph "cluster-SubGraph.mcre-tools-stack" {
+        graph [
+          label = "mcre-tools-stack",
+          labelloc = "b",
+          labeljust = "l",
+          margin = "10",
+          fontsize = "16",
+          penwidth = "2",
+          pencolor = "#888888",
+          style = "filled,rounded",
+          fillcolor = "#e4e4e4",
+        ];
+        "mcre-tools-stack/dynamodb-primary" [
+          label = " dynamodb-primary",
+          fontsize = 12,
+          image = "/Users/fujitashinya/.nodebrew/node/v20.11.0/lib/node_modules/cdk-dia/icons/aws/Service/Arch_Database/64/Arch_Amazon-DynamoDB_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 1.2,
+          height = 1.466,
+        ];
+        "mcre-tools-stack/s3-bucket-ogp" [
+          label = " s3-bucket-ogp",
+          fontsize = 12,
+          image = "/Users/fujitashinya/.nodebrew/node/v20.11.0/lib/node_modules/cdk-dia/icons/aws/Service/Arch_Storage/64/Arch_Amazon-S3-Standard_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 2,
+          height = 2.266,
+        ];
+        "mcre-tools-stack/lambda-layer-pillow" [
+          label = " lambda-layer-pillow",
+          fontsize = 12,
+          image = "/Users/fujitashinya/.nodebrew/node/v20.11.0/lib/node_modules/cdk-dia/icons/aws/Service/Arch_Compute/64/Arch_AWS-Lambda_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 2,
+          height = 2.266,
+        ];
+        "mcre-tools-stack/iam-role-lambda-api" [
+          label = " iam-role-lambda-api",
+          fontsize = 12,
+          image = "/Users/fujitashinya/.nodebrew/node/v20.11.0/lib/node_modules/cdk-dia/icons/aws/Service/Arch_Security-Identity-Compliance/64/Arch_AWS-Identity-and-Access-Management_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 1.2,
+          height = 1.466,
+        ];
+        "mcre-tools-stack/lambda-function-api" [
+          label = " lambda-function-api",
+          fontsize = 12,
+          image = "/Users/fujitashinya/.nodebrew/node/v20.11.0/lib/node_modules/cdk-dia/icons/aws/Service/Arch_Compute/64/Arch_AWS-Lambda_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 2,
+          height = 2.266,
+        ];
+        "mcre-tools-stack/iam-role-lambda-ogp" [
+          label = " iam-role-lambda-ogp",
+          fontsize = 12,
+          image = "/Users/fujitashinya/.nodebrew/node/v20.11.0/lib/node_modules/cdk-dia/icons/aws/Service/Arch_Security-Identity-Compliance/64/Arch_AWS-Identity-and-Access-Management_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 1.2,
+          height = 1.466,
+        ];
+        "mcre-tools-stack/lambda-function-ogp" [
+          label = " lambda-function-ogp",
+          fontsize = 12,
+          image = "/Users/fujitashinya/.nodebrew/node/v20.11.0/lib/node_modules/cdk-dia/icons/aws/Service/Arch_Compute/64/Arch_AWS-Lambda_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 2,
+          height = 2.266,
+        ];
+        "mcre-tools-stack/acm-certificate-api" [
+          label = " acm-certificate-api",
+          fontsize = 12,
+          image = "/Users/fujitashinya/.nodebrew/node/v20.11.0/lib/node_modules/cdk-dia/icons/aws/Service/Arch_Security-Identity-Compliance/64/Arch_AWS-Certificate-Manager_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 1.2,
+          height = 1.466,
+        ];
+        "mcre-tools-stack/api-gateway-api" [
+          label = " api-gateway-api",
+          fontsize = 12,
+          image = "/Users/fujitashinya/.nodebrew/node/v20.11.0/lib/node_modules/cdk-dia/icons/aws/Service/Arch_Networking-Content/64/Arch_Amazon-API-Gateway_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 1.2,
+          height = 1.466,
+        ];
+        "mcre-tools-stack/api-gateway-domain-api" [
+          label = " api gateway domain\napi",
+          fontsize = 12,
+          image = "/Users/fujitashinya/.nodebrew/node/v20.11.0/lib/node_modules/cdk-dia/icons/aws/Service/Arch_Storage/64/Arch_AWS-Storage-Gateway_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 2,
+          height = 2.4819999999999998,
+        ];
+        "mcre-tools-stack/base-path-mapping-api" [
+          label = "\nbase-path-mapping-api",
+          fontsize = 12,
+          image = "/Users/fujitashinya/.nodebrew/node/v20.11.0/lib/node_modules/cdk-dia/icons/aws/Service/Arch_Networking-Content/64/Arch_Amazon-API-Gateway_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 1.2,
+          height = 1.682,
+        ];
+        "mcre-tools-stack/api-gateway-a-record-api" [
+          label = " api gateway a record\napi",
+          fontsize = 12,
+          image = "/Users/fujitashinya/.nodebrew/node/v20.11.0/lib/node_modules/cdk-dia/icons/aws/Resource/Res_Networking-and-Content-Delivery/Res_48_Dark/Res_Amazon-Route-53-Hosted-Zone_48_Dark_gen.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 1.2,
+          height = 1.682,
+        ];
+        "mcre-tools-stack/acm-certificate-ogp" [
+          label = " acm-certificate-ogp",
+          fontsize = 12,
+          image = "/Users/fujitashinya/.nodebrew/node/v20.11.0/lib/node_modules/cdk-dia/icons/aws/Service/Arch_Security-Identity-Compliance/64/Arch_AWS-Certificate-Manager_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 1.2,
+          height = 1.466,
+        ];
+        "mcre-tools-stack/api-gateway-ogp" [
+          label = " api-gateway-ogp",
+          fontsize = 12,
+          image = "/Users/fujitashinya/.nodebrew/node/v20.11.0/lib/node_modules/cdk-dia/icons/aws/Service/Arch_Networking-Content/64/Arch_Amazon-API-Gateway_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 1.2,
+          height = 1.466,
+        ];
+        "mcre-tools-stack/api-gateway-domain-ogp" [
+          label = " api gateway domain\nogp",
+          fontsize = 12,
+          image = "/Users/fujitashinya/.nodebrew/node/v20.11.0/lib/node_modules/cdk-dia/icons/aws/Service/Arch_Storage/64/Arch_AWS-Storage-Gateway_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 2,
+          height = 2.4819999999999998,
+        ];
+        "mcre-tools-stack/base-path-mapping-ogp" [
+          label = "\nbase-path-mapping-ogp",
+          fontsize = 12,
+          image = "/Users/fujitashinya/.nodebrew/node/v20.11.0/lib/node_modules/cdk-dia/icons/aws/Service/Arch_Networking-Content/64/Arch_Amazon-API-Gateway_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 1.2,
+          height = 1.682,
+        ];
+        "mcre-tools-stack/api-gateway-a-record-ogp" [
+          label = " api gateway a record\nogp",
+          fontsize = 12,
+          image = "/Users/fujitashinya/.nodebrew/node/v20.11.0/lib/node_modules/cdk-dia/icons/aws/Resource/Res_Networking-and-Content-Delivery/Res_48_Dark/Res_Amazon-Route-53-Hosted-Zone_48_Dark_gen.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 1.2,
+          height = 1.682,
+        ];
+        "mcre-tools-stack/iam-role-github-actions" [
+          label = " iam role github\nactions",
+          fontsize = 12,
+          image = "/Users/fujitashinya/.nodebrew/node/v20.11.0/lib/node_modules/cdk-dia/icons/aws/Service/Arch_Security-Identity-Compliance/64/Arch_AWS-Identity-and-Access-Management_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 1.2,
+          height = 1.682,
+        ];
+        "mcre-tools-stack/ExportsReader" [
+          label = " ExportsReader",
+          fontsize = 12,
+          image = "/Users/fujitashinya/.nodebrew/node/v20.11.0/lib/node_modules/cdk-dia/icons/aws/Service/Arch_Management-Governance/64/Arch_AWS-CloudFormation_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 1.2,
+          height = 1.466,
+        ];
+        "mcre-tools-stack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole" [
+          label = " ServiceRole",
+          fontsize = 12,
+          image = "/Users/fujitashinya/.nodebrew/node/v20.11.0/lib/node_modules/cdk-dia/icons/aws/Service/Arch_Security-Identity-Compliance/64/Arch_AWS-Identity-and-Access-Management_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 1.2,
+          height = 1.466,
+        ];
+      }
+      subgraph "cluster-SubGraph.mcre-tools-stack-us-east-1" {
+        graph [
+          label = "mcre-tools-stack-us-east-1",
+          labelloc = "b",
+          labeljust = "l",
+          margin = "10",
+          fontsize = "16",
+          penwidth = "2",
+          pencolor = "#888888",
+          style = "filled,rounded",
+          fillcolor = "#e4e4e4",
+        ];
+        "mcre-tools-stack-us-east-1/s3-bucket-dist" [
+          label = " s3-bucket-dist",
+          fontsize = 12,
+          image = "/Users/fujitashinya/.nodebrew/node/v20.11.0/lib/node_modules/cdk-dia/icons/aws/Service/Arch_Storage/64/Arch_Amazon-S3-Standard_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 2,
+          height = 2.266,
+        ];
+        "mcre-tools-stack-us-east-1/acm-certificate-dist" [
+          label = " acm-certificate-dist",
+          fontsize = 12,
+          image = "/Users/fujitashinya/.nodebrew/node/v20.11.0/lib/node_modules/cdk-dia/icons/aws/Service/Arch_Security-Identity-Compliance/64/Arch_AWS-Certificate-Manager_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 1.2,
+          height = 1.466,
+        ];
+        "mcre-tools-stack-us-east-1/iam-role-lambda-response-to-bot-with-directory-index" [
+          label = " iam role lambda\nresponse to bot with\ndirectory index",
+          fontsize = 12,
+          image = "/Users/fujitashinya/.nodebrew/node/v20.11.0/lib/node_modules/cdk-dia/icons/aws/Service/Arch_Security-Identity-Compliance/64/Arch_AWS-Identity-and-Access-Management_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 1.2,
+          height = 1.898,
+        ];
+        "mcre-tools-stack-us-east-1/lambda-function-edge-response-to-bot-with-directory-index" [
+          label = " lambda function edge\nresponse to bot with\ndirectory index",
+          fontsize = 12,
+          image = "/Users/fujitashinya/.nodebrew/node/v20.11.0/lib/node_modules/cdk-dia/icons/aws/Service/Arch_Compute/64/Arch_AWS-Lambda_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 2,
+          height = 2.6979999999999995,
+        ];
+        "mcre-tools-stack-us-east-1/dist-CustomCachePolicy" [
+          label = " dist\nCustomCachePolicy",
+          fontsize = 12,
+          image = "/Users/fujitashinya/.nodebrew/node/v20.11.0/lib/node_modules/cdk-dia/icons/aws/Service/Arch_Networking-Content/64/Arch_Amazon-CloudFront_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 1.2,
+          height = 1.682,
+        ];
+        "mcre-tools-stack-us-east-1/cloudfront-distribution-dist" [
+          label = " cloudfront\ndistribution dist",
+          fontsize = 12,
+          image = "/Users/fujitashinya/.nodebrew/node/v20.11.0/lib/node_modules/cdk-dia/icons/aws/Service/Arch_Networking-Content/64/Arch_Amazon-CloudFront_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 2,
+          height = 2.4819999999999998,
+        ];
+        "mcre-tools-stack-us-east-1/cloudfront-a-record-dist" [
+          label = " cloudfront a record\ndist",
+          fontsize = 12,
+          image = "/Users/fujitashinya/.nodebrew/node/v20.11.0/lib/node_modules/cdk-dia/icons/aws/Resource/Res_Networking-and-Content-Delivery/Res_48_Dark/Res_Amazon-Route-53-Hosted-Zone_48_Dark_gen.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 1.2,
+          height = 1.682,
+        ];
+        "mcre-tools-stack-us-east-1/ExportsWriterapnortheast12334E1B8" [
+          label = "\nExportsWriterapnorthe",
+          fontsize = 12,
+          image = "/Users/fujitashinya/.nodebrew/node/v20.11.0/lib/node_modules/cdk-dia/icons/aws/Service/Arch_Management-Governance/64/Arch_AWS-CloudFormation_64@5x.png",
+          imagescale = "true",
+          imagepos = "tc",
+          penwidth = "0",
+          shape = "node",
+          fixedsize = "true",
+          labelloc = "b",
+          width = 1.2,
+          height = 1.682,
+        ];
+      }
+    }
+  }
+  "mcre-tools-stack/iam-role-lambda-api" -> "mcre-tools-stack/dynamodb-primary" [
+    dir = "both",
+  ];
+  "mcre-tools-stack/lambda-function-api" -> "mcre-tools-stack/dynamodb-primary" [
+    dir = "both",
+  ];
+  "mcre-tools-stack/lambda-function-api" -> "mcre-tools-stack/iam-role-lambda-api" [
+    dir = "both",
+  ];
+  "mcre-tools-stack/iam-role-lambda-ogp" -> "mcre-tools-stack/s3-bucket-ogp" [
+    dir = "both",
+  ];
+  "mcre-tools-stack/lambda-function-ogp" -> "mcre-tools-stack/s3-bucket-ogp" [
+    dir = "both",
+  ];
+  "mcre-tools-stack/lambda-function-ogp" -> "mcre-tools-stack/lambda-layer-pillow" [
+    dir = "both",
+  ];
+  "mcre-tools-stack/lambda-function-ogp" -> "mcre-tools-stack/iam-role-lambda-ogp" [
+    dir = "both",
+  ];
+  "mcre-tools-stack/api-gateway-api" -> "mcre-tools-stack/lambda-function-api" [
+    dir = "both",
+  ];
+  "mcre-tools-stack/api-gateway-domain-api" -> "mcre-tools-stack/acm-certificate-api" [
+    dir = "both",
+  ];
+  "mcre-tools-stack/base-path-mapping-api" -> "mcre-tools-stack/api-gateway-api" [
+    dir = "both",
+  ];
+  "mcre-tools-stack/base-path-mapping-api" -> "mcre-tools-stack/api-gateway-domain-api" [
+    dir = "both",
+  ];
+  "mcre-tools-stack/api-gateway-a-record-api" -> "mcre-tools-stack/api-gateway-domain-api" [
+    dir = "both",
+  ];
+  "mcre-tools-stack/api-gateway-ogp" -> "mcre-tools-stack/lambda-function-ogp" [
+    dir = "both",
+  ];
+  "mcre-tools-stack/api-gateway-domain-ogp" -> "mcre-tools-stack/acm-certificate-ogp" [
+    dir = "both",
+  ];
+  "mcre-tools-stack/base-path-mapping-ogp" -> "mcre-tools-stack/api-gateway-ogp" [
+    dir = "both",
+  ];
+  "mcre-tools-stack/base-path-mapping-ogp" -> "mcre-tools-stack/api-gateway-domain-ogp" [
+    dir = "both",
+  ];
+  "mcre-tools-stack/api-gateway-a-record-ogp" -> "mcre-tools-stack/api-gateway-domain-ogp" [
+    dir = "both",
+  ];
+  "mcre-tools-stack/iam-role-github-actions" -> "mcre-tools-stack/lambda-function-api" [
+    dir = "both",
+  ];
+  "mcre-tools-stack/iam-role-github-actions" -> "mcre-tools-stack/lambda-function-ogp" [
+    dir = "both",
+  ];
+  "mcre-tools-stack/iam-role-github-actions" -> "mcre-tools-stack/ExportsReader" [
+    dir = "both",
+  ];
+  "mcre-tools-stack-us-east-1/s3-bucket-dist" -> "mcre-tools-stack-us-east-1/cloudfront-distribution-dist" [
+    dir = "both",
+  ];
+  "mcre-tools-stack-us-east-1/lambda-function-edge-response-to-bot-with-directory-index" -> "mcre-tools-stack-us-east-1/iam-role-lambda-response-to-bot-with-directory-index" [
+    dir = "both",
+  ];
+  "mcre-tools-stack-us-east-1/cloudfront-distribution-dist" -> "mcre-tools-stack-us-east-1/s3-bucket-dist" [
+    dir = "both",
+  ];
+  "mcre-tools-stack-us-east-1/cloudfront-distribution-dist" -> "mcre-tools-stack-us-east-1/acm-certificate-dist" [
+    dir = "both",
+  ];
+  "mcre-tools-stack-us-east-1/cloudfront-distribution-dist" -> "mcre-tools-stack-us-east-1/dist-CustomCachePolicy" [
+    dir = "both",
+  ];
+  "mcre-tools-stack-us-east-1/cloudfront-a-record-dist" -> "mcre-tools-stack-us-east-1/cloudfront-distribution-dist" [
+    dir = "both",
+  ];
+}

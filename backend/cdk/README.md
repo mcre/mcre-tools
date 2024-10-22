@@ -42,6 +42,16 @@ cd backend/cdk
 source .venv/bin/activate
 ```
 
+## アーキテクチャ図生成の初期設定
+
+初期設定
+
+```
+npm install cdk-dia
+brew install graphviz
+```
+
+
 ## コマンド
 
 まず、env.json の env 値が `prod` になっていることを確認する。
@@ -50,6 +60,7 @@ CDK から CloudFormation Template をつくる。
 
 ```
 cdk --profile m_cre-super-user synth
+cdk-dia  # アーキテクチャ図の更新
 ```
 
 synth が通ったあとはデプロイする
