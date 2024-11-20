@@ -33,6 +33,7 @@ stack = Stack(
     f"{config['prefix']}-stack",
     env=Environment(region="ap-northeast-1"),
     cross_region_references=True,
+    tags={tag["key"]: tag["value"] for tag in config["tags"]},
 )
 
 # DynamoDB
@@ -127,6 +128,7 @@ stack_us = Stack(
     f"{config['prefix']}-stack-us-east-1",
     env=Environment(region="us-east-1"),
     cross_region_references=True,
+    tags={tag["key"]: tag["value"] for tag in config["tags"]},
 )
 
 # S3
