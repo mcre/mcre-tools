@@ -91,7 +91,7 @@ lambda_ogp = create_lambda_function(
     policies=[policy_s3_ogp_rw],
     environment={
         "S3_OGP_BUCKET_NAME": bucket_ogp.bucket_name,
-        "DOMAIN_NAME_DISTRIBUTION": f'{config["cloudfront"]["domain"]["dist"]["name"]}.{config["cloudfront"]["domain"]["dist"]["zone_name"]}',
+        "DOMAIN_NAME_DISTRIBUTION": f'{config["cloudfront"]["dist"]["domain"]["name"]}.{config["cloudfront"]["dist"]["domain"]["zone_name"]}',
     },
     layers=[layer_powertools, layer_pillow],
 )
@@ -100,7 +100,7 @@ github_actions_lambda_deploy_targets = [lambda_api, lambda_ogp]
 
 # API-Gateway
 acm_result_api = create_acm_certificate(
-    stack, "api", config["api-gateway"]["domain"]["api"]
+    stack, "api", config["api-gateway"]["api"]["domain"]
 )
 create_apigateway(
     stack,
@@ -108,13 +108,13 @@ create_apigateway(
     lambda_api,
     acm_result_api,
     cors_allow_origins=[
-        f"https://{config['cloudfront']['domain']['dist']['name']}.{config['cloudfront']['domain']['dist']['zone_name']}",
+        f"https://{config['cloudfront']['dist']['domain']['name']}.{config['cloudfront']['dist']['domain']['zone_name']}",
         "http://localhost:3000",
     ],
 )
 
 acm_result_ogp = create_acm_certificate(
-    stack, "ogp", config["api-gateway"]["domain"]["ogp"]
+    stack, "ogp", config["api-gateway"]["ogp"]["domain"]
 )
 create_apigateway(stack, "ogp", lambda_ogp, acm_result_ogp)
 
@@ -136,7 +136,7 @@ bucket_distribution = create_s3_bucket(stack_us, "dist")
 
 # ACM
 acm_result_dist = create_acm_certificate(
-    stack_us, "dist", config["cloudfront"]["domain"]["dist"]
+    stack_us, "dist", config["cloudfront"]["dist"]["domain"]
 )
 
 # Lambda

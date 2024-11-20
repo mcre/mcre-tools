@@ -252,7 +252,7 @@ def create_apigateway(
         security_policy=apigateway.SecurityPolicy.TLS_1_2,
     )
 
-    domain_config = config["api-gateway"]["domain"][name]
+    domain_config = config["api-gateway"][name]["domain"]
     apigateway.BasePathMapping(
         scope,
         f"base-path-mapping-{name}",

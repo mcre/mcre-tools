@@ -35,14 +35,16 @@
     }
   },
   "api-gateway": {
-    "domain": {
-      "api": {
+    "api": {
+      "domain": {
         "name": "tools-api",
         "zone_name": "mcre.info",
         "base_path": "v1",
         "hosted_zone_id": "Z330CBZA3E00YU"
-      },
-      "ogp": {
+      }
+    },
+    "ogp": {
+      "domain": {
         "name": "tools-ogp",
         "zone_name": "mcre.info",
         "hosted_zone_id": "Z330CBZA3E00YU"
@@ -59,8 +61,8 @@
     }
   },
   "cloudfront": {
-    "domain": {
-      "dist": {
+    "dist": {
+      "domain": {
         "name": "tools",
         "zone_name": "mcre.info",
         "hosted_zone_id": "Z330CBZA3E00YU"
