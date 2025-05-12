@@ -12,16 +12,8 @@
     "primary": {
       "deletion_protection": false,
       "point_in_time_recovery": false,
-      "capacity": {
-        "table": {
-          "read": 1,
-          "write": 1,
-          "autoscaling": {
-            "read": { "min": 1, "max": 10, "percent": 70 },
-            "write": { "min": 1, "max": 10, "percent": 70 }
-          }
-        }
-      }
+      "max_read_request_units": 1000,
+      "max_write_request_units": 1000
     }
   },
   "lambda": {

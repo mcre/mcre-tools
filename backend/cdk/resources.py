@@ -55,23 +55,14 @@ def create_dynamodb_primary_table(scope: Stack) -> dynamodb.Table:
         scope,
         "dynamodb-primary",
         table_name=f"{config['prefix']}-primary",
-        billing_mode=dynamodb.BillingMode.PROVISIONED,
+        billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
         deletion_protection=dp,
         point_in_time_recovery=table_config["point_in_time_recovery"],
-        read_capacity=table_config["capacity"]["table"]["read"],
-        write_capacity=table_config["capacity"]["table"]["write"],
+        max_read_request_units=table_config["max_read_request_units"],
+        max_write_request_units=table_config["max_write_request_units"],
         removal_policy=RemovalPolicy.RETAIN if dp else RemovalPolicy.DESTROY,
         partition_key=dynamodb.Attribute(name="id", type=dynamodb.AttributeType.STRING),
     )
-
-    if "autoscaling" in table_config["capacity"]["table"]:
-        asc = table_config["capacity"]["table"]["autoscaling"]
-        resource.auto_scale_read_capacity(
-            min_capacity=asc["read"]["min"], max_capacity=asc["read"]["max"]
-        ).scale_on_utilization(target_utilization_percent=asc["read"]["percent"])
-        resource.auto_scale_write_capacity(
-            min_capacity=asc["write"]["min"], max_capacity=asc["write"]["max"]
-        ).scale_on_utilization(target_utilization_percent=asc["write"]["percent"])
 
     # columns = [("search_key", dynamodb.AttributeType.STRING)]
     columns = []
@@ -81,25 +72,9 @@ def create_dynamodb_primary_table(scope: Stack) -> dynamodb.Table:
             index_name=f"{column_name}-id-index",
             partition_key=dynamodb.Attribute(name=column_name, type=column_type),
             sort_key=dynamodb.Attribute(name="id", type=dynamodb.AttributeType.STRING),
-            read_capacity=table_config["capacity"][column_name]["read"],
-            write_capacity=table_config["capacity"][column_name]["write"],
+            max_read_request_units=table_config["max_read_request_units"],
+            max_write_request_units=table_config["max_write_request_units"],
         )
-        if "autoscaling" in table_config["capacity"][column_name]:
-            ascg = table_config["capacity"][column_name]["autoscaling"]
-            resource.auto_scale_global_secondary_index_read_capacity(
-                index_name=f"{column_name}-id-index",
-                min_capacity=ascg["read"]["min"],
-                max_capacity=ascg["read"]["max"],
-            ).scale_on_utilization(
-                target_utilization_percent=ascg["read"]["percent"],
-            )
-            resource.auto_scale_global_secondary_index_write_capacity(
-                index_name=f"{column_name}-id-index",
-                min_capacity=ascg["write"]["min"],
-                max_capacity=ascg["write"]["max"],
-            ).scale_on_utilization(
-                target_utilization_percent=ascg["write"]["percent"],
-            )
     return resource
 
 

@@ -12,8 +12,7 @@
     "preview": "vite preview",
     "lint": "eslint . --fix --ignore-path .gitignore",
     "api:build": "rm -rf ./tmp-apis && npx openapi2aspida -o=./tmp-apis/ && rsync -a --delete ./tmp-apis/ ./src/apis/ && rm -rf ./tmp-apis",
-    "api:watch": "chokidar ./openapi.yaml -c \"npm run api:build\"",
-    "sitemap:build": "node ./bin/updateSitemap.js"
+    "api:watch": "chokidar ./openapi.yaml -c \"npm run api:build\""
   },
   "dependencies": {
     "@aspida/fetch": "^1.14.0",
