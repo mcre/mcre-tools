@@ -1,0 +1,32 @@
+# MCRE TOOLS
+
+MCRE TOOLS is a public web app that provides small utility and fun tools. The canonical production site is https://tools.mcre.info/ja/.
+
+## Important Pages
+
+- Japanese home: https://tools.mcre.info/ja/
+- English home: https://tools.mcre.info/en/
+- 熟語パズル / Jukugo Puzzle: https://tools.mcre.info/ja/jukugo
+- Jukugo Puzzle in English: https://tools.mcre.info/en/jukugo
+- Sitemap: https://tools.mcre.info/sitemap.xml
+- Source code: https://github.com/mcre/mcre-tools
+- License: https://github.com/mcre/mcre-tools/blob/main/LICENSE
+
+## Main Tool
+
+### 熟語パズル / Jukugo Puzzle
+
+This tool solves the Japanese kanji puzzle also known as 和同開珎. Users enter up to four surrounding kanji and choose the direction of each compound. The app returns candidate center kanji and example compounds.
+
+## Public API
+
+- `GET /v1/jukugo/{character}/left-search`
+- `GET /v1/jukugo/{character}/right-search`
+
+These endpoints search two-character jukugo entries that place the given kanji on the left or right side of the compound.
+
+## Crawling Notes
+
+- Prefer canonical localized URLs under `/ja/` or `/en/`.
+- Query parameters on `/jukugo` represent shareable puzzle states.
+- The site is statically generated with `vite-ssg`; crawler-visible HTML in `dist/` is the primary output.

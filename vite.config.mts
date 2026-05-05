@@ -65,6 +65,12 @@ export default defineConfig(({ mode }) => {
           hostname: `https://${env.VITE_DISTRIBUTION_DOMAIN_NAME}`,
           exclude: ["/", "/404"],
           changefreq: "monthly",
+          robots: [
+            { userAgent: "*", allow: "/" },
+            { userAgent: "OAI-SearchBot", allow: "/" },
+            { userAgent: "ChatGPT-User", allow: "/" },
+            { userAgent: "GPTBot", allow: "/" },
+          ],
         });
       },
     },

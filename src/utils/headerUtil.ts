@@ -6,20 +6,77 @@ export const useHeaderUtil = () => {
   const i18nUtil = useI18nUtil();
 
   const getHead = (tool?: string) => {
+    const distUrl = `https://${import.meta.env.VITE_DISTRIBUTION_DOMAIN_NAME}`;
     const site = computed(() => t("common.title"));
     const localeName = computed(() => t("localeName"));
     const localeValue = computed(() => locale.value);
-    const path = computed(() => (tool ? i18nUtil.path(tool) : "/"));
-    const ogUrl = computed(() => `${distUrl}${path.value}`);
+    const path = computed(() => i18nUtil.path(tool || "/"));
+    const canonicalUrl = computed(() => `${distUrl}${path.value}`);
     const title = computed(() =>
       tool ? `${t(`tools.${tool}.title`)} - ${site.value}` : site.value,
     );
     const iconDir = tool || "favicon";
+    const imageUrl = computed(() => `${distUrl}/img/${iconDir}/180.png`);
     const description = computed(() =>
       tool ? t(`tools.${tool}.description`) : t(`common.description`),
     );
+    const structuredData = computed(() => {
+      const websiteId = `${distUrl}/#website`;
+      const website = {
+        "@type": "WebSite",
+        "@id": websiteId,
+        name: site.value,
+        url: `${distUrl}${i18nUtil.path("/")}`,
+        inLanguage: localeValue.value,
+        description: t("common.description"),
+      };
 
-    const distUrl = `https://${import.meta.env.VITE_DISTRIBUTION_DOMAIN_NAME}`;
+      if (!tool) {
+        return {
+          "@context": "https://schema.org",
+          "@graph": [website],
+        };
+      }
+
+      return {
+        "@context": "https://schema.org",
+        "@graph": [
+          website,
+          {
+            "@type": "WebApplication",
+            "@id": `${canonicalUrl.value}#webapp`,
+            name: t(`tools.${tool}.title`),
+            url: canonicalUrl.value,
+            description: description.value,
+            inLanguage: localeValue.value,
+            applicationCategory: "UtilitiesApplication",
+            operatingSystem: "Any",
+            image: imageUrl.value,
+            isPartOf: {
+              "@id": websiteId,
+            },
+          },
+          {
+            "@type": "BreadcrumbList",
+            "@id": `${canonicalUrl.value}#breadcrumb`,
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: site.value,
+                item: `${distUrl}${i18nUtil.path("/")}`,
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: t(`tools.${tool}.title`),
+                item: canonicalUrl.value,
+              },
+            ],
+          },
+        ],
+      };
+    });
 
     return {
       htmlAttrs: {
@@ -27,6 +84,10 @@ export const useHeaderUtil = () => {
       },
       title,
       link: [
+        {
+          rel: "canonical",
+          href: canonicalUrl,
+        },
         ...availableLocales.map((lang) => ({
           rel: "alternate",
           hreflang: lang,
@@ -52,48 +113,66 @@ export const useHeaderUtil = () => {
       ],
       meta: [
         {
-          id: "robots",
+          name: "robots",
           content: "all",
         },
         {
-          id: "description",
+          name: "description",
           content: description,
         },
         {
-          id: "og-locale",
+          property: "og:type",
+          content: "website",
+        },
+        {
+          property: "og:locale",
           content: localeName,
         },
         {
-          id: "og-site-name",
+          property: "og:site_name",
           content: site,
         },
         {
-          id: "og-title",
+          property: "og:title",
           content: title,
         },
         {
-          id: "og-url",
-          content: ogUrl,
+          property: "og:url",
+          content: canonicalUrl,
         },
         {
-          id: "og-image",
-          content: `${distUrl}/img/${iconDir}/180.png`,
+          property: "og:image",
+          content: imageUrl,
         },
         {
-          id: "og-description",
+          property: "og:description",
           content: description,
         },
         {
-          id: "note-card",
+          name: "note:card",
           content: "summary",
         },
         {
-          id: "tw-card",
+          name: "twitter:card",
           content: "summary",
         },
         {
-          id: "tw-image",
-          content: `${distUrl}/img/${iconDir}/180.png`,
+          name: "twitter:title",
+          content: title,
+        },
+        {
+          name: "twitter:description",
+          content: description,
+        },
+        {
+          name: "twitter:image",
+          content: imageUrl,
+        },
+      ],
+      script: [
+        {
+          type: "application/ld+json",
+          textContent: computed(() => JSON.stringify(structuredData.value)),
         },
       ],
     } as any;
@@ -111,23 +190,23 @@ export const useHeaderUtil = () => {
     return {
       meta: [
         {
-          id: "og-url",
+          property: "og:url",
           content: currentFullPath,
         },
         {
-          id: "og-image",
+          property: "og:image",
           content: imageFullPath,
         },
         {
-          id: "note-card",
+          name: "note:card",
           content: "summary_large_image",
         },
         {
-          id: "tw-card",
+          name: "twitter:card",
           content: "summary_large_image",
         },
         {
-          id: "tw-image",
+          name: "twitter:image",
           content: imageFullPath,
         },
       ],

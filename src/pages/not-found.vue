@@ -28,7 +28,7 @@ useHead({
   title: computed(() => `${t("notFound.title")} - ${t("common.title")}`),
   meta: [
     {
-      id: "robots",
+      name: "robots",
       content: "noindex, nofollow, noarchive",
     },
   ],
