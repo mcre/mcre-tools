@@ -156,6 +156,11 @@ def create_lambda_function(
         f"iam-role-lambda-{name}",
         role_name=iam_role_name,
         assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
+        managed_policies=[
+            iam.ManagedPolicy.from_aws_managed_policy_name(
+                "service-role/AWSLambdaBasicExecutionRole"
+            )
+        ],
         inline_policies=(
             {f"{iam_role_name}-policy": iam.PolicyDocument(statements=policies)}
             if policies
@@ -163,14 +168,14 @@ def create_lambda_function(
         ),
     )
 
-    log_group = logs.LogGroup(
+    log_group_name = f"/aws/lambda/{config['prefix']}-{name}"
+    log_retention = logs.RetentionDays[config["lambda"][name]["log_retention"]]
+    logs.LogRetention(
         scope,
-        f"lambda-log-group-{name}",
-        log_group_name=f"/aws/lambda/{config['prefix']}-{name}",
-        retention=logs.RetentionDays[config["lambda"][name]["log_retention"]],
-        removal_policy=RemovalPolicy.DESTROY,
+        f"lambda-log-retention-{name}",
+        log_group_name=log_group_name,
+        retention=log_retention,
     )
-    log_group.grant_write(iam_role)
 
     lambda_environment = environment.copy() if environment else {}
     for key, value in config["lambda"][name].get("env", {}).items():
@@ -186,7 +191,6 @@ def create_lambda_function(
         memory_size=config["lambda"][name]["memory"],
         timeout=Duration.seconds(config["lambda"][name]["timeout_in_seconds"]),
         role=iam_role,
-        log_group=log_group,
         ephemeral_storage_size=Size.mebibytes(512),
         environment=lambda_environment,
         layers=layers or [],

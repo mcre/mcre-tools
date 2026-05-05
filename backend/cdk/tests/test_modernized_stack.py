@@ -54,6 +54,57 @@ class ModernizedStackTest(unittest.TestCase):
             },
         )
 
+    def test_lambda_log_retention_does_not_recreate_default_log_groups(self):
+        templates = self._templates()
+        jp_template = templates["mcre-tools-dev-ap-northeast-1"]
+        existing_log_group_names = [
+            "/aws/lambda/mcre-tools-dev-api",
+            "/aws/lambda/mcre-tools-dev-ogp",
+        ]
+
+        log_group_resources = jp_template.find_resources("AWS::Logs::LogGroup")
+        for log_group_name in existing_log_group_names:
+            self.assertNotIn(
+                log_group_name,
+                [
+                    resource.get("Properties", {}).get("LogGroupName")
+                    for resource in log_group_resources.values()
+                ],
+            )
+            jp_template.has_resource_properties(
+                "Custom::LogRetention",
+                {
+                    "LogGroupName": log_group_name,
+                    "RetentionInDays": 90,
+                },
+            )
+
+        for name in ["api", "ogp"]:
+            jp_template.has_resource_properties(
+                "AWS::IAM::Role",
+                {
+                    "RoleName": f"mcre-tools-dev-lambda-{name}",
+                    "ManagedPolicyArns": Match.array_with(
+                        [
+                            {
+                                "Fn::Join": Match.array_with(
+                                    [
+                                        "",
+                                        Match.array_with(
+                                            [
+                                                "arn:",
+                                                {"Ref": "AWS::Partition"},
+                                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+                                            ]
+                                        ),
+                                    ]
+                                )
+                            }
+                        ]
+                    ),
+                },
+            )
+
     def test_outputs_include_vite_env_for_actions(self):
         templates = self._templates()
         jp_template = templates["mcre-tools-dev-ap-northeast-1"]
