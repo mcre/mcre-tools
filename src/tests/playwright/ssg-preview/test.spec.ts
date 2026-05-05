@@ -1,4 +1,4 @@
-import type { Locator } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
 
 const expectInsideViewport = async (
@@ -18,6 +18,71 @@ const expectLoadedImage = async (locator: Locator) => {
     return image.complete && image.naturalWidth > 0 && image.naturalHeight > 0;
   });
   expect(loaded).toBe(true);
+};
+
+const expectShareButtonIconContained = async (button: Locator) => {
+  await expect(button).toBeVisible();
+
+  const icon = button.locator("img.share-button__icon--x");
+  await expectLoadedImage(icon);
+
+  const buttonBox = await button.boundingBox();
+  const iconBox = await icon.boundingBox();
+  expect(buttonBox).not.toBeNull();
+  expect(iconBox).not.toBeNull();
+
+  expect(iconBox!.x).toBeGreaterThanOrEqual(buttonBox!.x);
+  expect(iconBox!.y).toBeGreaterThanOrEqual(buttonBox!.y);
+  expect(iconBox!.x + iconBox!.width).toBeLessThanOrEqual(
+    buttonBox!.x + buttonBox!.width,
+  );
+  expect(iconBox!.y + iconBox!.height).toBeLessThanOrEqual(
+    buttonBox!.y + buttonBox!.height,
+  );
+  expect(iconBox!.width).toBeGreaterThanOrEqual(18);
+  expect(iconBox!.width).toBeLessThanOrEqual(22);
+  expect(iconBox!.height).toBeGreaterThanOrEqual(18);
+  expect(iconBox!.height).toBeLessThanOrEqual(22);
+
+  await expect(icon).toHaveCSS("display", "block");
+  await expect(icon).toHaveCSS("object-fit", "contain");
+};
+
+const expectHeadMetadata = async (
+  page: Page,
+  path: string,
+  canonicalUrl: string,
+  schemaTypes: string[],
+) => {
+  await page.goto(path);
+
+  await expect(page.locator(`head link[rel="canonical"]`)).toHaveAttribute(
+    "href",
+    canonicalUrl,
+  );
+  await expect(page.locator(`head meta[name="description"]`)).toHaveAttribute(
+    "content",
+    /.+/,
+  );
+  await expect(page.locator(`head meta[property="og:url"]`)).toHaveAttribute(
+    "content",
+    canonicalUrl,
+  );
+  await expect(
+    page.locator(`head meta[name="twitter:description"]`),
+  ).toHaveAttribute("content", /.+/);
+
+  const structuredData = await page
+    .locator(`head script[type="application/ld+json"]`)
+    .textContent();
+  expect(structuredData).not.toBeNull();
+  const jsonLd = JSON.parse(structuredData!) as {
+    "@graph": Array<{ "@type": string }>;
+  };
+  const graph = jsonLd["@graph"];
+  expect(graph.map((entry: { "@type": string }) => entry["@type"])).toEqual(
+    expect.arrayContaining(schemaTypes),
+  );
 };
 
 test.describe("SSG preview layout", () => {
@@ -84,5 +149,58 @@ test.describe("SSG preview layout", () => {
     await expect(page.locator("#input-left")).toBeVisible();
     await expect(page.locator("#answer")).toBeVisible();
     await expectInsideViewport(page.locator("table"), 1280);
+  });
+
+  test("build output keeps share button icons contained on desktop and mobile", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await page.goto("/ja");
+    await expectShareButtonIconContained(
+      page.getByRole("button", { name: /share/i }).first(),
+    );
+
+    await page.goto("/ja/jukugo");
+    await expectShareButtonIconContained(
+      page.getByRole("button", { name: /share/i }).last(),
+    );
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/ja");
+    await expectShareButtonIconContained(
+      page.getByRole("button", { name: /share/i }).first(),
+    );
+
+    await page.goto("/ja/jukugo");
+    await expectShareButtonIconContained(
+      page.getByRole("button", { name: /share/i }).last(),
+    );
+  });
+
+  test("build output exposes AIO metadata and crawler hints", async ({
+    page,
+    request,
+  }) => {
+    await expectHeadMetadata(page, "/ja", "https://tools.mcre.info/ja/", [
+      "WebSite",
+    ]);
+    await expectHeadMetadata(
+      page,
+      "/ja/jukugo",
+      "https://tools.mcre.info/ja/jukugo",
+      ["WebSite", "WebApplication", "BreadcrumbList"],
+    );
+
+    const llms = await request.get("/llms.txt");
+    expect(llms.ok()).toBe(true);
+    const llmsText = await llms.text();
+    expect(llmsText).toContain("https://tools.mcre.info/ja/jukugo");
+
+    const robots = await request.get("/robots.txt");
+    expect(robots.ok()).toBe(true);
+    const robotsText = await robots.text();
+    expect(robotsText).toContain("User-agent: OAI-SearchBot");
+    expect(robotsText).toContain("User-agent: ChatGPT-User");
+    expect(robotsText).toContain("User-agent: GPTBot");
   });
 });

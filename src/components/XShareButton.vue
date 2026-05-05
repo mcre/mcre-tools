@@ -1,12 +1,18 @@
 <template>
-  <v-btn color="black" variant="flat" @click="updateAndOpenShareUrl">
+  <v-btn
+    class="share-button"
+    color="black"
+    variant="flat"
+    @click="updateAndOpenShareUrl"
+  >
     <template #prepend>
       <img
-        alt="X icon"
-        class="icon"
-        height="16"
+        alt=""
+        aria-hidden="true"
+        class="share-button__icon share-button__icon--x"
+        height="20"
         src="@/assets/images/x.svg"
-        width="16"
+        width="20"
       />
     </template>
     SHARE
@@ -24,3 +30,25 @@ const updateAndOpenShareUrl = (): void => {
   window.open(shareUrl, "_blank");
 };
 </script>
+
+<style scoped>
+.share-button {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.share-button :deep(.v-btn__prepend) {
+  margin-inline-end: 10px;
+}
+
+.share-button__icon {
+  display: block;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
+.share-button__icon--x {
+  height: 20px;
+  width: 20px;
+}
+</style>

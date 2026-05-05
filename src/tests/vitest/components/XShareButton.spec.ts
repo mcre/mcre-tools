@@ -9,6 +9,19 @@ vi.mock("vue-router", () => ({
 }));
 
 describe("XShareButton", () => {
+  it("SNSアイコンをavatarではなく固定サイズの画像として表示する", () => {
+    (useRoute as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
+      fullPath: "/test-path",
+    });
+
+    const w = mount(XShareButton);
+    const image = find(w, "img.share-button__icon--x");
+
+    expect(w.findComponent({ name: "VAvatar" }).exists()).toBe(false);
+    expect(image.attributes("alt")).toBe("");
+    expect(image.attributes("aria-hidden")).toBe("true");
+  });
+
   it("クリック時に updateAndOpenShareUrl が呼び出され、window.open が正しく動作する", async () => {
     (useRoute as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
       fullPath: "/test-path?param=value",
