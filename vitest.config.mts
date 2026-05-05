@@ -1,24 +1,24 @@
-import { defineConfig } from "vitest/config";
+import { resolve } from "node:path";
+import VueI18nPlugin from "@intlify/unplugin-vue-i18n/vite";
 import vue from "@vitejs/plugin-vue";
-import Vuetify from "vite-plugin-vuetify";
-import { resolve } from "path";
-import dotenv from "dotenv";
-
 import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
+import { loadEnv } from "vite";
+import Vuetify from "vite-plugin-vuetify";
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
     globals: true,
     environment: "jsdom",
+    include: ["src/tests/vitest/**/*.spec.ts"],
+    setupFiles: "src/tests/vitest/setup.ts",
+    env: loadEnv("production", process.cwd(), ""),
     server: {
       deps: {
         inline: ["vuetify"],
       },
     },
-    include: ["src/tests/vitest/**/*.spec.ts"],
-    setupFiles: "src/tests/vitest/setup.ts",
-    env: dotenv.config({ path: ".env.production" }).parsed,
   },
   plugins: [
     vue(),
@@ -32,15 +32,19 @@ export default defineConfig({
       imports: [
         "vue",
         {
-          "vue-router/auto": ["useRoute", "useRouter"],
+          "vue-router": ["useRoute", "useRouter"],
         },
       ],
+      dirs: ["src/composables", "src/utils", "src/router"],
       dts: "src/auto-imports.d.ts",
       vueTemplate: true,
-      dirs: ["src/utils", "src/router"],
     }),
     Components({
+      dirs: ["src/components"],
       dts: "src/components.d.ts",
+    }),
+    VueI18nPlugin({
+      include: resolve(__dirname, "./src/locales"),
     }),
   ],
   resolve: {

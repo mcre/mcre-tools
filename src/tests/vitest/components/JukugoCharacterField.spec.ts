@@ -1,8 +1,8 @@
 import { mount } from "@vue/test-utils";
-import { describe, it, expect } from "vitest";
-import { ref, nextTick } from "vue";
-import { find, findComponent } from "@/tests/vitest/helpers";
+import { describe, expect, it } from "vitest";
+import { nextTick, ref } from "vue";
 import JukugoCharacterField from "@/components/JukugoCharacterField.vue";
+import { find, findComponent } from "@/tests/vitest/helpers";
 
 describe("JukugoCharacterField", () => {
   const createWrapper = (modelValueRef: { value: string }) => {

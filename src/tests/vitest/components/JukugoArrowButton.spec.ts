@@ -1,13 +1,13 @@
-import { mount } from "@vue/test-utils";
-import { describe, it } from "vitest";
-import { findComponent, expectIconToBe } from "@/tests/vitest/helpers";
-import JukugoArrowButton from "@/components/JukugoArrowButton.vue";
 import {
-  mdiArrowUpThick,
   mdiArrowDownThick,
   mdiArrowLeftThick,
   mdiArrowRightThick,
+  mdiArrowUpThick,
 } from "@mdi/js";
+import { mount } from "@vue/test-utils";
+import { describe, it } from "vitest";
+import JukugoArrowButton from "@/components/JukugoArrowButton.vue";
+import { expectIconToBe, findComponent } from "@/tests/vitest/helpers";
 
 type Direction = "up" | "down" | "left" | "right";
 
@@ -19,8 +19,8 @@ describe("JukugoArrowButton", () => {
   ) => {
     return mount(JukugoArrowButton, {
       props: {
-        forward: forward,
-        reverse: reverse,
+        forward,
+        reverse,
         modelValue: modelValueRef.value,
       },
     });

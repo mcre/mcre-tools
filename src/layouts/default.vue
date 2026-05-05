@@ -1,38 +1,40 @@
 <template>
-  <v-app-bar flat density="comfortable">
-    <template v-slot:prepend>
+  <v-app-bar density="comfortable" flat>
+    <template #prepend>
       <v-app-bar-nav-icon
+        :aria-label="$t('common.toggleMenu')"
         variant="text"
         @click.stop="drawer = !drawer"
-        :aria-label="$t('common.toggleMenu')"
       />
     </template>
+
     <v-app-bar-title>
       <v-btn
-        :to="i18nUtil.path('/')"
-        variant="text"
         :active="false"
         :aria-label="$t('common.moveToHome')"
+        :to="i18nUtil.path('/')"
+        variant="text"
       >
         MCRE TOOLS
       </v-btn>
     </v-app-bar-title>
-    <template v-slot:append>
+
+    <template #append>
       <language-switcher />
       <x-share-button class="mr-1" />
     </template>
   </v-app-bar>
 
-  <v-navigation-drawer v-model="drawer" v-for="tool in tools" :key="tool">
+  <v-navigation-drawer v-for="tool in tools" :key="tool" v-model="drawer">
     <v-list lines="two" :role="null">
       <v-list-item
-        :title="$t(`tools.${tool}.title`)"
         :subtitle="$t(`tools.${tool}.descriptionShort`)"
+        :title="$t(`tools.${tool}.title`)"
         :to="i18nUtil.path(tool)"
       >
-        <template v-slot:prepend>
+        <template #prepend>
           <v-avatar size="32">
-            <img :src="`/img/${tool}/32.png`" alt="" width="32" height="32" />
+            <img alt="" height="32" :src="`/img/${tool}/32.png`" width="32" />
           </v-avatar>
         </template>
       </v-list-item>
@@ -47,8 +49,8 @@
 </template>
 
 <script lang="ts" setup>
-const drawer = ref(false);
 import { useTheme } from "vuetify";
+const drawer = ref(false);
 const i18nUtil = useI18nUtil();
 
 onMounted(() => {
@@ -58,7 +60,7 @@ onMounted(() => {
       .matches
       ? "dark"
       : "light";
-    theme.global.name.value = currentTheme;
+    theme.change(currentTheme);
   }
 });
 </script>

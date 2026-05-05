@@ -2,13 +2,13 @@
   <v-text-field
     v-model="model"
     class="centered-input"
-    variant="outlined"
-    hide-details
     :error="!isKanjiValid"
-    @compositionstart="handleCompositionStart"
-    @compositionend="handleCompositionEnd"
-    @input="handleInput"
+    hide-details
     min-width="48px"
+    variant="outlined"
+    @compositionend="handleCompositionEnd"
+    @compositionstart="handleCompositionStart"
+    @input="handleInput"
   />
 </template>
 
@@ -22,11 +22,8 @@ const isKanjiValid = ref(true);
 const typing = ref(false);
 
 const validateKanji = (value: string) => {
-  if (!value || value === "") {
-    isKanjiValid.value = true;
-  } else {
-    isKanjiValid.value = jukugoUtil.isKanji(value);
-  }
+  isKanjiValid.value =
+    !value || value === "" ? true : jukugoUtil.isKanji(value);
 };
 
 const slice = (str: string) => {

@@ -1,4 +1,4 @@
-import { BaseWrapper, DOMWrapper, VueWrapper } from "@vue/test-utils";
+import type { BaseWrapper, DOMWrapper, VueWrapper } from "@vue/test-utils";
 import { expect } from "vitest";
 
 export const findComponent = (
@@ -12,9 +12,10 @@ export const findComponent = (
 
 export const find = (
   wrapper: BaseWrapper<any>,
-  selector: string,
+  cssSelector: string,
 ): DOMWrapper<Element> => {
-  const element = wrapper.find(selector);
+  // eslint-disable-next-line unicorn/no-array-callback-reference -- Vue Test Utils の CSS selector API。
+  const element = wrapper.find(cssSelector);
   expect(element.exists()).toBe(true);
   return element;
 };

@@ -1,6 +1,6 @@
 module.exports = {
-  content: ['dist/**/*.html'],
-  css: ['dist/assets/*.css'],
+  content: ["dist/**/*.html"],
+  css: ["dist/assets/*.css"],
   safelist: {
     standard: [
       /-(leave|enter|appear)(|-(to|from|active))$/,
@@ -11,9 +11,9 @@ module.exports = {
       /button/,
       /input/,
       /select/,
-      /textarea/
+      /textarea/,
     ],
-    greedy: [/data-v-.*/, /^v-/]
+    greedy: [/data-v-.*/, /^v-/],
   },
-  output: 'dist/assets/'
-}
+  output: "dist/assets/",
+};

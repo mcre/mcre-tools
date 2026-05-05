@@ -1,24 +1,25 @@
 <template>
   <v-container>
     <v-menu offset-y>
-      <template v-slot:activator="{ props }">
+      <template #activator="{ props }">
         <v-btn
-          :icon="mdiTranslate"
-          size="small"
           v-bind="props"
           id="language-switcher-button"
+          :icon="mdiTranslate"
+          size="small"
         />
       </template>
+
       <v-list>
         <v-list-item
           v-for="(lang, index) in availableLocales"
+          :id="`language-option-${lang}`"
           :key="index"
           @click="changeLanguage(lang)"
-          :id="`language-option-${lang}`"
         >
           <v-list-item-title>
             {{ messages[lang]?.languageName }}
-            <v-icon v-if="locale === lang" size="small" :icon="mdiCheck" />
+            <v-icon v-if="locale === lang" :icon="mdiCheck" size="small" />
           </v-list-item-title>
         </v-list-item>
       </v-list>
@@ -27,9 +28,9 @@
 </template>
 
 <script lang="ts" setup>
+import type { AvailableLocales } from "@/plugins/i18n";
+import { mdiCheck, mdiTranslate } from "@mdi/js";
 import { useI18n } from "vue-i18n";
-import { mdiTranslate, mdiCheck } from "@mdi/js";
-import { AvailableLocales } from "@/plugins/i18n";
 
 const { messages, locale, availableLocales } = useI18n();
 

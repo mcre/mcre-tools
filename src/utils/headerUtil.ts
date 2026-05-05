@@ -1,5 +1,5 @@
-import { useI18n } from "vue-i18n";
 import { computed } from "vue";
+import { useI18n } from "vue-i18n";
 
 export const useHeaderUtil = () => {
   const { t, locale, availableLocales, fallbackLocale } = useI18n();
@@ -14,7 +14,7 @@ export const useHeaderUtil = () => {
     const title = computed(() =>
       tool ? `${t(`tools.${tool}.title`)} - ${site.value}` : site.value,
     );
-    const iconDir = tool ? tool : "favicon";
+    const iconDir = tool || "favicon";
     const description = computed(() =>
       tool ? t(`tools.${tool}.description`) : t(`common.description`),
     );
@@ -25,17 +25,17 @@ export const useHeaderUtil = () => {
       htmlAttrs: {
         lang: localeValue,
       },
-      title: title,
+      title,
       link: [
         ...availableLocales.map((lang) => ({
           rel: "alternate",
           hreflang: lang,
-          href: `${distUrl}/${lang}/${tool ? tool : ""}`,
+          href: `${distUrl}/${lang}/${tool || ""}`,
         })),
         {
           rel: "alternate",
           hreflang: "x-default",
-          href: `${distUrl}/${fallbackLocale.value}/${tool ? tool : ""}`,
+          href: `${distUrl}/${fallbackLocale.value}/${tool || ""}`,
         },
         {
           id: "favicon-16",
@@ -96,7 +96,7 @@ export const useHeaderUtil = () => {
           content: `${distUrl}/img/${iconDir}/180.png`,
         },
       ],
-    };
+    } as any;
   };
 
   const getOgpHead = () => {
@@ -131,7 +131,7 @@ export const useHeaderUtil = () => {
           content: imageFullPath,
         },
       ],
-    };
+    } as any;
   };
 
   return {

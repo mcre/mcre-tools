@@ -1,10 +1,10 @@
-import { routerOptions } from "./router";
+import { ViteSSG } from "vite-ssg";
 
+import { availableLocales, defaultLocale, setupI18n } from "@/plugins/i18n";
 import { setupVuetify } from "@/plugins/vuetify";
-import { setupI18n, availableLocales, defaultLocale } from "@/plugins/i18n";
 
 import App from "./App.vue";
-import { ViteSSG } from "vite-ssg";
+import { routerOptions } from "./router";
 
 import "@/styles/global.scss";
 import "@fontsource-variable/roboto-flex";
@@ -19,7 +19,7 @@ export const createApp = ViteSSG(
       app.use(i18n);
       app.use(vuetify);
 
-      router.beforeEach((to, from, next) => {
+      router.beforeEach((to) => {
         const locale = availableLocales.find((loc) =>
           to.path.startsWith(`/${loc}`),
         );
@@ -31,20 +31,17 @@ export const createApp = ViteSSG(
           if (currentLocale.value !== locale) {
             currentLocale.value = locale;
           }
-          next(); // そのまま進む
         } else {
-          // ロケールがない場合、デフォルトにリダイレクト
           const toPath = to.path == "/" ? "" : to.path;
-          return next({
+          return {
             path: `/${defaultLocale}${toPath}`,
             query: to.query,
             hash: to.hash,
-          });
+          };
         }
       });
     } else {
-      // SSGのときはページごとにi18nインスタンスをつくる
-      router.beforeEach((to, from, next) => {
+      router.beforeEach((to) => {
         const locale =
           availableLocales.find((loc) => to.path.startsWith(`/${loc}`)) ||
           defaultLocale;
@@ -53,7 +50,6 @@ export const createApp = ViteSSG(
         const vuetify = setupVuetify(i18n);
         app.use(i18n);
         app.use(vuetify);
-        next();
       });
     }
   },

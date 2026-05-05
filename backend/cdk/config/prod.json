@@ -1,8 +1,14 @@
 {
   "prefix": "mcre-tools",
-  "account_id": "118834186871",
-  "cdk_identifier": "hnb659fds",
   "tags": [{ "key": "project", "value": "mcre-tools" }],
+  "aws": {
+    "account_id": "118834186871"
+  },
+  "vite_env": {},
+  "github": {
+    "owner": "mcre",
+    "repo": "mcre-tools"
+  },
   "iam": {
     "open_id_connect_provider": {
       "github_arn": "arn:aws:iam::118834186871:oidc-provider/token.actions.githubusercontent.com"
@@ -18,12 +24,20 @@
   },
   "lambda": {
     "api": {
+      "env": {
+        "LOG_LEVEL": "INFO"
+      },
       "memory": 128,
-      "timeout_in_seconds": 60
+      "timeout_in_seconds": 60,
+      "log_retention": "ONE_YEAR"
     },
     "ogp": {
+      "env": {
+        "LOG_LEVEL": "INFO"
+      },
       "memory": 512,
-      "timeout_in_seconds": 30
+      "timeout_in_seconds": 30,
+      "log_retention": "ONE_YEAR"
     }
   },
   "api-gateway": {

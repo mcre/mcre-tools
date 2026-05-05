@@ -1,8 +1,8 @@
+import { type I18n, useI18n } from "vue-i18n";
 import { createVuetify } from "vuetify";
-import "vuetify/styles";
 import { aliases, mdi } from "vuetify/iconsets/mdi-svg";
-import { useI18n, I18n } from "vue-i18n";
 import { createVueI18nAdapter } from "vuetify/locale/adapters/vue-i18n";
+import "vuetify/styles";
 
 export const setupVuetify = (i18nInstance: I18n) => {
   return createVuetify({

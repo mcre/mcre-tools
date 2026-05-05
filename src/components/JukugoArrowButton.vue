@@ -1,19 +1,19 @@
 <template>
   <v-btn
     :icon="model ? forwardIcon : reverseIcon"
-    variant="text"
-    tabindex="-1"
     size="small"
+    tabindex="-1"
+    variant="text"
     @click="model = !model"
   />
 </template>
 
 <script lang="ts" setup>
 import {
-  mdiArrowUpThick,
   mdiArrowDownThick,
   mdiArrowLeftThick,
   mdiArrowRightThick,
+  mdiArrowUpThick,
 } from "@mdi/js";
 import { computed } from "vue";
 

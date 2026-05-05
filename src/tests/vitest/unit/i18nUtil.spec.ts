@@ -1,7 +1,7 @@
-import { describe, it, expect, vi } from "vitest";
-import { useI18nUtil } from "@/utils/i18nUtil";
-import { useI18n } from "vue-i18n";
 import type { WritableComputedRef } from "vue";
+import { describe, expect, it, vi } from "vitest";
+import { useI18n } from "vue-i18n";
+import { useI18nUtil } from "@/utils/i18nUtil";
 
 // useI18nをモック
 vi.mock("vue-i18n", () => ({

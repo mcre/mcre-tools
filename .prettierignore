@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.vite-ssg-temp/
+cdk.out/
+backend/cdk/cdk.out/
+backend/cdk/work/
+backend/cdk/.venv/
+backend/cdk/resource-files/
+backend/cdk/layers/*.zip
+
+src/apis/
+src/auto-imports.d.ts
+src/components.d.ts

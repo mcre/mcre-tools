@@ -1,0 +1,267 @@
+name: deploy
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+    paths:
+      - .github/workflows/deploy.yaml
+      - backend/cdk/**
+      - backend/lambda/**
+      - public/**
+      - src/**
+      - env.d.ts
+      - index.html
+      - openapi.yaml
+      - package-lock.json
+      - package.json
+      - playwright.config.ts
+      - eslint.config.js
+      - tsconfig*.json
+      - vite.config.mts
+      - vitest.config.mts
+  workflow_dispatch:
+
+env:
+  ENV_NAME: >-
+    ${{ github.ref == 'refs/heads/main' && 'prod' ||
+        github.ref == 'refs/heads/dev'  && 'dev' }}
+  AWS_IAM_ROLE_ARN: >-
+    ${{ github.ref == 'refs/heads/main' && vars.AWS_IAM_ROLE_ARN_PROD ||
+        github.ref == 'refs/heads/dev'  && vars.AWS_IAM_ROLE_ARN_DEV }}
+  DEFAULT_REGION: us-east-1
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Use Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install Node modules
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Install CDK Python modules
+        run: |
+          python3 -m venv backend/cdk/.venv
+          backend/cdk/.venv/bin/python -m pip install -r backend/cdk/requirements-dev.txt
+
+      - name: Format check
+        run: npm run format:check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type check
+        run: npm run type-check
+
+      - name: Unit tests
+        run: npm run test:unit
+
+      - name: Build SSG
+        run: npm run build
+
+      - name: E2E tests against build preview
+        run: npm run e2e
+
+      - name: Lambda tests
+        run: npm run lambda:test
+
+      - name: CDK synth
+        run: |
+          CDK_ENV="${{ env.ENV_NAME }}" npm run cdk -- synth --all
+
+  deploy-cdk:
+    runs-on: ubuntu-latest
+    needs:
+      - verify
+    outputs:
+      PREFIX: ${{ steps.output-step.outputs.PREFIX }}
+      CLOUDFRONT_DISTRIBUTION: ${{ steps.output-step.outputs.CLOUDFRONT_DISTRIBUTION }}
+      BUCKET_DISTRIBUTION: ${{ steps.output-step.outputs.BUCKET_DISTRIBUTION }}
+      VITE_ENV: ${{ steps.output-step.outputs.VITE_ENV }}
+      LAMBDA_FUNCTIONS: ${{ steps.output-step.outputs.LAMBDA_FUNCTIONS }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Use Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install Node modules
+        run: npm ci
+
+      - name: Install Python modules
+        run: |
+          python3 -m venv backend/cdk/.venv
+          backend/cdk/.venv/bin/python -m pip install -r backend/cdk/requirements.txt
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ env.AWS_IAM_ROLE_ARN }}
+          aws-region: ${{ env.DEFAULT_REGION }}
+
+      - name: CDK Deploy
+        run: |
+          CDK_ENV="${{ env.ENV_NAME }}" npm run cdk -- deploy --all --require-approval never --outputs-file cdk-outputs.json
+
+      - name: Extract Outputs
+        id: output-step
+        working-directory: backend/cdk
+        run: |
+          if [ "${{ env.ENV_NAME }}" = "prod" ]; then
+            STACK_NAME_JP="mcre-tools-stack"
+            STACK_NAME_US="mcre-tools-stack-us-east-1"
+          else
+            STACK_NAME_JP="mcre-tools-dev-ap-northeast-1"
+            STACK_NAME_US="mcre-tools-dev-us-east-1"
+          fi
+
+          PREFIX=$(jq -r --arg STACK_NAME_JP "$STACK_NAME_JP" '.[$STACK_NAME_JP].Prefix' cdk-outputs.json)
+          CLOUDFRONT_DISTRIBUTION=$(jq -r --arg STACK_NAME_US "$STACK_NAME_US" '.[$STACK_NAME_US].CloudfrontDistribution' cdk-outputs.json)
+          BUCKET_DISTRIBUTION=$(jq -r --arg STACK_NAME_US "$STACK_NAME_US" '.[$STACK_NAME_US].BucketDistribution' cdk-outputs.json)
+          J=$(jq -r --arg STACK_NAME_JP "$STACK_NAME_JP" '.[$STACK_NAME_JP].ViteEnvJp // {}' cdk-outputs.json)
+          U=$(jq -r --arg STACK_NAME_US "$STACK_NAME_US" '.[$STACK_NAME_US].ViteEnvUs // {}' cdk-outputs.json)
+          VITE_ENV=$(jq -n -c --argjson jp "$J" --argjson us "$U" '($jp // {}) * ($us // {})')
+          LAMBDA_FUNCTIONS=$(jq -r --arg STACK_NAME_JP "$STACK_NAME_JP" '.[$STACK_NAME_JP].LambdaFunctions' cdk-outputs.json)
+          echo "PREFIX=${PREFIX}" >> "$GITHUB_OUTPUT"
+          echo "CLOUDFRONT_DISTRIBUTION=${CLOUDFRONT_DISTRIBUTION}" >> "$GITHUB_OUTPUT"
+          echo "BUCKET_DISTRIBUTION=${BUCKET_DISTRIBUTION}" >> "$GITHUB_OUTPUT"
+          echo "VITE_ENV=${VITE_ENV}" >> "$GITHUB_OUTPUT"
+          echo "LAMBDA_FUNCTIONS=${LAMBDA_FUNCTIONS}" >> "$GITHUB_OUTPUT"
+
+  deploy-lambda:
+    runs-on: ubuntu-latest
+    needs:
+      - deploy-cdk
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Use Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install Python modules
+        run: pip3 install awscli
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ env.AWS_IAM_ROLE_ARN }}
+          aws-region: ${{ env.DEFAULT_REGION }}
+
+      - name: Deploy Lambda functions
+        run: |
+          IFS=',' read -r -a arr <<< "${{ needs.deploy-cdk.outputs.LAMBDA_FUNCTIONS }}"
+          for fn in "${arr[@]}"; do
+            [ -n "$fn" ] || continue
+            short_name="${fn/${{ needs.deploy-cdk.outputs.PREFIX }}-/}"
+            pushd "./backend/lambda/src/${short_name}"
+            cp ../util.py ./
+            if [ "$short_name" = "ogp" ]; then
+              rm -rf assets
+              cp -R ../../ogp/assets ./assets
+            fi
+            rm -f package.zip
+            zip -r package.zip .
+            popd
+            aws lambda update-function-code \
+              --region ap-northeast-1 \
+              --function-name "$fn" \
+              --zip-file "fileb://./backend/lambda/src/${short_name}/package.zip"
+          done
+
+  deploy-node:
+    runs-on: ubuntu-latest
+    needs:
+      - deploy-cdk
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Write CDK outputs to .env.production
+        run: |
+          VITE_ENV_JSON='${{ needs.deploy-cdk.outputs.VITE_ENV }}'
+          touch .env.production
+
+          echo "$VITE_ENV_JSON" | jq -r 'to_entries | .[] | "\(.key)=\(.value)"' | while IFS= read -r line; do
+            key="${line%%=*}"
+            sed -i "/^$key=/d" .env.production
+            echo "$line" >> .env.production
+          done
+
+      - name: Install Node modules
+        run: npm ci
+
+      - name: Build SSG for target environment
+        run: npm run build
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ env.AWS_IAM_ROLE_ARN }}
+          aws-region: ${{ env.DEFAULT_REGION }}
+
+      - name: Sync /assets with S3 (Cache-Control)
+        run: |
+          aws s3 sync dist/assets s3://${{ needs.deploy-cdk.outputs.BUCKET_DISTRIBUTION }}/assets \
+            --follow-symlinks \
+            --delete \
+            --cache-control "max-age=31536000"
+
+      - name: Sync /img with S3 (Cache-Control)
+        run: |
+          aws s3 sync dist/img s3://${{ needs.deploy-cdk.outputs.BUCKET_DISTRIBUTION }}/img \
+            --follow-symlinks \
+            --delete \
+            --cache-control "max-age=31536000"
+
+      - name: Sync other files with S3 (No Cache-Control)
+        run: |
+          aws s3 sync dist s3://${{ needs.deploy-cdk.outputs.BUCKET_DISTRIBUTION }} \
+            --exclude "assets/*" \
+            --exclude "img/*" \
+            --follow-symlinks \
+            --delete
+
+      - name: Invalidate CloudFront
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id "${{ needs.deploy-cdk.outputs.CLOUDFRONT_DISTRIBUTION }}" \
+            --paths "/*"

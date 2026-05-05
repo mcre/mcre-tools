@@ -1,82 +1,54 @@
-# CDK コマンドメモ
+# CDK
 
-## 設計方針について
+`tools.mcre.info` の CloudFront/S3/API Gateway/Lambda/DynamoDB/GitHub OIDC を作成する CDK app。
 
-configのenvを変更することにより、別のAWSアカウントや同じアカウント内に独立環境を作成できるようにしたい。
-そうでない場合はできるだけPythonコード内にハードコードする。
+## 環境切り替え
 
-## 前提とするリソースについて
+`CDK_ENV` で環境を切り替える。
+
+- `CDK_ENV=dev`: `tools-dev.mcre.info` 系
+- `CDK_ENV=prod`: `tools.mcre.info` 系
+
+prod は既存 stack 名と domain を維持する。
+
+## 前提リソース
 
 下記は手動で作成する。
 
-- Route53ドメインとHostedZone
+- Route53 domain と hosted zone
 - Open ID Connect Provider
-  - AWSアカウント上に複数の同じProviderを作成することができないため。
+  - AWS アカウント上に複数の同じ provider を作成できないため。
 
-## Github Actionsの権限について
+## GitHub Actions の権限
 
-Github Actions自体でもCDKのDeployを行っているが、そのためのIAM RoleはCDKで作成したものため、初回のCDK Deployはローカル環境から別の権限で実施する必要がある。
-
-## Github Actionsの環境変数
-
-- Variables
-  - `AWS_IAM_ROLE_ARN` CDKのiam-role-github-actions
+GitHub Actions 用 IAM Role は CDK が作成する。そのため初回だけはローカルから別権限で CDK deploy する。
 
 ## 仮想環境
 
-各コマンドは仮想環境上で実行する必要がある。
-
-仮想環境の作成
-
-```
+```sh
 cd backend/cdk
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements.txt
+python3.13 -m venv .venv
+.venv/bin/python -m pip install -r requirements-dev.txt
 ```
 
-仮想環境の入り方
+## Commands
 
-```
-cd backend/cdk
-source .venv/bin/activate
-```
-
-## アーキテクチャ図生成の初期設定
-
-初期設定
-
-```
-npm install cdk-dia
-brew install graphviz
+```sh
+npm run cdk:synth:dev
+npm run cdk:diff:dev
+npm run cdk:deploy:dev
+npm run cdk:synth:prod
+npm run cdk:diff:prod
+npm run cdk:deploy:prod
 ```
 
+CDK CLI は repository の npm devDependency を使う。
 
-## コマンド
+## Outputs
 
-まず、env.json の env 値が `prod` になっていることを確認する。
+GitHub Actions は CDK outputs から `.env.production` を生成し、SSG build に渡す。
 
-CDK から CloudFormation Template をつくる。
-
-```
-cdk --profile m_cre-super-user synth
-cdk-dia  # アーキテクチャ図の更新
-```
-
-synth が通ったあとはデプロイする
-
-```
-cdk --profile m_cre-super-user deploy --all
-```
-
-(差分を見るとき)
-
-```
-cdk --profile m_cre-super-user diff
-```
-
-(破棄するとき)
-
-```
-cdk --profile m_cre-super-user destroy
-```
+- `ViteEnvJp`: `VITE_API_DOMAIN_NAME` と `VITE_OGP_DOMAIN_NAME`
+- `ViteEnvUs`: `VITE_DISTRIBUTION_DOMAIN_NAME`
+- `BucketDistribution`: SSG deploy 先 bucket
+- `CloudfrontDistribution`: invalidation 対象 distribution

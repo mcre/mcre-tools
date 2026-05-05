@@ -23,5 +23,6 @@ export const setupI18n = (locale?: string) => {
     locale: locale || defaultLocale,
     fallbackLocale: locale || defaultLocale,
     messages,
+    warnHtmlMessage: false,
   });
 };

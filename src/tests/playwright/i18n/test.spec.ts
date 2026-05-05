@@ -1,4 +1,14 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
+
+import { mockJukugoApi } from "../helpers/jukugoApi";
+
+const currentPathAndQuery = (urlString: string) => {
+  const url = new URL(urlString);
+  return {
+    path: url.pathname,
+    query: Object.fromEntries(url.searchParams.entries()),
+  };
+};
 
 test.describe("i18n", () => {
   test("日本語のページが表示される", async ({ page }) => {
@@ -30,6 +40,8 @@ test.describe("i18n", () => {
   });
 
   test("言語指定なしURLの場合日本語にリダイレクトされる", async ({ page }) => {
+    await mockJukugoApi(page);
+
     await page.goto("/jukugo");
     await expect(page).toHaveURL("/ja/jukugo");
     await expect(page.locator("h1")).toHaveText("熟語パズル");
@@ -37,9 +49,21 @@ test.describe("i18n", () => {
     await page.goto(
       "/jukugo?t=%E9%95%B7&r=%E5%8C%96&b=%E8%88%97&l=%E6%B5%B7&ar=0&ab=0&a=%E8%80%81",
     );
-    await expect(page).toHaveURL(
-      "/ja/jukugo?t=%E9%95%B7&r=%E5%8C%96&b=%E8%88%97&l=%E6%B5%B7&ar=0&ab=0&a=%E8%80%81",
-    );
+    await expect(page).toHaveURL(/\/ja\/jukugo/);
+    await expect
+      .poll(() => currentPathAndQuery(page.url()))
+      .toEqual({
+        path: "/ja/jukugo",
+        query: {
+          t: "長",
+          b: "舗",
+          ab: "0",
+          l: "海",
+          r: "化",
+          ar: "0",
+          a: "老",
+        },
+      });
     await expect(page.locator("h1")).toHaveText("熟語パズル");
 
     await page.goto("/");

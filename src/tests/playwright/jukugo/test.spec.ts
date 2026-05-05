@@ -1,6 +1,12 @@
-import { test, expect, Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
+
+import { mockJukugoApi } from "../helpers/jukugoApi";
 
 const positions = ["top", "left", "right", "bottom"] as const;
+
+const currentQuery = (page: Page) =>
+  Object.fromEntries(new URL(page.url()).searchParams.entries());
 
 async function jukugoTest(
   page: Page,
@@ -9,8 +15,7 @@ async function jukugoTest(
   inputs: { c: string; reverse?: boolean }[],
   expectedQueryParams?: Record<string, string>,
 ) {
-  for (let i = 0; i < positions.length; i++) {
-    const pos = positions[i];
+  for (const [i, pos] of positions.entries()) {
     const input = inputs[i];
     if (input?.c) await page.locator(`#input-${pos}`).fill(input.c);
     if (input?.reverse) await page.locator(`#arrow-${pos}`).click();
@@ -18,24 +23,19 @@ async function jukugoTest(
   const answer = page.locator("#answer");
   const numOfAnswers = page.locator("#num-of-answers div");
 
-  // 読込中
-  await expect(answer).toHaveValue(""); // 一時的に空欄になる
-  await expect(numOfAnswers).toHaveText(`候補数: -`);
-
-  // 読み込み完了
   await expect(answer).toHaveValue(expectedAnswer);
   await expect(numOfAnswers).toHaveText(`候補数: ${expectedNumOfAnswers}`);
 
   if (expectedQueryParams) {
-    // クエリパラメータのチェック
-    const url = new URL(page.url());
-    const actualParams = Object.fromEntries(url.searchParams.entries());
-
-    expect(actualParams).toEqual(expectedQueryParams);
+    await expect.poll(() => currentQuery(page)).toEqual(expectedQueryParams);
   }
 }
 
-test.describe.parallel("jukugo", () => {
+test.describe("jukugo", () => {
+  test.beforeEach(async ({ page }) => {
+    await mockJukugoApi(page);
+  });
+
   test("「老」", async ({ page }) => {
     await page.goto("/ja/jukugo");
 
@@ -314,18 +314,17 @@ test.describe.parallel("jukugo", () => {
     await expect(page.locator("#answer")).toHaveValue("本");
     await expect(items.nth(selectItem + 1)).toHaveClass(/v-list-item--active/);
 
-    // クエリパラメータの更新を確認
-    const url = new URL(page.url());
-    const actualParams = Object.fromEntries(url.searchParams.entries());
-    expect(actualParams).toEqual({
-      t: "長",
-      l: "海",
-      r: "化",
-      b: "舗",
-      ar: "0",
-      ab: "0",
-      a: "本",
-      id: `${selectItem}`,
-    });
+    await expect
+      .poll(() => currentQuery(page))
+      .toEqual({
+        t: "長",
+        l: "海",
+        r: "化",
+        b: "舗",
+        ar: "0",
+        ab: "0",
+        a: "本",
+        id: `${selectItem}`,
+      });
   });
 });

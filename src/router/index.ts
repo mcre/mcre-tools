@@ -1,24 +1,24 @@
-import { RouterOptions } from "vite-ssg";
+import type {
+  RouteComponent,
+  RouteRecordRaw,
+  RouterScrollBehavior,
+} from "vue-router";
+import Layout from "@/layouts/default.vue";
+import Index from "@/pages/index.vue";
+import Jukugo from "@/pages/jukugo.vue";
+import NotFound from "@/pages/not-found.vue";
 import { availableLocales } from "@/plugins/i18n";
 
-import Layout from "@/layouts/default.vue";
-
-import Index from "@/pages/index.vue";
-import NotFound from "@/pages/not-found.vue";
-
-import Jukugo from "@/pages/jukugo.vue";
-
-const toolsComponents: { [key: string]: Component } = {
+const toolsComponents: Record<string, RouteComponent> = {
   jukugo: Jukugo,
 };
 export const tools = Object.keys(toolsComponents);
 
-const generateRoutes = () => {
-  const routes = [];
+const generateRoutes = (): RouteRecordRaw[] => {
+  const routes: RouteRecordRaw[] = [];
 
   for (const locale of availableLocales) {
-    const children = [];
-    children.push({ path: "", component: Index });
+    const children: RouteRecordRaw[] = [{ path: "", component: Index }];
 
     for (const path in toolsComponents) {
       if (toolsComponents.hasOwnProperty(path)) {
@@ -28,7 +28,7 @@ const generateRoutes = () => {
 
     children.push({ path: ":pathMatch(.*)*", component: NotFound });
     routes.push({
-      path: `/${locale}/`,
+      path: `/${locale}`,
       component: Layout,
       children,
     });
@@ -42,15 +42,17 @@ const generateRoutes = () => {
   return routes;
 };
 
-export const routerOptions: RouterOptions = {
+const scrollBehavior: RouterScrollBehavior = (to, from) => {
+  return new Promise((resolve) => {
+    if (to.hash) {
+      resolve({ el: to.hash });
+    } else if (from.path !== to.path) {
+      resolve({ top: 0 });
+    }
+  });
+};
+
+export const routerOptions = {
   routes: generateRoutes(),
-  scrollBehavior(to, from, savedPosition) {
-    return new Promise((resolve) => {
-      if (to.hash) {
-        resolve({ el: to.hash });
-      } else if (from.path !== to.path) {
-        resolve({ top: 0 });
-      }
-    });
-  },
+  scrollBehavior,
 };

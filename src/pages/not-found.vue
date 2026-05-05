@@ -5,6 +5,7 @@
         <h1>{{ $t("notFound.title") }}</h1>
       </v-col>
     </v-row>
+
     <v-row>
       <v-col cols="12">
         <v-btn :to="i18nUtil.path('/')">
@@ -16,11 +17,10 @@
 </template>
 
 <script lang="ts" setup>
+import { useHead } from "@unhead/vue";
 import { useI18n } from "vue-i18n";
 const { t } = useI18n();
 const i18nUtil = useI18nUtil();
-
-import { useHead } from "@unhead/vue";
 const headerUtil = useHeaderUtil();
 
 useHead(headerUtil.getHead());
@@ -32,5 +32,5 @@ useHead({
       content: "noindex, nofollow, noarchive",
     },
   ],
-});
+} as any);
 </script>

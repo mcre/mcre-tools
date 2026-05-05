@@ -1,6 +1,6 @@
-$custom-font-family: 'Roboto Flex Variable', sans-serif;
+$custom-font-family: "Roboto Flex Variable", sans-serif;
 
-@use 'vuetify/settings' with (
+@use "vuetify/settings" with (
   $body-font-family: $custom-font-family,
   $heading-font-family: $custom-font-family
 );

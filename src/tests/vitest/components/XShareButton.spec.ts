@@ -1,8 +1,8 @@
 import { mount } from "@vue/test-utils";
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { useRoute } from "vue-router";
-import { find } from "@/tests/vitest/helpers";
 import XShareButton from "@/components/XShareButton.vue";
+import { find } from "@/tests/vitest/helpers";
 
 vi.mock("vue-router", () => ({
   useRoute: vi.fn(),

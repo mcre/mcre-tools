@@ -1,0 +1,78 @@
+{
+  "prefix": "mcre-tools-dev",
+  "tags": [{ "key": "project", "value": "mcre-tools-dev" }],
+  "aws": {
+    "account_id": "118834186871"
+  },
+  "vite_env": {},
+  "github": {
+    "owner": "mcre",
+    "repo": "mcre-tools"
+  },
+  "iam": {
+    "open_id_connect_provider": {
+      "github_arn": "arn:aws:iam::118834186871:oidc-provider/token.actions.githubusercontent.com"
+    }
+  },
+  "dynamodb": {
+    "primary": {
+      "deletion_protection": false,
+      "point_in_time_recovery": false,
+      "max_read_request_units": 1000,
+      "max_write_request_units": 1000
+    }
+  },
+  "lambda": {
+    "api": {
+      "env": {
+        "LOG_LEVEL": "DEBUG"
+      },
+      "memory": 128,
+      "timeout_in_seconds": 60,
+      "log_retention": "THREE_MONTHS"
+    },
+    "ogp": {
+      "env": {
+        "LOG_LEVEL": "DEBUG"
+      },
+      "memory": 512,
+      "timeout_in_seconds": 30,
+      "log_retention": "THREE_MONTHS"
+    }
+  },
+  "api-gateway": {
+    "api": {
+      "domain": {
+        "name": "tools-api-dev",
+        "zone_name": "mcre.info",
+        "base_path": "v1",
+        "hosted_zone_id": "Z330CBZA3E00YU"
+      }
+    },
+    "ogp": {
+      "domain": {
+        "name": "tools-ogp-dev",
+        "zone_name": "mcre.info",
+        "hosted_zone_id": "Z330CBZA3E00YU"
+      }
+    }
+  },
+  "s3": {
+    "dist": {
+      "deletion_protection": false
+    },
+    "ogp": {
+      "deletion_protection": false,
+      "remove_days": 30
+    }
+  },
+  "cloudfront": {
+    "dist": {
+      "domain": {
+        "name": "tools-dev",
+        "zone_name": "mcre.info",
+        "hosted_zone_id": "Z330CBZA3E00YU"
+      }
+    }
+  }
+}
