@@ -28,6 +28,9 @@ from config import get_env_config
 
 config = get_env_config()
 CDK_ROOT = Path(__file__).parent
+DEPLOYED_CLOUDFRONT_CACHE_POLICY_LOGICAL_IDS = {
+    "dist": "distCustomCachePolicyEB4AD228",
+}
 
 
 def _domain_name(domain_config: dict) -> str:
@@ -324,6 +327,9 @@ def create_cloudfront(
         enable_accept_encoding_gzip=True,
         enable_accept_encoding_brotli=True,
     )
+    deployed_logical_id = DEPLOYED_CLOUDFRONT_CACHE_POLICY_LOGICAL_IDS.get(name)
+    if deployed_logical_id:
+        html_cache_policy.node.default_child.override_logical_id(deployed_logical_id)
 
     behavior = cloudfront.BehaviorOptions(
         origin=cloudfront_origins.S3BucketOrigin.with_origin_access_control(bucket),

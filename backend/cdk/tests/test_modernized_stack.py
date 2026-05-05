@@ -1,4 +1,5 @@
 import importlib
+import json
 import os
 import pathlib
 import sys
@@ -112,6 +113,79 @@ class ModernizedStackTest(unittest.TestCase):
 
         jp_template.has_output("ViteEnvJp", Match.any_value())
         us_template.has_output("ViteEnvUs", Match.any_value())
+
+    def test_cloudfront_cache_policy_uses_consistent_construct_id_without_replacement(
+        self,
+    ):
+        cdk_app = importlib.import_module("app")
+        us_stack = next(
+            stack
+            for stack in cdk_app.app.node.children
+            if isinstance(stack, Stack)
+            and stack.stack_name == "mcre-tools-dev-us-east-1"
+        )
+        self.assertIsNotNone(us_stack.node.try_find_child("custom-cache-policy-dist"))
+
+        us_template = Template.from_stack(us_stack)
+        cache_policy_resources = {
+            logical_id: resource
+            for logical_id, resource in us_template.to_json()["Resources"].items()
+            if resource["Type"] == "AWS::CloudFront::CachePolicy"
+            and resource["Properties"]["CachePolicyConfig"]["Name"]
+            == "mcre-tools-dev-dist"
+        }
+
+        self.assertEqual(1, len(cache_policy_resources))
+        self.assertTrue(
+            next(iter(cache_policy_resources)).startswith("distCustomCachePolicy")
+        )
+
+    def test_github_actions_role_can_assume_cdk_bootstrap_roles(self):
+        templates = self._templates()
+        us_template = templates["mcre-tools-dev-us-east-1"]
+        template_json = us_template.to_json()
+        resources = template_json["Resources"].values()
+        github_actions_role = next(
+            resource
+            for resource in resources
+            if resource["Type"] == "AWS::IAM::Role"
+            and resource["Properties"].get("RoleName")
+            == "mcre-tools-dev-github-actions"
+        )
+        statements = [
+            statement
+            for policy in github_actions_role["Properties"]["Policies"]
+            for statement in policy["PolicyDocument"]["Statement"]
+        ]
+        assume_role_statement = next(
+            (
+                statement
+                for statement in statements
+                if statement["Effect"] == "Allow"
+                and statement["Action"] == "sts:AssumeRole"
+            ),
+            None,
+        )
+
+        self.assertIsNotNone(assume_role_statement)
+        assume_role_resources = [
+            json.dumps(resource) for resource in assume_role_statement["Resource"]
+        ]
+        for region in ["ap-northeast-1", "us-east-1"]:
+            for role_type in [
+                "deploy-role",
+                "file-publishing-role",
+                "image-publishing-role",
+                "lookup-role",
+            ]:
+                self.assertTrue(
+                    any(
+                        f"cdk-hnb659fds-{role_type}-" in resource
+                        and region in resource
+                        for resource in assume_role_resources
+                    ),
+                    f"{role_type} in {region}",
+                )
 
 
 if __name__ == "__main__":

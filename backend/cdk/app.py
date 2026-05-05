@@ -91,6 +91,13 @@ lambda_ogp = create_lambda_function(
     layers=[layer_pillow],
 )
 github_actions_lambda_deploy_targets = [lambda_api, lambda_ogp]
+github_actions_cdk_deploy_regions = ["ap-northeast-1", "us-east-1"]
+github_actions_cdk_bootstrap_role_types = [
+    "deploy-role",
+    "file-publishing-role",
+    "image-publishing-role",
+    "lookup-role",
+]
 
 dist_domain_config = config["cloudfront"]["dist"]["domain"]
 dist_domain_name = (
@@ -188,6 +195,14 @@ policies = [
         resources=[
             f"arn:aws:cloudformation:us-east-1:{Aws.ACCOUNT_ID}:stack/{stack_us.stack_name}/*",
             f"arn:aws:cloudformation:ap-northeast-1:{Aws.ACCOUNT_ID}:stack/{stack_jp.stack_name}/*",
+        ],
+    ),
+    iam.PolicyStatement(
+        actions=["sts:AssumeRole"],
+        resources=[
+            f"arn:{Aws.PARTITION}:iam::{Aws.ACCOUNT_ID}:role/cdk-hnb659fds-{role_type}-{Aws.ACCOUNT_ID}-{region}"
+            for region in github_actions_cdk_deploy_regions
+            for role_type in github_actions_cdk_bootstrap_role_types
         ],
     ),
 ]
