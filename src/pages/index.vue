@@ -85,42 +85,54 @@
 
     <v-row>
       <v-col cols="12" sm="4">
-        <v-btn
-          :aria-label="$t('index.aboutTheCreatorLinkLabel')"
-          class="mb-1 mr-2"
-          href="https://mcre.info"
-          :icon="mdiAccountCircle"
-          rel="noopener noreferrer"
-          size="small"
-          target="_blank"
-        />
-        {{ $t("index.aboutTheCreator") }}
+        <div class="reference-link">
+          <v-btn
+            :aria-label="$t('index.aboutTheCreatorLinkLabel')"
+            href="https://mcre.info"
+            :icon="mdiAccountCircle"
+            rel="noopener noreferrer"
+            size="small"
+            target="_blank"
+          />
+
+          <span class="reference-link__label">
+            {{ $t("index.aboutTheCreator") }}
+          </span>
+        </div>
       </v-col>
 
       <v-col cols="12" sm="4">
-        <v-btn
-          :aria-label="$t('index.sourceCodesLinkLabel')"
-          class="mb-1 mr-2"
-          href="https://github.com/mcre/mcre-tools"
-          :icon="mdiGithub"
-          rel="noopener noreferrer"
-          size="small"
-          target="_blank"
-        />
-        {{ $t("index.sourceCodes") }}
+        <div class="reference-link">
+          <v-btn
+            :aria-label="$t('index.sourceCodesLinkLabel')"
+            href="https://github.com/mcre/mcre-tools"
+            :icon="mdiGithub"
+            rel="noopener noreferrer"
+            size="small"
+            target="_blank"
+          />
+
+          <span class="reference-link__label">
+            {{ $t("index.sourceCodes") }}
+          </span>
+        </div>
       </v-col>
 
       <v-col cols="12" sm="4">
-        <v-btn
-          :aria-label="$t('index.aboutLicensesLinkLabel')"
-          class="mb-1 mr-2"
-          href="https://github.com/mcre/mcre-tools/blob/main/LICENSE"
-          :icon="mdiCertificateOutline"
-          rel="noopener noreferrer"
-          size="small"
-          target="_blank"
-        />
-        {{ $t("index.aboutLicenses") }}
+        <div class="reference-link">
+          <v-btn
+            :aria-label="$t('index.aboutLicensesLinkLabel')"
+            href="https://github.com/mcre/mcre-tools/blob/main/LICENSE"
+            :icon="mdiCertificateOutline"
+            rel="noopener noreferrer"
+            size="small"
+            target="_blank"
+          />
+
+          <span class="reference-link__label">
+            {{ $t("index.aboutLicenses") }}
+          </span>
+        </div>
       </v-col>
     </v-row>
   </v-container>
@@ -141,3 +153,15 @@ useHead(headerUtil.getHead());
 
 const i18nUtil = useI18nUtil();
 </script>
+
+<style scoped>
+.reference-link {
+  display: inline-flex;
+  align-items: center;
+  column-gap: 8px;
+}
+
+.reference-link__label {
+  line-height: 1.5;
+}
+</style>

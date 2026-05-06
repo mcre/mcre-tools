@@ -85,6 +85,52 @@ const expectHeadMetadata = async (
   );
 };
 
+const referenceLinkLabels = [
+  "作者について",
+  "ソースコード",
+  "ライセンスに関して",
+] as const;
+
+const getReferenceLinkGaps = async (page: Page) =>
+  page.evaluate((labels) => {
+    const readTextRect = (container: Element, label: string) => {
+      const labelElement = [
+        ...container.querySelectorAll<HTMLElement>(".reference-link__label"),
+      ].find((element) => element.textContent?.trim() === label);
+      if (labelElement) return labelElement.getBoundingClientRect();
+
+      const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+      while (walker.nextNode()) {
+        const node = walker.currentNode;
+        const start = node.textContent?.indexOf(label) ?? -1;
+        if (start < 0) continue;
+
+        const range = document.createRange();
+        range.setStart(node, start);
+        range.setEnd(node, start + label.length);
+        return range.getBoundingClientRect();
+      }
+
+      throw new Error(`Reference link label was not found: ${label}`);
+    };
+
+    return Object.fromEntries(
+      labels.map((label) => {
+        const button = [
+          ...document.querySelectorAll<HTMLElement>("a[aria-label]"),
+        ].find((element) => element.getAttribute("aria-label") === label);
+        const container = button?.parentElement;
+        if (!button || !container) {
+          throw new Error(`Reference link button was not found: ${label}`);
+        }
+
+        const buttonBox = button.getBoundingClientRect();
+        const textBox = readTextRect(container, label);
+        return [label, textBox.left - buttonBox.right];
+      }),
+    );
+  }, referenceLinkLabels);
+
 test.describe("SSG preview layout", () => {
   test("build output keeps home CSS, cards, and images on desktop", async ({
     page,
@@ -242,6 +288,34 @@ test.describe("SSG preview layout", () => {
     await expect(
       page.getByRole("button", { name: "入力をリセット" }),
     ).toBeVisible();
+  });
+
+  test("reference link icon gaps match before and after hydration", async ({
+    baseURL,
+    browser,
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await page.goto("/ja/");
+    const hydratedGaps = await getReferenceLinkGaps(page);
+
+    const noScriptContext = await browser.newContext({
+      baseURL,
+      javaScriptEnabled: false,
+      viewport: { width: 1280, height: 720 },
+    });
+    const noScriptPage = await noScriptContext.newPage();
+    await noScriptPage.goto("/ja/");
+    const ssgGaps = await getReferenceLinkGaps(noScriptPage);
+    await noScriptContext.close();
+
+    for (const label of referenceLinkLabels) {
+      expect(hydratedGaps[label]).toBeGreaterThanOrEqual(7.5);
+      expect(hydratedGaps[label]).toBeLessThanOrEqual(8.5);
+      expect(
+        Math.abs(hydratedGaps[label] - ssgGaps[label]),
+      ).toBeLessThanOrEqual(0.5);
+    }
   });
 
   test("build preview exposes query-specific large OGP metadata after hydration", async ({
