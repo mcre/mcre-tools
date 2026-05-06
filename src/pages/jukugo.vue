@@ -303,29 +303,30 @@
   </v-container>
 
   <div id="button-hide" class="jukugo-action-button jukugo-action-button--hide">
-    <v-btn
-      :aria-label="
-        hideAnswer
-          ? $t(`tools.${tool}.showAnswer`)
-          : $t(`tools.${tool}.hideAnswer`)
-      "
-      :icon="hideAnswer ? mdiEye : mdiEyeOff"
-      size="small"
-      @click="toggleHideAnswer"
-    />
+    <v-fab :icon="true" size="small" @click="toggleHideAnswer">
+      <v-icon :icon="hideAnswer ? mdiEye : mdiEyeOff" />
+
+      <span class="visually-hidden">
+        {{
+          hideAnswer
+            ? $t(`tools.${tool}.showAnswer`)
+            : $t(`tools.${tool}.hideAnswer`)
+        }}
+      </span>
+    </v-fab>
   </div>
 
   <div
     id="button-reset"
     class="jukugo-action-button jukugo-action-button--reset"
   >
-    <v-btn
-      v-show="isModified"
-      :aria-label="$t(`tools.${tool}.reset`)"
-      :icon="mdiEraser"
-      size="small"
-      @click="resetInputs"
-    />
+    <v-fab :active="isModified" :icon="true" size="small" @click="resetInputs">
+      <v-icon :icon="mdiEraser" />
+
+      <span class="visually-hidden">
+        {{ $t(`tools.${tool}.reset`) }}
+      </span>
+    </v-fab>
   </div>
 </template>
 
@@ -502,5 +503,17 @@ table td {
 
 .jukugo-action-button--reset {
   bottom: 60px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 </style>

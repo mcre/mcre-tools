@@ -394,6 +394,8 @@ test.describe("SSG preview layout", () => {
   }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/ja/jukugo/");
+    await expect(page.locator("#button-hide .v-fab")).toBeVisible();
+    await expect(page.locator("#button-reset .v-fab")).toBeAttached();
     const hydratedBox = await getHideAnswerButtonBox(page);
 
     const noScriptContext = await browser.newContext({
