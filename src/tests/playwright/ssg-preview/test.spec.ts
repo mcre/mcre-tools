@@ -131,6 +131,51 @@ const getReferenceLinkGaps = async (page: Page) =>
     );
   }, referenceLinkLabels);
 
+const getHeadingIconGap = async (page: Page, label: string) =>
+  page.evaluate((label) => {
+    const heading = [...document.querySelectorAll("h2")].find((element) =>
+      element.textContent?.includes(label),
+    );
+    if (!heading) throw new Error(`Heading was not found: ${label}`);
+
+    const icon = heading.querySelector(".v-icon");
+    if (!icon) throw new Error(`Heading icon was not found: ${label}`);
+
+    const labelElement = [
+      ...heading.querySelectorAll<HTMLElement>(".section-heading__label"),
+    ].find((element) => element.textContent?.trim() === label);
+    let textBox: DOMRect;
+
+    if (labelElement) {
+      textBox = labelElement.getBoundingClientRect();
+    } else {
+      const walker = document.createTreeWalker(heading, NodeFilter.SHOW_TEXT);
+      while (walker.nextNode()) {
+        const node = walker.currentNode;
+        const start = node.textContent?.indexOf(label) ?? -1;
+        if (start < 0) continue;
+
+        const range = document.createRange();
+        range.setStart(node, start);
+        range.setEnd(node, start + label.length);
+        textBox = range.getBoundingClientRect();
+        const iconBox = icon.getBoundingClientRect();
+        return textBox.left - iconBox.right;
+      }
+
+      throw new Error(`Heading label was not found: ${label}`);
+    }
+
+    const iconBox = icon.getBoundingClientRect();
+    return textBox.left - iconBox.right;
+  }, label);
+
+const getHideAnswerButtonBox = async (page: Page) => {
+  const box = await page.locator("#button-hide button").boundingBox();
+  expect(box).not.toBeNull();
+  return box!;
+};
+
 test.describe("SSG preview layout", () => {
   test("build output keeps home CSS, cards, and images on desktop", async ({
     page,
@@ -316,6 +361,53 @@ test.describe("SSG preview layout", () => {
         Math.abs(hydratedGaps[label] - ssgGaps[label]),
       ).toBeLessThanOrEqual(0.5);
     }
+  });
+
+  test("reference heading icon gap matches before and after hydration", async ({
+    baseURL,
+    browser,
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await page.goto("/ja/");
+    const hydratedGap = await getHeadingIconGap(page, "参考情報");
+
+    const noScriptContext = await browser.newContext({
+      baseURL,
+      javaScriptEnabled: false,
+      viewport: { width: 1280, height: 720 },
+    });
+    const noScriptPage = await noScriptContext.newPage();
+    await noScriptPage.goto("/ja/");
+    const ssgGap = await getHeadingIconGap(noScriptPage, "参考情報");
+    await noScriptContext.close();
+
+    expect(hydratedGap).toBeGreaterThanOrEqual(7.5);
+    expect(hydratedGap).toBeLessThanOrEqual(8.5);
+    expect(Math.abs(hydratedGap - ssgGap)).toBeLessThanOrEqual(0.5);
+  });
+
+  test("jukugo hide-answer button position matches before and after hydration", async ({
+    baseURL,
+    browser,
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/ja/jukugo/");
+    const hydratedBox = await getHideAnswerButtonBox(page);
+
+    const noScriptContext = await browser.newContext({
+      baseURL,
+      javaScriptEnabled: false,
+      viewport: { width: 390, height: 844 },
+    });
+    const noScriptPage = await noScriptContext.newPage();
+    await noScriptPage.goto("/ja/jukugo/");
+    const ssgBox = await getHideAnswerButtonBox(noScriptPage);
+    await noScriptContext.close();
+
+    expect(Math.abs(hydratedBox.x - ssgBox.x)).toBeLessThanOrEqual(0.5);
+    expect(Math.abs(hydratedBox.y - ssgBox.y)).toBeLessThanOrEqual(0.5);
   });
 
   test("build preview exposes query-specific large OGP metadata after hydration", async ({

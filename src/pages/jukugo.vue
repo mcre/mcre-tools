@@ -302,42 +302,31 @@
     </v-row>
   </v-container>
 
-  <v-fab
-    id="button-hide"
-    active
-    app
-    :icon="true"
-    location="bottom end"
-    size="small"
-    @click="toggleHideAnswer"
-  >
-    <v-icon :icon="hideAnswer ? mdiEye : mdiEyeOff" />
-
-    <span class="visually-hidden">
-      {{
+  <div id="button-hide" class="jukugo-action-button jukugo-action-button--hide">
+    <v-btn
+      :aria-label="
         hideAnswer
           ? $t(`tools.${tool}.showAnswer`)
           : $t(`tools.${tool}.hideAnswer`)
-      }}
-    </span>
-  </v-fab>
+      "
+      :icon="hideAnswer ? mdiEye : mdiEyeOff"
+      size="small"
+      @click="toggleHideAnswer"
+    />
+  </div>
 
-  <v-fab
+  <div
     id="button-reset"
-    :active="isModified"
-    app
-    class="mb-12"
-    :icon="true"
-    location="bottom end"
-    size="small"
-    @click="resetInputs"
+    class="jukugo-action-button jukugo-action-button--reset"
   >
-    <v-icon :icon="mdiEraser" />
-
-    <span class="visually-hidden">
-      {{ $t(`tools.${tool}.reset`) }}
-    </span>
-  </v-fab>
+    <v-btn
+      v-show="isModified"
+      :aria-label="$t(`tools.${tool}.reset`)"
+      :icon="mdiEraser"
+      size="small"
+      @click="resetInputs"
+    />
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -501,15 +490,17 @@ table td {
   vertical-align: middle;
 }
 
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+.jukugo-action-button {
+  position: fixed;
+  right: 12px;
+  z-index: 1004;
+}
+
+.jukugo-action-button--hide {
+  bottom: 12px;
+}
+
+.jukugo-action-button--reset {
+  bottom: 60px;
 }
 </style>

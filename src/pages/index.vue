@@ -17,7 +17,13 @@
     <v-row>
       <v-col cols="12">
         <h2>
-          <v-icon start> {{ mdiToolbox }} </v-icon>{{ $t("index.toolList") }}
+          <span class="section-heading">
+            <v-icon class="section-heading__icon" :icon="mdiToolbox" />
+
+            <span class="section-heading__label">
+              {{ $t("index.toolList") }}
+            </span>
+          </span>
         </h2>
       </v-col>
     </v-row>
@@ -49,11 +55,13 @@
     <v-row>
       <v-col cols="12">
         <h2>
-          <v-icon class="mb-1" start>
-            {{ mdiScaleBalance }}
-          </v-icon>
+          <span class="section-heading">
+            <v-icon class="section-heading__icon" :icon="mdiScaleBalance" />
 
-          <span id="termsOfUseTitle">{{ $t("index.termsOfUse") }}</span>
+            <span id="termsOfUseTitle" class="section-heading__label">
+              {{ $t("index.termsOfUse") }}
+            </span>
+          </span>
         </h2>
       </v-col>
     </v-row>
@@ -75,10 +83,16 @@
     <v-row>
       <v-col cols="12">
         <h2>
-          <v-icon class="mb-1" start>
-            {{ mdiInformationOutline }}
-          </v-icon>
-          {{ $t("index.referenceInformation") }}
+          <span class="section-heading">
+            <v-icon
+              class="section-heading__icon"
+              :icon="mdiInformationOutline"
+            />
+
+            <span class="section-heading__label">
+              {{ $t("index.referenceInformation") }}
+            </span>
+          </span>
         </h2>
       </v-col>
     </v-row>
@@ -155,12 +169,18 @@ const i18nUtil = useI18nUtil();
 </script>
 
 <style scoped>
+.section-heading,
 .reference-link {
   display: inline-flex;
   align-items: center;
   column-gap: 8px;
 }
 
+.section-heading__icon {
+  flex: 0 0 auto;
+}
+
+.section-heading__label,
 .reference-link__label {
   line-height: 1.5;
 }
