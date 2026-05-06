@@ -1,15 +1,12 @@
-import type {
-  RouteComponent,
-  RouteRecordRaw,
-  RouterScrollBehavior,
-} from "vue-router";
-import Layout from "@/layouts/default.vue";
-import Index from "@/pages/index.vue";
-import Jukugo from "@/pages/jukugo.vue";
-import NotFound from "@/pages/not-found.vue";
+import type { RouteRecordRaw, RouterScrollBehavior } from "vue-router";
 import { availableLocales } from "@/plugins/i18n";
 
-const toolsComponents: Record<string, RouteComponent> = {
+const Layout = () => import("@/layouts/default.vue");
+const Index = () => import("@/pages/index.vue");
+const Jukugo = () => import("@/pages/jukugo.vue");
+const NotFound = () => import("@/pages/not-found.vue");
+
+const toolsComponents = {
   jukugo: Jukugo,
 };
 export const tools = Object.keys(toolsComponents);
@@ -20,10 +17,8 @@ const generateRoutes = (): RouteRecordRaw[] => {
   for (const locale of availableLocales) {
     const children: RouteRecordRaw[] = [{ path: "", component: Index }];
 
-    for (const path in toolsComponents) {
-      if (toolsComponents.hasOwnProperty(path)) {
-        children.push({ path, component: toolsComponents[path] });
-      }
+    for (const [path, component] of Object.entries(toolsComponents)) {
+      children.push({ path, component });
     }
 
     children.push({ path: ":pathMatch(.*)*", component: NotFound });

@@ -1,4 +1,9 @@
-$custom-font-family: "Roboto Flex Variable", sans-serif;
+$custom-font-family:
+  system-ui,
+  -apple-system,
+  BlinkMacSystemFont,
+  "Segoe UI",
+  sans-serif;
 
 @use "vuetify/settings" with (
   $body-font-family: $custom-font-family,

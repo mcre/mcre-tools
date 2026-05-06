@@ -5,6 +5,7 @@
         <v-btn
           v-bind="props"
           id="language-switcher-button"
+          :aria-label="$t('common.changeLanguage')"
           :icon="mdiTranslate"
           size="small"
         />

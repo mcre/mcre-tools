@@ -92,8 +92,13 @@ test.describe("SSG preview layout", () => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto("/ja");
 
+    const stylesheets = page.locator(
+      'link[rel="stylesheet"][href*="/assets/"]',
+    );
+    await expect(stylesheets.first()).toBeAttached();
+    expect(await stylesheets.count()).toBeGreaterThan(0);
     await expect(
-      page.locator('link[rel="stylesheet"][href*="/assets/"]'),
+      page.locator('script[type="module"][src*="/assets/app-"]'),
     ).toHaveCount(1);
     await expect(page.locator(".v-application")).toBeVisible();
     await expect(page.locator(".v-app-bar")).toBeVisible();
@@ -103,7 +108,12 @@ test.describe("SSG preview layout", () => {
     await expect(toolCard).toBeVisible();
     await expectInsideViewport(toolCard, 1280);
     expect((await toolCard.boundingBox())!.width).toBeGreaterThan(600);
-    await expectLoadedImage(toolCard.locator('img[src="/img/jukugo/32.png"]'));
+    const toolIcon = toolCard.locator('img[src="/img/jukugo/32.png"]');
+    await expectLoadedImage(toolIcon);
+    await expect(toolIcon).toHaveAttribute(
+      "srcset",
+      /\/img\/jukugo\/32\.png(?: 1x)?, \/img\/jukugo\/64\.png 2x/,
+    );
 
     const creator = await page.getByText("作者について").boundingBox();
     const source = await page.getByText("ソースコード").boundingBox();
@@ -202,6 +212,38 @@ test.describe("SSG preview layout", () => {
     expect(robotsText).toContain("User-agent: OAI-SearchBot");
     expect(robotsText).toContain("User-agent: ChatGPT-User");
     expect(robotsText).toContain("User-agent: GPTBot");
+  });
+
+  test("build output exposes accessible names for icon-only controls", async ({
+    page,
+  }) => {
+    await page.goto("/ja");
+
+    await expect(page.getByRole("link", { name: /MCRE TOOLS/ })).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "表示言語を変更" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "作者について" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "ソースコード" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "ライセンスに関して" }),
+    ).toBeVisible();
+
+    await page.goto("/ja/jukugo");
+    await expect(
+      page.getByRole("button", { name: "矢印の向きを切り替える" }).first(),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "答えを隠す" }),
+    ).toBeVisible();
+    await page.locator("#input-top").fill("長");
+    await expect(
+      page.getByRole("button", { name: "入力をリセット" }),
+    ).toBeVisible();
   });
 
   test("build preview exposes query-specific large OGP metadata after hydration", async ({

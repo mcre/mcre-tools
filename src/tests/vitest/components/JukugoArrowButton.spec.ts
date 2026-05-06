@@ -26,6 +26,22 @@ describe("JukugoArrowButton", () => {
     });
   };
 
+  it("アイコンボタンにアクセシブルネームを設定する", () => {
+    const model = ref(true);
+    const w = mount(JukugoArrowButton, {
+      props: {
+        forward: "down",
+        reverse: "up",
+        modelValue: model.value,
+        ariaLabel: "矢印の向きを切り替える",
+      },
+    });
+
+    const btn = findComponent(w, "VBtn");
+
+    expect(btn.attributes("aria-label")).toBe("矢印の向きを切り替える");
+  });
+
   it("クリックによって上下方向が反転する", async () => {
     const model = ref(true);
     const w = createWrapper("down", "up", model);

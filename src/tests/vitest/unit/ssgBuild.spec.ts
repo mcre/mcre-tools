@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
@@ -62,5 +62,33 @@ describeWhenDistExists("SSG build output", () => {
     expect(robotsTxt).toContain("User-agent: OAI-SearchBot");
     expect(robotsTxt).toContain("User-agent: ChatGPT-User");
     expect(robotsTxt).toContain("User-agent: GPTBot");
+  });
+
+  it("keeps initial build output free of eager third-party scripts and webfont assets", () => {
+    const htmlFiles = [
+      "index.html",
+      "ja/index.html",
+      "en/index.html",
+      "ja/jukugo/index.html",
+      "en/jukugo/index.html",
+    ].map((path) => readFileSync(resolve(dist, path), "utf8"));
+    const assetFiles = readdirSync(resolve(dist, "assets"));
+
+    for (const html of htmlFiles) {
+      expect(html).not.toContain("googletagmanager.com/gtag/js");
+      expect(html).not.toContain("pagead2.googlesyndication.com/pagead/js");
+    }
+
+    expect(assetFiles.some((name) => name.includes("roboto-flex"))).toBe(false);
+    expect(
+      assetFiles.some(
+        (name) => name.startsWith("pages-") && name.endsWith(".js"),
+      ),
+    ).toBe(true);
+    expect(
+      assetFiles.some(
+        (name) => name.startsWith("jukugo-") && name.endsWith(".js"),
+      ),
+    ).toBe(true);
   });
 });

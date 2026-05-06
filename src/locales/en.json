@@ -5,14 +5,18 @@
     "title": "MCRE TOOLS",
     "moveToHome": "Move to Home",
     "toggleMenu": "Toggle the Menu",
+    "changeLanguage": "Change language",
     "description": "A collection of useful and fun tools."
   },
   "index": {
     "toolList": "Tools",
     "referenceInformation": "Reference Info",
     "aboutTheCreator": "About the Creator",
+    "aboutTheCreatorLinkLabel": "About the Creator",
     "sourceCodes": "Source Code",
+    "sourceCodesLinkLabel": "Source Code",
     "aboutLicenses": "Licenses",
+    "aboutLicensesLinkLabel": "Licenses",
     "termsOfUse": "Terms of Use",
     "termsOfUseDescription1": "The tools and content on this site are provided for reference only. We cannot guarantee their accuracy or reliability, so please use them at your own discretion and risk.",
     "termsOfUseDescription2": "The site owner is not responsible for any damages that may arise from using this site. Content may change or be removed without prior notice."
@@ -28,7 +32,11 @@
       "description": "This tool helps you solve a traditional Japanese puzzle, known as 'Wado Kaichin', where you guess the kanji in the center based on the surrounding four kanji.",
       "numOfCandidates": "Number of Options",
       "transitionNotice": "Welcome to the new 'Jukugo Puzzle' site.<br />If you came from the old site, please update your bookmark.",
-      "arrowDescription": "You can tap the <span class=\"text-decoration-underline\">arrows</span> to reverse their direction."
+      "arrowDescription": "You can tap the <span class=\"text-decoration-underline\">arrows</span> to reverse their direction.",
+      "toggleArrow": "Toggle arrow direction",
+      "hideAnswer": "Hide answer",
+      "showAnswer": "Show answer",
+      "reset": "Reset inputs"
     }
   }
 }

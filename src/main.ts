@@ -2,12 +2,12 @@ import { ViteSSG } from "vite-ssg";
 
 import { availableLocales, defaultLocale, setupI18n } from "@/plugins/i18n";
 import { setupVuetify } from "@/plugins/vuetify";
+import { scheduleThirdPartyScripts } from "@/utils/thirdPartyScripts";
 
 import App from "./App.vue";
 import { routerOptions } from "./router";
 
 import "@/styles/global.scss";
-import "@fontsource-variable/roboto-flex";
 
 export const createApp = ViteSSG(
   App,
@@ -40,6 +40,8 @@ export const createApp = ViteSSG(
           };
         }
       });
+
+      scheduleThirdPartyScripts();
     } else {
       router.beforeEach((to) => {
         const locale =

@@ -31,7 +31,13 @@
         >
           <template #prepend>
             <v-avatar size="32">
-              <img alt="" height="32" :src="`/img/${tool}/32.png`" width="32" />
+              <img
+                alt=""
+                height="32"
+                :src="`/img/${tool}/32.png`"
+                :srcset="`/img/${tool}/32.png 1x, /img/${tool}/64.png 2x`"
+                width="32"
+              />
             </v-avatar>
           </template>
         </v-card>
@@ -80,6 +86,7 @@
     <v-row>
       <v-col cols="12" sm="4">
         <v-btn
+          :aria-label="$t('index.aboutTheCreatorLinkLabel')"
           class="mb-1 mr-2"
           href="https://mcre.info"
           :icon="mdiAccountCircle"
@@ -92,6 +99,7 @@
 
       <v-col cols="12" sm="4">
         <v-btn
+          :aria-label="$t('index.sourceCodesLinkLabel')"
           class="mb-1 mr-2"
           href="https://github.com/mcre/mcre-tools"
           :icon="mdiGithub"
@@ -104,6 +112,7 @@
 
       <v-col cols="12" sm="4">
         <v-btn
+          :aria-label="$t('index.aboutLicensesLinkLabel')"
           class="mb-1 mr-2"
           href="https://github.com/mcre/mcre-tools/blob/main/LICENSE"
           :icon="mdiCertificateOutline"

@@ -37,7 +37,6 @@
   },
   "dependencies": {
     "@aspida/fetch": "^1.14.0",
-    "@fontsource-variable/roboto-flex": "^5.2.8",
     "@mdi/js": "^7.4.47",
     "@unhead/vue": "^2.1.13",
     "aspida": "^1.14.0",

@@ -11,7 +11,7 @@
     <v-app-bar-title>
       <v-btn
         :active="false"
-        :aria-label="$t('common.moveToHome')"
+        :aria-label="`${$t('common.title')} - ${$t('common.moveToHome')}`"
         :to="i18nUtil.path('/')"
         variant="text"
       >
@@ -34,7 +34,13 @@
       >
         <template #prepend>
           <v-avatar size="32">
-            <img alt="" height="32" :src="`/img/${tool}/32.png`" width="32" />
+            <img
+              alt=""
+              height="32"
+              :src="`/img/${tool}/32.png`"
+              :srcset="`/img/${tool}/32.png 1x, /img/${tool}/64.png 2x`"
+              width="32"
+            />
           </v-avatar>
         </template>
       </v-list-item>

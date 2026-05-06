@@ -13,7 +13,13 @@
     <v-row class="align-center">
       <v-col cols="auto">
         <v-avatar size="32">
-          <img alt="" height="32" :src="`/img/${tool}/32.png`" width="32" />
+          <img
+            alt=""
+            height="32"
+            :src="`/img/${tool}/32.png`"
+            :srcset="`/img/${tool}/32.png 1x, /img/${tool}/64.png 2x`"
+            width="32"
+          />
         </v-avatar>
       </v-col>
 
@@ -63,6 +69,7 @@
                 <jukugo-arrow-button
                   id="arrow-top"
                   v-model="arrows.top"
+                  :aria-label="$t(`tools.${tool}.toggleArrow`)"
                   forward="down"
                   reverse="up"
                   @update:model-value="fetchData"
@@ -87,6 +94,7 @@
                 <jukugo-arrow-button
                   id="arrow-left"
                   v-model="arrows.left"
+                  :aria-label="$t(`tools.${tool}.toggleArrow`)"
                   forward="right"
                   reverse="left"
                   @update:model-value="fetchData"
@@ -124,6 +132,7 @@
                 <jukugo-arrow-button
                   id="arrow-right"
                   v-model="arrows.right"
+                  :aria-label="$t(`tools.${tool}.toggleArrow`)"
                   forward="left"
                   reverse="right"
                   @update:model-value="fetchData"
@@ -148,6 +157,7 @@
                 <jukugo-arrow-button
                   id="arrow-bottom"
                   v-model="arrows.bottom"
+                  :aria-label="$t(`tools.${tool}.toggleArrow`)"
                   forward="up"
                   reverse="down"
                   @update:model-value="fetchData"
@@ -296,22 +306,38 @@
     id="button-hide"
     active
     app
-    :icon="hideAnswer ? mdiEye : mdiEyeOff"
+    :icon="true"
     location="bottom end"
     size="small"
     @click="toggleHideAnswer"
-  />
+  >
+    <v-icon :icon="hideAnswer ? mdiEye : mdiEyeOff" />
+
+    <span class="visually-hidden">
+      {{
+        hideAnswer
+          ? $t(`tools.${tool}.showAnswer`)
+          : $t(`tools.${tool}.hideAnswer`)
+      }}
+    </span>
+  </v-fab>
 
   <v-fab
     id="button-reset"
     :active="isModified"
     app
     class="mb-12"
-    :icon="mdiEraser"
+    :icon="true"
     location="bottom end"
     size="small"
     @click="resetInputs"
-  />
+  >
+    <v-icon :icon="mdiEraser" />
+
+    <span class="visually-hidden">
+      {{ $t(`tools.${tool}.reset`) }}
+    </span>
+  </v-fab>
 </template>
 
 <script lang="ts" setup>
@@ -473,5 +499,17 @@ onMounted(() => {
 table td {
   text-align: center;
   vertical-align: middle;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 </style>

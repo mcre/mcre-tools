@@ -48,6 +48,7 @@ declare global {
   const ref: typeof import('vue').ref
   const resolveComponent: typeof import('vue').resolveComponent
   const routerOptions: typeof import('./router/index').routerOptions
+  const scheduleThirdPartyScripts: typeof import('./utils/thirdPartyScripts').scheduleThirdPartyScripts
   const shallowReactive: typeof import('vue').shallowReactive
   const shallowReadonly: typeof import('vue').shallowReadonly
   const shallowRef: typeof import('vue').shallowRef
@@ -85,6 +86,9 @@ declare global {
   // @ts-ignore
   export type { JukugoPosition, JukugoInputs, JukugoArrows, JukugoAnswer, JukugoSolveState, JukugoQueryState, JukugoSearch } from './composables/useJukugoSolver'
   import('./composables/useJukugoSolver')
+  // @ts-ignore
+  export type { ThirdPartyScriptsOptions } from './utils/thirdPartyScripts'
+  import('./utils/thirdPartyScripts')
 }
 
 // for vue template auto import
@@ -134,6 +138,7 @@ declare module 'vue' {
     readonly ref: UnwrapRef<typeof import('vue')['ref']>
     readonly resolveComponent: UnwrapRef<typeof import('vue')['resolveComponent']>
     readonly routerOptions: UnwrapRef<typeof import('./router/index')['routerOptions']>
+    readonly scheduleThirdPartyScripts: UnwrapRef<typeof import('./utils/thirdPartyScripts')['scheduleThirdPartyScripts']>
     readonly shallowReactive: UnwrapRef<typeof import('vue')['shallowReactive']>
     readonly shallowReadonly: UnwrapRef<typeof import('vue')['shallowReadonly']>
     readonly shallowRef: UnwrapRef<typeof import('vue')['shallowRef']>
