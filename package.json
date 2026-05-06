@@ -24,6 +24,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lambda:test": "python3 -m unittest discover backend/lambda/tests",
+    "cdk:test": "cd backend/cdk && HOME=/tmp/mcre-tools-cdk-home PATH=.venv/bin:$PATH python3 -m unittest discover -s tests",
     "cdk": "cd backend/cdk && PATH=.venv/bin:$PATH cdk",
     "cdk:synth:dev": "CDK_ENV=dev npm run cdk -- synth --all",
     "cdk:diff:dev": "CDK_ENV=dev npm run cdk -- diff --all",

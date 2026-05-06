@@ -109,18 +109,29 @@ def get_jukugo(query_strings):
     ).hexdigest()
     image_key = f"jukugo/{hash_key}.png"
     image_url = f"https://{bucket_name}.s3.ap-northeast-1.amazonaws.com/{image_key}"
+    fallback_image_url = (
+        f"https://{os.getenv('DOMAIN_NAME_DISTRIBUTION')}/img/jukugo/180.png"
+    )
 
     if u.is_exists_in_s3(bucket_name, image_key):
         return u.redirect_response(image_url)
 
-    u.upload_image_to_s3(bucket_name, image_key, generate_jukugo_image(params))
-    return u.redirect_response(image_url)
+    try:
+        u.upload_image_to_s3(bucket_name, image_key, generate_jukugo_image(params))
+        return u.redirect_response(image_url)
+    except Exception as error:
+        u.logger.exception("OGP画像生成中にエラー: %s", error)
+        return u.redirect_response(fallback_image_url)
 
 
 @u.logger.inject_lambda_context(log_event=True)
 def main(event, context):
     request = u.parse_api_request(event)
-    if request.method == "GET" and request.parts in [["jukugo"], ["ja", "jukugo"], ["en", "jukugo"]]:
+    if request.method in ["GET", "HEAD"] and request.parts in [
+        ["jukugo"],
+        ["ja", "jukugo"],
+        ["en", "jukugo"],
+    ]:
         return get_jukugo(request.query_string)
     return u.api_error_response(
         status_code=404,

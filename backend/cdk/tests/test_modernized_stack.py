@@ -4,6 +4,7 @@ import os
 import pathlib
 import sys
 import unittest
+import zipfile
 
 from aws_cdk import App, Stack
 from aws_cdk.assertions import Match, Template
@@ -54,6 +55,16 @@ class ModernizedStackTest(unittest.TestCase):
                 "PublicAccessBlockConfiguration": Match.any_value(),
             },
         )
+
+    def test_pillow_layer_matches_python_313_runtime(self):
+        layer_path = CDK_ROOT / "layers" / "Pillow-11.3.0-py313.zip"
+
+        self.assertTrue(layer_path.exists())
+        with zipfile.ZipFile(layer_path) as archive:
+            names = archive.namelist()
+
+        self.assertTrue(any("cpython-313" in name for name in names))
+        self.assertFalse(any("cpython-312" in name for name in names))
 
     def test_lambda_log_retention_does_not_recreate_default_log_groups(self):
         templates = self._templates()

@@ -86,6 +86,12 @@ jobs:
       - name: Lambda tests
         run: npm run lambda:test
 
+      - name: CDK tests
+        run: npm run cdk:test
+
+      - name: OGP layer image generation smoke
+        run: python3 scripts/verify_ogp_layer_image_generation.py
+
       - name: CDK synth
         run: |
           CDK_ENV="${{ env.ENV_NAME }}" npm run cdk -- synth --all
@@ -98,6 +104,8 @@ jobs:
       PREFIX: ${{ steps.output-step.outputs.PREFIX }}
       CLOUDFRONT_DISTRIBUTION: ${{ steps.output-step.outputs.CLOUDFRONT_DISTRIBUTION }}
       BUCKET_DISTRIBUTION: ${{ steps.output-step.outputs.BUCKET_DISTRIBUTION }}
+      DOMAIN_NAME_DISTRIBUTION: ${{ steps.output-step.outputs.DOMAIN_NAME_DISTRIBUTION }}
+      DOMAIN_NAME_OGP: ${{ steps.output-step.outputs.DOMAIN_NAME_OGP }}
       VITE_ENV: ${{ steps.output-step.outputs.VITE_ENV }}
       LAMBDA_FUNCTIONS: ${{ steps.output-step.outputs.LAMBDA_FUNCTIONS }}
     steps:
@@ -148,6 +156,8 @@ jobs:
           PREFIX=$(jq -r --arg STACK_NAME_JP "$STACK_NAME_JP" '.[$STACK_NAME_JP].Prefix' cdk-outputs.json)
           CLOUDFRONT_DISTRIBUTION=$(jq -r --arg STACK_NAME_US "$STACK_NAME_US" '.[$STACK_NAME_US].CloudfrontDistribution' cdk-outputs.json)
           BUCKET_DISTRIBUTION=$(jq -r --arg STACK_NAME_US "$STACK_NAME_US" '.[$STACK_NAME_US].BucketDistribution' cdk-outputs.json)
+          DOMAIN_NAME_DISTRIBUTION=$(jq -r --arg STACK_NAME_US "$STACK_NAME_US" '.[$STACK_NAME_US].DomainNameDistribution' cdk-outputs.json)
+          DOMAIN_NAME_OGP=$(jq -r --arg STACK_NAME_JP "$STACK_NAME_JP" '.[$STACK_NAME_JP].DomainNameOgp' cdk-outputs.json)
           J=$(jq -r --arg STACK_NAME_JP "$STACK_NAME_JP" '.[$STACK_NAME_JP].ViteEnvJp // {}' cdk-outputs.json)
           U=$(jq -r --arg STACK_NAME_US "$STACK_NAME_US" '.[$STACK_NAME_US].ViteEnvUs // {}' cdk-outputs.json)
           VITE_ENV=$(jq -n -c --argjson jp "$J" --argjson us "$U" '($jp // {}) * ($us // {})')
@@ -155,6 +165,8 @@ jobs:
           echo "PREFIX=${PREFIX}" >> "$GITHUB_OUTPUT"
           echo "CLOUDFRONT_DISTRIBUTION=${CLOUDFRONT_DISTRIBUTION}" >> "$GITHUB_OUTPUT"
           echo "BUCKET_DISTRIBUTION=${BUCKET_DISTRIBUTION}" >> "$GITHUB_OUTPUT"
+          echo "DOMAIN_NAME_DISTRIBUTION=${DOMAIN_NAME_DISTRIBUTION}" >> "$GITHUB_OUTPUT"
+          echo "DOMAIN_NAME_OGP=${DOMAIN_NAME_OGP}" >> "$GITHUB_OUTPUT"
           echo "VITE_ENV=${VITE_ENV}" >> "$GITHUB_OUTPUT"
           echo "LAMBDA_FUNCTIONS=${LAMBDA_FUNCTIONS}" >> "$GITHUB_OUTPUT"
 
@@ -265,3 +277,22 @@ jobs:
           aws cloudfront create-invalidation \
             --distribution-id "${{ needs.deploy-cdk.outputs.CLOUDFRONT_DISTRIBUTION }}" \
             --paths "/*"
+
+  ogp-smoke:
+    runs-on: ubuntu-latest
+    needs:
+      - deploy-cdk
+      - deploy-lambda
+      - deploy-node
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
+      - name: OGP smoke test
+        run: |
+          node scripts/verify-ogp-smoke.mjs "https://${{ needs.deploy-cdk.outputs.DOMAIN_NAME_DISTRIBUTION }}/ja/jukugo?t=%E9%95%B7&a=%E8%80%81"

@@ -203,4 +203,32 @@ test.describe("SSG preview layout", () => {
     expect(robotsText).toContain("User-agent: ChatGPT-User");
     expect(robotsText).toContain("User-agent: GPTBot");
   });
+
+  test("build preview exposes query-specific large OGP metadata after hydration", async ({
+    page,
+  }) => {
+    await page.goto("/ja/jukugo?t=%E9%95%B7&a=%E8%80%81");
+
+    await expect
+      .poll(async () => {
+        const currentPath = await page.evaluate(
+          () => window.location.pathname + window.location.search,
+        );
+        const ogUrl = await page
+          .locator(`head meta[property="og:url"]`)
+          .getAttribute("content");
+        const ogImage = await page
+          .locator(`head meta[property="og:image"]`)
+          .getAttribute("content");
+
+        return (
+          ogUrl === `https://tools.mcre.info${currentPath}` &&
+          ogImage === `https://tools-ogp.mcre.info${currentPath}`
+        );
+      })
+      .toBe(true);
+    await expect(
+      page.locator(`head meta[name="twitter:card"]`),
+    ).toHaveAttribute("content", "summary_large_image");
+  });
 });

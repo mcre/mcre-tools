@@ -70,7 +70,7 @@ policy_s3_ogp_rw = iam.PolicyStatement(
     ],
 )
 
-layer_pillow = create_lambda_layer(stack_jp, "pillow", "Pillow-10.4.0")
+layer_pillow = create_lambda_layer(stack_jp, "pillow", "Pillow-11.3.0-py313")
 
 lambda_api = create_lambda_function(
     stack_jp,
