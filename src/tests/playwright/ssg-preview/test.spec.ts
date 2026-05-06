@@ -92,11 +92,9 @@ test.describe("SSG preview layout", () => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto("/ja");
 
-    const stylesheets = page.locator(
-      'link[rel="stylesheet"][href*="/assets/"]',
-    );
-    await expect(stylesheets.first()).toBeAttached();
-    expect(await stylesheets.count()).toBeGreaterThan(0);
+    await expect(
+      page.locator('link[rel="stylesheet"][href*="/assets/"]'),
+    ).toHaveCount(1);
     await expect(
       page.locator('script[type="module"][src*="/assets/app-"]'),
     ).toHaveCount(1);

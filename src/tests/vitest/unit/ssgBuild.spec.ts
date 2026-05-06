@@ -77,6 +77,9 @@ describeWhenDistExists("SSG build output", () => {
     for (const html of htmlFiles) {
       expect(html).not.toContain("googletagmanager.com/gtag/js");
       expect(html).not.toContain("pagead2.googlesyndication.com/pagead/js");
+      expect(
+        html.match(/<link[^>]+rel="stylesheet"[^>]+href="\/assets\//g) ?? [],
+      ).toHaveLength(1);
     }
 
     expect(assetFiles.some((name) => name.includes("roboto-flex"))).toBe(false);

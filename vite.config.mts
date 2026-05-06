@@ -52,6 +52,9 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 3000,
     },
+    build: {
+      cssCodeSplit: false,
+    },
     ssr: {
       noExternal: ["vuetify", "aspida", "@aspida/fetch"],
     },
