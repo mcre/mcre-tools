@@ -200,10 +200,6 @@ jobs:
             short_name="${fn/${{ needs.deploy-cdk.outputs.PREFIX }}-/}"
             pushd "./backend/lambda/src/${short_name}"
             cp ../util.py ./
-            if [ "$short_name" = "ogp" ]; then
-              rm -rf assets
-              cp -R ../../ogp/assets ./assets
-            fi
             rm -f package.zip
             zip -r package.zip .
             popd

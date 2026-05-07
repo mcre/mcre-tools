@@ -7,18 +7,11 @@ from pathlib import Path
 import util as u
 
 
-ASSET_ROOTS = [
-    Path(__file__).parent / "assets",
-    Path(__file__).parents[2] / "ogp" / "assets",
-]
+ASSET_ROOT = Path(__file__).parent / "assets"
 
 
 def asset_path(relative_path: str) -> str:
-    for root in ASSET_ROOTS:
-        candidate = root / relative_path
-        if candidate.exists():
-            return str(candidate)
-    return str(ASSET_ROOTS[0] / relative_path)
+    return str(ASSET_ROOT / relative_path)
 
 
 def generate_jukugo_image(params):

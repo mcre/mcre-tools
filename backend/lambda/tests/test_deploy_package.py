@@ -14,8 +14,6 @@ def build_package_names(short_name: str) -> set[str]:
         stage = pathlib.Path(temp_dir) / short_name
         shutil.copytree(SRC_ROOT / short_name, stage)
         shutil.copy2(SRC_ROOT / "util.py", stage / "util.py")
-        if short_name == "ogp":
-            shutil.copytree(LAMBDA_ROOT / "ogp" / "assets", stage / "assets")
 
         package_path = pathlib.Path(temp_dir) / "package.zip"
         with zipfile.ZipFile(package_path, "w") as archive:
@@ -42,6 +40,11 @@ class LambdaDeployPackageTest(unittest.TestCase):
         self.assertIn("assets/jukugo/base.png", package_names)
         self.assertIn("assets/jukugo/reverse_arrows.png", package_names)
         self.assertIn("assets/fonts/NotoSansJP-Light.ttf", package_names)
+
+    def test_legacy_lambda_source_layout_is_removed(self):
+        self.assertFalse((LAMBDA_ROOT / "api").exists())
+        self.assertFalse((LAMBDA_ROOT / "ogp").exists())
+        self.assertFalse((LAMBDA_ROOT / "util.py").exists())
 
 
 if __name__ == "__main__":
