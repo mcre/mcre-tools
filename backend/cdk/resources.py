@@ -314,6 +314,14 @@ def create_cloudfront(
     acm_result: Dict[str, Union[acm.Certificate, route53.IHostedZone, str]],
     lambda_edge_version_viewer_request: lambda_.Version,
 ) -> cloudfront.Distribution:
+    def viewer_request_edge_lambdas() -> List[cloudfront.EdgeLambda]:
+        return [
+            cloudfront.EdgeLambda(
+                function_version=lambda_edge_version_viewer_request,
+                event_type=cloudfront.LambdaEdgeEventType.VIEWER_REQUEST,
+            )
+        ]
+
     html_cache_policy = cloudfront.CachePolicy(
         scope,
         f"custom-cache-policy-{name}",
@@ -336,12 +344,7 @@ def create_cloudfront(
         viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         cache_policy=html_cache_policy,
         response_headers_policy=cloudfront.ResponseHeadersPolicy.SECURITY_HEADERS,
-        edge_lambdas=[
-            cloudfront.EdgeLambda(
-                function_version=lambda_edge_version_viewer_request,
-                event_type=cloudfront.LambdaEdgeEventType.VIEWER_REQUEST,
-            )
-        ],
+        edge_lambdas=viewer_request_edge_lambdas(),
     )
 
     resource = cloudfront.Distribution(
@@ -373,6 +376,7 @@ def create_cloudfront(
                 viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
                 cache_policy=cloudfront.CachePolicy.CACHING_OPTIMIZED,
                 response_headers_policy=cloudfront.ResponseHeadersPolicy.SECURITY_HEADERS,
+                edge_lambdas=viewer_request_edge_lambdas(),
             ),
             "/img/*": cloudfront.BehaviorOptions(
                 origin=cloudfront_origins.S3BucketOrigin.with_origin_access_control(
@@ -381,6 +385,7 @@ def create_cloudfront(
                 viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
                 cache_policy=cloudfront.CachePolicy.CACHING_OPTIMIZED,
                 response_headers_policy=cloudfront.ResponseHeadersPolicy.SECURITY_HEADERS,
+                edge_lambdas=viewer_request_edge_lambdas(),
             ),
         },
     )

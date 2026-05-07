@@ -1,4 +1,6 @@
 const URL_DIST = 'https://@{DOMAIN_NAME_DIST}';
+const BASIC_AUTH_ENABLED = @{BASIC_AUTH_ENABLED};
+const BASIC_AUTH_HEADER = '@{BASIC_AUTH_HEADER}';
 const BOTS = [
   'Twitterbot',
   'facebookexternalhit',
@@ -12,6 +14,23 @@ const BOTS = [
 ];
 
 const LOCALES = @{LOCALES};
+
+const getHeader = (headers, name) => {
+  const values = headers[name.toLowerCase()];
+  if (!values || !values[0]) {
+    return '';
+  }
+  return values[0].value;
+};
+
+const unauthorized = () => ({
+  status: '401',
+  statusDescription: 'Unauthorized',
+  headers: {
+    'www-authenticate': [{ key: 'WWW-Authenticate', value: 'Basic' }],
+    'cache-control': [{ key: 'Cache-Control', value: 'no-store' }],
+  },
+});
 
 const generateContent = ({ lang, toolName, toolMessages, requestUrl, imageUrl }) => {
   const siteName = LOCALES[lang].common.title
@@ -48,9 +67,13 @@ exports.handler = async (event) => {
   const request = event.Records[0].cf.request;
   const uri = request.uri;
   const queryString = request.querystring;
-  const userAgent = request.headers['user-agent'][0].value;
+  const userAgent = getHeader(request.headers, 'user-agent');
 
   console.log('URL: ' + uri + ', UA: ' + userAgent + ', QS: ' + queryString);
+
+  if (BASIC_AUTH_ENABLED && getHeader(request.headers, 'authorization') !== BASIC_AUTH_HEADER) {
+    return unauthorized();
+  }
 
   let lang = 'ja';
   const uriLang = uri.split('/')[1];

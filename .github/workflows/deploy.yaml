@@ -295,4 +295,7 @@ jobs:
 
       - name: OGP smoke test
         run: |
+          if [ "${{ env.ENV_NAME }}" = "dev" ]; then
+            export OGP_SMOKE_BASIC_AUTH="mcre:53"
+          fi
           node scripts/verify-ogp-smoke.mjs "https://${{ needs.deploy-cdk.outputs.DOMAIN_NAME_DISTRIBUTION }}/ja/jukugo?t=%E9%95%B7&a=%E8%80%81"

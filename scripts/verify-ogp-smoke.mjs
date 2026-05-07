@@ -74,10 +74,27 @@ function fetchWithTimeout(url, init = {}) {
   });
 }
 
+function readPageAuthorizationHeader() {
+  const explicitHeader = process.env.OGP_SMOKE_AUTH_HEADER;
+  if (explicitHeader) {
+    return explicitHeader;
+  }
+
+  const basicAuth = process.env.OGP_SMOKE_BASIC_AUTH;
+  if (!basicAuth) {
+    return undefined;
+  }
+  return `Basic ${Buffer.from(basicAuth, "utf8").toString("base64")}`;
+}
+
 export async function runOgpSmoke(pageUrl) {
+  const pageAuthorizationHeader = readPageAuthorizationHeader();
   const pageResponse = await fetchWithTimeout(pageUrl, {
     headers: {
       accept: "text/html,*/*",
+      ...(pageAuthorizationHeader
+        ? { authorization: pageAuthorizationHeader }
+        : {}),
     },
   });
   ensure(

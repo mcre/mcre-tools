@@ -82,5 +82,8 @@ describe("deploy workflow", () => {
     expect(JSON.stringify(jobs["ogp-smoke"].steps)).toContain(
       "node scripts/verify-ogp-smoke.mjs",
     );
+    expect(JSON.stringify(jobs["ogp-smoke"].steps)).toContain(
+      "OGP_SMOKE_BASIC_AUTH",
+    );
   });
 });

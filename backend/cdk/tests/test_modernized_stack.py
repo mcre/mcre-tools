@@ -151,6 +151,43 @@ class ModernizedStackTest(unittest.TestCase):
             next(iter(cache_policy_resources)).startswith("distCustomCachePolicy")
         )
 
+    def test_dev_dist_cloudfront_basic_auth_is_configured_for_all_site_behaviors(self):
+        config = importlib.import_module("config").get_env_config()
+        self.assertEqual(
+            {
+                "enabled": True,
+                "username": "mcre",
+                "password": "53",
+            },
+            config["cloudfront"]["dist"]["basic_auth"],
+        )
+
+        templates = self._templates()
+        us_template = templates["mcre-tools-dev-us-east-1"]
+        distribution = next(
+            resource
+            for resource in us_template.to_json()["Resources"].values()
+            if resource["Type"] == "AWS::CloudFront::Distribution"
+        )
+        distribution_config = distribution["Properties"]["DistributionConfig"]
+
+        def has_viewer_request_lambda(behavior):
+            return any(
+                association.get("EventType") == "viewer-request"
+                for association in behavior.get("LambdaFunctionAssociations", [])
+            )
+
+        self.assertTrue(
+            has_viewer_request_lambda(distribution_config["DefaultCacheBehavior"])
+        )
+
+        behavior_by_path = {
+            behavior["PathPattern"]: behavior
+            for behavior in distribution_config["CacheBehaviors"]
+        }
+        for path_pattern in ["/assets/*", "/img/*"]:
+            self.assertTrue(has_viewer_request_lambda(behavior_by_path[path_pattern]))
+
     def test_github_actions_role_can_assume_cdk_bootstrap_roles(self):
         templates = self._templates()
         us_template = templates["mcre-tools-dev-us-east-1"]
