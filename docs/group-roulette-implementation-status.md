@@ -12,13 +12,15 @@
 - 実装コードはまだ追加していない。
 - 計画書は `docs/group-roulette-plan.md` に作成済み。
 - WebSocket はグループルーレット専用ではなく、今後のグループ系ツールでも使えるリアルタイム同期基盤として設計する方針。
+- DynamoDB 設計は `DB.md` を正とし、既存 primary table を拡張する方針。
 
 ## 決定済み事項
 
 - ツール ID は `group-roulette`。
 - URL は `/ja/group-roulette` と `/en/group-roulette`。
 - 同期方式は API Gateway WebSocket + Lambda + DynamoDB。
-- リアルタイム同期用に専用 DynamoDB table を作る。
+- リアルタイム同期用データは `DB.md` に従い、既存 primary table に `id` prefix、`search_key_1`、`order`、`ttl` を追加して保存する。
+- `GroupRouletteRoom|{roomId}` を正の room state とし、GSI は監査、補助一覧、broadcast 対象取得に限定する。
 - ホストだけがルーレットの開始・停止を操作できる。
 - ゲスト名は任意。未入力時は自動表示名を割り当てる。
 - ホストが許可している間、ゲストは候補を即時追加できる。
@@ -32,7 +34,9 @@
 
 - [ ] 計画書を最終確認する。
 - [ ] 失敗するテストを追加する。
-- [ ] CDK に WebSocket API と専用 DynamoDB table のテストを追加する。
+- [ ] CDK に WebSocket API と primary table の TTL/GSI 拡張テストを追加する。
+- [ ] Lambda に primary table の record prefix、`search_key_1`、`order`、`ttl` のテストを追加する。
+- [ ] Lambda に `GroupRouletteRoom` canonical state と条件付き更新/transaction のテストを追加する。
 - [ ] Lambda の realtime handler テストを追加する。
 - [ ] フロントエンドの状態管理テストを追加する。
 - [ ] CDK 実装を追加する。
@@ -47,7 +51,8 @@
 
 1. `docs/group-roulette-plan.md` の未決事項を確認する。
 2. TDD 方針に従い、まず CDK / Lambda / frontend の失敗テストを追加する。
-3. WebSocket 基盤の最小リソースから実装を始める。
+3. `DB.md` に primary table の GSI/TTL とグループルーレット用レコード種別を追記する。
+4. WebSocket 基盤の最小リソースから実装を始める。
 
 ## 未決事項
 
