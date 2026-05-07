@@ -41,6 +41,13 @@ class LambdaDeployPackageTest(unittest.TestCase):
         self.assertIn("assets/jukugo/reverse_arrows.png", package_names)
         self.assertIn("assets/fonts/NotoSansJP-Light.ttf", package_names)
 
+    def test_realtime_package_includes_shared_util(self):
+        package_names = build_package_names("realtime")
+
+        self.assertIn("main.py", package_names)
+        self.assertIn("util.py", package_names)
+        self.assertIn("repository.py", package_names)
+
     def test_legacy_lambda_source_layout_is_removed(self):
         self.assertFalse((LAMBDA_ROOT / "api").exists())
         self.assertFalse((LAMBDA_ROOT / "ogp").exists())

@@ -9,6 +9,7 @@
 ## 現在の状態
 
 - CDK リアルタイム基盤の実装を開始済み。
+- Lambda Realtime 永続化基盤の最小構成を実装済み。
 - 計画書は `docs/group-roulette-plan.md` に作成済み。
 - WebSocket はグループルーレット専用ではなく、今後のグループ系ツールでも使えるリアルタイム同期基盤として設計する方針。
 - DynamoDB 設計は `DB.md` を正とし、既存 primary table を拡張する方針。
@@ -35,12 +36,12 @@
 - [ ] 計画書を最終確認する。
 - [x] 失敗するテストを追加する。
 - [x] CDK に WebSocket API と primary table の TTL/GSI 拡張テストを追加する。
-- [ ] Lambda に primary table の record prefix、`search_key_1`、`order`、`ttl` のテストを追加する。
-- [ ] Lambda に `GroupRouletteRoom` canonical state と条件付き更新/transaction のテストを追加する。
-- [ ] Lambda の realtime handler テストを追加する。
+- [x] Lambda に primary table の record prefix、`search_key_1`、`order`、`ttl` のテストを追加する。
+- [x] Lambda に `GroupRouletteRoom` canonical state と条件付き更新/transaction のテストを追加する。
+- [x] Lambda の realtime handler テストを追加する。
 - [ ] フロントエンドの状態管理テストを追加する。
 - [x] CDK 実装を追加する。
-- [ ] Lambda realtime 基盤を追加する。
+- [x] Lambda realtime 基盤を追加する。
 - [ ] グループルーレット REST API と WebSocket handler を追加する。
 - [ ] 既存 navigation drawer を複数ツール対応へ修正する。
 - [ ] `group-roulette` ページ、composable、ルーティング、i18n、画像を追加する。
@@ -49,9 +50,9 @@
 
 ## 次にやること
 
-1. Lambda に primary table の record prefix、`search_key_1`、`order`、`ttl` の失敗テストを追加する。
-2. Lambda に `GroupRouletteRoom` canonical state と条件付き更新/transaction の失敗テストを追加する。
-3. Realtime Lambda の handler/repository の最小構成を TDD で実装する。
+1. グループルーレットの REST room 作成 API の失敗テストを追加する。
+2. Realtime Lambda の `joinRoom` handler/repository の失敗テストを追加する。
+3. `addOption` WebSocket handler と broadcast 対象取得の失敗テストを追加する。
 
 ## 未決事項
 
@@ -62,3 +63,4 @@
 
 - 2026-05-07: 実装状況ファイルを作成。
 - 2026-05-08: CDK に WebSocket API、Realtime Lambda の器、WebSocket 独自ドメイン、primary table TTL/GSI、`VITE_REALTIME_WS_URL` output を追加。`npm run cdk:test`、`npm run cdk:synth:dev`、`npm run cdk:synth:prod` で確認。
+- 2026-05-08: Lambda に Realtime 永続化基盤の `repository.py` と deploy 可能な `main.py` を追加。`GroupRouletteRoom`、member、connection、option、event、request の key/item と `add_option` transaction を unittest で固定。`npm run lambda:test`、`npm run cdk:test` で確認。
