@@ -11,6 +11,8 @@ from aws_cdk import (
     Size,
     Stack,
     aws_apigateway as apigateway,
+    aws_apigatewayv2 as apigatewayv2,
+    aws_apigatewayv2_integrations as apigatewayv2_integrations,
     aws_certificatemanager as acm,
     aws_cloudfront as cloudfront,
     aws_cloudfront_origins as cloudfront_origins,
@@ -80,7 +82,7 @@ def create_acm_certificate(
 def create_dynamodb_primary_table(scope: Stack) -> dynamodb.Table:
     table_config = config["dynamodb"]["primary"]
     deletion_protection = table_config["deletion_protection"]
-    return dynamodb.Table(
+    table = dynamodb.Table(
         scope,
         "dynamodb-primary",
         table_name=f"{config['prefix']}-primary",
@@ -95,7 +97,17 @@ def create_dynamodb_primary_table(scope: Stack) -> dynamodb.Table:
             RemovalPolicy.RETAIN if deletion_protection else RemovalPolicy.DESTROY
         ),
         partition_key=dynamodb.Attribute(name="id", type=dynamodb.AttributeType.STRING),
+        time_to_live_attribute="ttl",
     )
+    table.add_global_secondary_index(
+        index_name="search_key_1-order-index",
+        partition_key=dynamodb.Attribute(
+            name="search_key_1", type=dynamodb.AttributeType.STRING
+        ),
+        sort_key=dynamodb.Attribute(name="order", type=dynamodb.AttributeType.NUMBER),
+        projection_type=dynamodb.ProjectionType.ALL,
+    )
+    return table
 
 
 def create_s3_bucket(
@@ -246,6 +258,68 @@ def create_apigateway(
         **_a_record_kwargs(acm_result),
         target=route53.RecordTarget.from_alias(
             route53_targets.ApiGatewayDomain(custom_domain)
+        ),
+    )
+    return resource
+
+
+def create_websocket_api(
+    scope: Stack,
+    name: str,
+    target_lambda: lambda_.Function,
+    acm_result: Dict[str, Union[acm.Certificate, route53.IHostedZone, str]],
+) -> apigatewayv2.WebSocketApi:
+    def lambda_integration(route_name: str):
+        return apigatewayv2_integrations.WebSocketLambdaIntegration(
+            f"websocket-lambda-integration-{name}-{route_name}",
+            target_lambda,
+        )
+
+    resource = apigatewayv2.WebSocketApi(
+        scope,
+        f"api-gateway-websocket-{name}",
+        api_name=f"{config['prefix']}-{name}",
+        route_selection_expression="$request.body.type",
+        connect_route_options=apigatewayv2.WebSocketRouteOptions(
+            integration=lambda_integration("connect")
+        ),
+        disconnect_route_options=apigatewayv2.WebSocketRouteOptions(
+            integration=lambda_integration("disconnect")
+        ),
+        default_route_options=apigatewayv2.WebSocketRouteOptions(
+            integration=lambda_integration("default")
+        ),
+    )
+    stage = apigatewayv2.WebSocketStage(
+        scope,
+        f"api-gateway-websocket-stage-{name}",
+        web_socket_api=resource,
+        stage_name="prod",
+        auto_deploy=True,
+    )
+    custom_domain = apigatewayv2.DomainName(
+        scope,
+        f"api-gateway-websocket-domain-{name}",
+        domain_name=acm_result["domain_name"],
+        certificate=acm_result["certificate"],
+    )
+    apigatewayv2.ApiMapping(
+        scope,
+        f"api-gateway-websocket-api-mapping-{name}",
+        api=resource,
+        domain_name=custom_domain,
+        stage=stage,
+    )
+
+    route53.ARecord(
+        scope,
+        f"api-gateway-websocket-a-record-{name}",
+        **_a_record_kwargs(acm_result),
+        target=route53.RecordTarget.from_alias(
+            route53_targets.ApiGatewayv2DomainProperties(
+                custom_domain.regional_domain_name,
+                custom_domain.regional_hosted_zone_id,
+            )
         ),
     )
     return resource

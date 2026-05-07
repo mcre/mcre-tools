@@ -8,8 +8,7 @@
 
 ## 現在の状態
 
-- 仕様検討中。
-- 実装コードはまだ追加していない。
+- CDK リアルタイム基盤の実装を開始済み。
 - 計画書は `docs/group-roulette-plan.md` に作成済み。
 - WebSocket はグループルーレット専用ではなく、今後のグループ系ツールでも使えるリアルタイム同期基盤として設計する方針。
 - DynamoDB 設計は `DB.md` を正とし、既存 primary table を拡張する方針。
@@ -19,6 +18,7 @@
 - ツール ID は `group-roulette`。
 - URL は `/ja/group-roulette` と `/en/group-roulette`。
 - 同期方式は API Gateway WebSocket + Lambda + DynamoDB。
+- WebSocket 独自ドメインは dev `tools-ws-dev.mcre.info`、prod `tools-ws.mcre.info`。
 - リアルタイム同期用データは `DB.md` に従い、既存 primary table に `id` prefix、`search_key_1`、`order`、`ttl` を追加して保存する。
 - `GroupRouletteRoom|{roomId}` を正の room state とし、GSI は監査、補助一覧、broadcast 対象取得に限定する。
 - ホストだけがルーレットの開始・停止を操作できる。
@@ -33,13 +33,13 @@
 ## 作業チェックリスト
 
 - [ ] 計画書を最終確認する。
-- [ ] 失敗するテストを追加する。
-- [ ] CDK に WebSocket API と primary table の TTL/GSI 拡張テストを追加する。
+- [x] 失敗するテストを追加する。
+- [x] CDK に WebSocket API と primary table の TTL/GSI 拡張テストを追加する。
 - [ ] Lambda に primary table の record prefix、`search_key_1`、`order`、`ttl` のテストを追加する。
 - [ ] Lambda に `GroupRouletteRoom` canonical state と条件付き更新/transaction のテストを追加する。
 - [ ] Lambda の realtime handler テストを追加する。
 - [ ] フロントエンドの状態管理テストを追加する。
-- [ ] CDK 実装を追加する。
+- [x] CDK 実装を追加する。
 - [ ] Lambda realtime 基盤を追加する。
 - [ ] グループルーレット REST API と WebSocket handler を追加する。
 - [ ] 既存 navigation drawer を複数ツール対応へ修正する。
@@ -49,17 +49,16 @@
 
 ## 次にやること
 
-1. `docs/group-roulette-plan.md` の未決事項を確認する。
-2. TDD 方針に従い、まず CDK / Lambda / frontend の失敗テストを追加する。
-3. `DB.md` に primary table の GSI/TTL とグループルーレット用レコード種別を追記する。
-4. WebSocket 基盤の最小リソースから実装を始める。
+1. Lambda に primary table の record prefix、`search_key_1`、`order`、`ttl` の失敗テストを追加する。
+2. Lambda に `GroupRouletteRoom` canonical state と条件付き更新/transaction の失敗テストを追加する。
+3. Realtime Lambda の handler/repository の最小構成を TDD で実装する。
 
 ## 未決事項
 
-- WebSocket API の独自ドメイン名。
 - 管理者が 90 日以内の生履歴を見る手段を、当面 AWS コンソール前提にするか、管理画面を別途作るか。
 - ゲスト表示名の重複時に番号を付けるか、そのまま許可するか。
 
 ## 作業ログ
 
 - 2026-05-07: 実装状況ファイルを作成。
+- 2026-05-08: CDK に WebSocket API、Realtime Lambda の器、WebSocket 独自ドメイン、primary table TTL/GSI、`VITE_REALTIME_WS_URL` output を追加。`npm run cdk:test`、`npm run cdk:synth:dev`、`npm run cdk:synth:prod` で確認。

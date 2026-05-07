@@ -125,6 +125,149 @@ class ModernizedStackTest(unittest.TestCase):
         jp_template.has_output("ViteEnvJp", Match.any_value())
         us_template.has_output("ViteEnvUs", Match.any_value())
 
+    def test_primary_table_has_realtime_lookup_index_and_ttl(self):
+        templates = self._templates()
+        jp_template = templates["mcre-tools-dev-ap-northeast-1"]
+
+        jp_template.has_resource_properties(
+            "AWS::DynamoDB::Table",
+            {
+                "TimeToLiveSpecification": {
+                    "AttributeName": "ttl",
+                    "Enabled": True,
+                },
+                "GlobalSecondaryIndexes": Match.array_with(
+                    [
+                        Match.object_like(
+                            {
+                                "IndexName": "search_key_1-order-index",
+                                "KeySchema": [
+                                    {
+                                        "AttributeName": "search_key_1",
+                                        "KeyType": "HASH",
+                                    },
+                                    {"AttributeName": "order", "KeyType": "RANGE"},
+                                ],
+                            }
+                        )
+                    ]
+                ),
+            },
+        )
+
+    def test_realtime_websocket_api_routes_and_domain_are_configured(self):
+        templates = self._templates()
+        jp_template = templates["mcre-tools-dev-ap-northeast-1"]
+
+        jp_template.has_resource_properties(
+            "AWS::ApiGatewayV2::Api",
+            {
+                "Name": "mcre-tools-dev-websocket",
+                "ProtocolType": "WEBSOCKET",
+                "RouteSelectionExpression": "$request.body.type",
+            },
+        )
+        for route_key in ["$connect", "$disconnect", "$default"]:
+            jp_template.has_resource_properties(
+                "AWS::ApiGatewayV2::Route",
+                {"RouteKey": route_key},
+            )
+
+        jp_template.has_resource_properties(
+            "AWS::ApiGatewayV2::Stage",
+            {"StageName": "prod", "AutoDeploy": True},
+        )
+        jp_template.has_resource_properties(
+            "AWS::ApiGatewayV2::DomainName",
+            {"DomainName": "tools-ws-dev.mcre.info"},
+        )
+        jp_template.has_resource_properties(
+            "AWS::ApiGatewayV2::ApiMapping",
+            {"Stage": "prod"},
+        )
+        jp_template.has_resource_properties(
+            "AWS::Route53::RecordSet",
+            {"Name": "tools-ws-dev.mcre.info."},
+        )
+
+    def test_realtime_lambda_has_environment_permissions_and_deploy_output(self):
+        templates = self._templates()
+        jp_template = templates["mcre-tools-dev-ap-northeast-1"]
+        template_json = jp_template.to_json()
+
+        jp_template.has_resource_properties(
+            "AWS::Lambda::Function",
+            {
+                "FunctionName": "mcre-tools-dev-realtime",
+                "Runtime": "python3.13",
+                "Environment": {
+                    "Variables": {
+                        "DYNAMO_DB_PRIMARY_TABLE_NAME": {
+                            "Ref": Match.string_like_regexp("dynamodbprimary")
+                        },
+                        "LOG_LEVEL": "DEBUG",
+                    }
+                },
+            },
+        )
+        jp_template.has_resource_properties(
+            "Custom::LogRetention",
+            {
+                "LogGroupName": "/aws/lambda/mcre-tools-dev-realtime",
+                "RetentionInDays": 90,
+            },
+        )
+
+        realtime_role = next(
+            resource
+            for resource in template_json["Resources"].values()
+            if resource["Type"] == "AWS::IAM::Role"
+            and resource["Properties"].get("RoleName")
+            == "mcre-tools-dev-lambda-realtime"
+        )
+        realtime_policy_statements = [
+            statement
+            for policy in realtime_role["Properties"]["Policies"]
+            for statement in policy["PolicyDocument"]["Statement"]
+        ]
+        self.assertTrue(
+            any(
+                "dynamodb:TransactWriteItems" in statement["Action"]
+                and "dynamodb:Query" in statement["Action"]
+                for statement in realtime_policy_statements
+            )
+        )
+        realtime_role_ref = next(
+            logical_id
+            for logical_id, resource in template_json["Resources"].items()
+            if resource == realtime_role
+        )
+        attached_policy_statements = [
+            statement
+            for resource in template_json["Resources"].values()
+            if resource["Type"] == "AWS::IAM::Policy"
+            and {"Ref": realtime_role_ref} in resource["Properties"].get("Roles", [])
+            for statement in resource["Properties"]["PolicyDocument"]["Statement"]
+        ]
+        self.assertTrue(
+            any(
+                statement["Action"] == "execute-api:ManageConnections"
+                for statement in attached_policy_statements
+            )
+        )
+
+        jp_template.has_output("LambdaFunctions", {"Value": Match.any_value()})
+        lambda_functions_output = template_json["Outputs"]["LambdaFunctions"]["Value"]
+        self.assertIn("realtime", json.dumps(lambda_functions_output))
+
+    def test_vite_env_includes_realtime_websocket_url(self):
+        templates = self._templates()
+        jp_template = templates["mcre-tools-dev-ap-northeast-1"]
+        vite_env_output = jp_template.to_json()["Outputs"]["ViteEnvJp"]["Value"]
+
+        self.assertIn("VITE_REALTIME_WS_URL", json.dumps(vite_env_output))
+        self.assertIn("wss://tools-ws-dev.mcre.info", json.dumps(vite_env_output))
+
     def test_cloudfront_cache_policy_uses_consistent_construct_id_without_replacement(
         self,
     ):

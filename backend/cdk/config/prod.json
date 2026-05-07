@@ -31,6 +31,14 @@
       "timeout_in_seconds": 60,
       "log_retention": "ONE_YEAR"
     },
+    "realtime": {
+      "env": {
+        "LOG_LEVEL": "INFO"
+      },
+      "memory": 128,
+      "timeout_in_seconds": 60,
+      "log_retention": "ONE_YEAR"
+    },
     "ogp": {
       "env": {
         "LOG_LEVEL": "INFO"
@@ -52,6 +60,13 @@
     "ogp": {
       "domain": {
         "name": "tools-ogp",
+        "zone_name": "mcre.info",
+        "hosted_zone_id": "Z330CBZA3E00YU"
+      }
+    },
+    "websocket": {
+      "domain": {
+        "name": "tools-ws",
         "zone_name": "mcre.info",
         "hosted_zone_id": "Z330CBZA3E00YU"
       }
