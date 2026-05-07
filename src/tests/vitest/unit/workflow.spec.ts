@@ -58,8 +58,9 @@ describe("deploy workflow", () => {
       workflow.jobs["deploy-lambda"].steps,
     );
 
+    expect(deployLambdaSteps).toContain("pushd");
+    expect(deployLambdaSteps).toContain("backend/lambda/src/${short_name}");
     expect(deployLambdaSteps).toContain("cp ../util.py ./");
-    expect(deployLambdaSteps).toContain("cp -R ../../ogp/assets ./assets");
     expect(deployLambdaSteps).toContain("zip -r package.zip .");
   });
 
