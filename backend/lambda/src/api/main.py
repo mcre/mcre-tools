@@ -2,6 +2,11 @@ import os
 
 import util as u
 
+try:
+    from . import group_roulette
+except ImportError:
+    import group_roulette
+
 
 CHARACTER = u.request_path_param("character")
 
@@ -30,6 +35,7 @@ ROUTES = [
         lambda character: get_jukugo_search("left", character),
         CHARACTER,
     ),
+    u.api_route("POST", "group-roulette/rooms", group_roulette.create_room),
 ]
 
 

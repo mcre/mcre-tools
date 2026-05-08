@@ -10,6 +10,7 @@
 
 - CDK リアルタイム基盤の実装を開始済み。
 - Lambda Realtime 永続化基盤の最小構成を実装済み。
+- グループルーレットの REST room 作成 API の最小構成を実装済み。
 - 計画書は `docs/group-roulette-plan.md` に作成済み。
 - WebSocket はグループルーレット専用ではなく、今後のグループ系ツールでも使えるリアルタイム同期基盤として設計する方針。
 - DynamoDB 設計は `DB.md` を正とし、既存 primary table を拡張する方針。
@@ -50,9 +51,9 @@
 
 ## 次にやること
 
-1. グループルーレットの REST room 作成 API の失敗テストを追加する。
-2. Realtime Lambda の `joinRoom` handler/repository の失敗テストを追加する。
-3. `addOption` WebSocket handler と broadcast 対象取得の失敗テストを追加する。
+1. Realtime Lambda の `joinRoom` handler/repository の失敗テストを追加する。
+2. `addOption` WebSocket handler と broadcast 対象取得の失敗テストを追加する。
+3. フロントエンドの状態管理テストを追加する。
 
 ## 未決事項
 
@@ -64,3 +65,4 @@
 - 2026-05-07: 実装状況ファイルを作成。
 - 2026-05-08: CDK に WebSocket API、Realtime Lambda の器、WebSocket 独自ドメイン、primary table TTL/GSI、`VITE_REALTIME_WS_URL` output を追加。`npm run cdk:test`、`npm run cdk:synth:dev`、`npm run cdk:synth:prod` で確認。
 - 2026-05-08: Lambda に Realtime 永続化基盤の `repository.py` と deploy 可能な `main.py` を追加。`GroupRouletteRoom`、member、connection、option、event、request の key/item と `add_option` transaction を unittest で固定。`npm run lambda:test`、`npm run cdk:test` で確認。
+- 2026-05-08: `POST /v1/group-roulette/rooms` を追加。`roomId` と `hostToken` を生成し、`hostToken` は SHA-256 hash のみ DynamoDB に保存する。OpenAPI/aspida と API Lambda package の `realtime/repository.py` 同梱を更新。
