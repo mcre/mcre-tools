@@ -193,7 +193,9 @@ test.describe("SSG preview layout", () => {
     await expect(page.locator(".v-app-bar")).toBeVisible();
     await expect(page.locator("#termsOfUseTitle")).toHaveText("利用規約");
 
-    const toolCard = page.locator(".v-card").first();
+    const toolCard = page
+      .getByRole("main")
+      .getByRole("link", { name: /熟語パズル/ });
     await expect(toolCard).toBeVisible();
     await expectInsideViewport(toolCard, 1280);
     expect((await toolCard.boundingBox())!.width).toBeGreaterThan(600);
@@ -248,6 +250,172 @@ test.describe("SSG preview layout", () => {
     await expect(page.locator("#input-left")).toBeVisible();
     await expect(page.locator("#answer")).toBeVisible();
     await expectInsideViewport(page.locator("table"), 1280);
+  });
+
+  test("build output exposes group roulette page and icon", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await page.goto("/ja");
+
+    await expect(
+      page.getByRole("main").getByRole("link", { name: /グループルーレット/ }),
+    ).toBeVisible();
+
+    await page.goto("/ja/group-roulette");
+    await expect(page.locator("h1")).toHaveText("グループルーレット");
+    await expectLoadedImage(
+      page.locator('img[src="/img/group-roulette/32.png"]').first(),
+    );
+    await expect(
+      page.getByRole("button", { name: "部屋を作成" }),
+    ).toBeVisible();
+    await expectInsideViewport(page.locator(".group-roulette-shell"), 1280);
+  });
+
+  test("group roulette creates a room and applies mocked polling option flow", async ({
+    page,
+  }) => {
+    let activeOptions: Array<{ id: string; label: string; order: number }> = [];
+    let joinRequests = 0;
+    let status = "waiting";
+    let currentSpin: Record<string, unknown> | null = null;
+    const envelope = (payload: Record<string, unknown>, revision = 1) => ({
+      protocolVersion: 1,
+      tool: "group-roulette",
+      type: "roomState",
+      roomId: "room_abc",
+      revision,
+      serverTime: "2026-05-08T09:30:00.000Z",
+      payload: {
+        status,
+        expiresAt: "2026-05-09T09:30:00Z",
+        guestAddEnabled: true,
+        activeOptions,
+        currentSpin,
+        ...payload,
+      },
+    });
+
+    await page.route("**/v1/group-roulette/rooms", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        status: 201,
+        body: JSON.stringify({
+          ...envelope({
+            member: {
+              id: "member_1",
+              displayName: "ホスト",
+              role: "host",
+            },
+          }),
+          hostToken: "host_secret",
+        }),
+      });
+    });
+    await page.route(
+      "**/v1/group-roulette/rooms/room_abc/join",
+      async (route) => {
+        joinRequests += 1;
+        await route.fulfill({
+          contentType: "application/json",
+          status: 200,
+          body: JSON.stringify(
+            envelope({
+              member: {
+                id: "member_1",
+                displayName: "主催者",
+                role: "host",
+              },
+            }),
+          ),
+        });
+      },
+    );
+    await page.route(
+      "**/v1/group-roulette/rooms/room_abc/state**",
+      async (route) => {
+        await route.fulfill({
+          contentType: "application/json",
+          status: 200,
+          body: JSON.stringify(envelope({}, activeOptions.length + 1)),
+        });
+      },
+    );
+    await page.route(
+      "**/v1/group-roulette/rooms/room_abc/options",
+      async (route) => {
+        const request = route.request().postDataJSON() as { label: string };
+        activeOptions = [{ id: "option_1", label: request.label, order: 1 }];
+        await route.fulfill({
+          contentType: "application/json",
+          status: 200,
+          body: JSON.stringify(envelope({}, 2)),
+        });
+      },
+    );
+    await page.route(
+      "**/v1/group-roulette/rooms/room_abc/spins/start",
+      async (route) => {
+        status = "spinning";
+        currentSpin = {
+          id: "spin_1",
+          startedAt: "2026-05-08T09:30:00Z",
+          durationMs: 5000,
+          options: activeOptions,
+        };
+        await route.fulfill({
+          contentType: "application/json",
+          status: 200,
+          body: JSON.stringify(envelope({}, 3)),
+        });
+      },
+    );
+    await page.route(
+      "**/v1/group-roulette/rooms/room_abc/spins/stop",
+      async (route) => {
+        status = "stopping";
+        currentSpin = {
+          id: "spin_1",
+          startedAt: "2026-05-08T09:30:00Z",
+          durationMs: 5000,
+          options: activeOptions,
+          winnerOptionId: "option_1",
+          stopAt: "2026-05-08T09:30:03Z",
+        };
+        await route.fulfill({
+          contentType: "application/json",
+          status: 200,
+          body: JSON.stringify(envelope({}, 4)),
+        });
+      },
+    );
+
+    await page.goto("/ja/group-roulette");
+    await page.getByRole("button", { name: "部屋を作成" }).click();
+    await expect(page).toHaveURL(/roomId=room_abc/);
+    await expect(
+      page.getByRole("heading", { name: "待機中", level: 2 }),
+    ).toBeVisible();
+    expect(joinRequests).toBe(0);
+    await expect(page.getByRole("button", { name: "入室" })).toBeHidden();
+
+    await page.getByLabel("候補名").fill("Pizza");
+    await page.getByRole("button", { name: "候補を追加" }).click();
+
+    await expect(page.getByText("Pizza")).toBeVisible();
+    await expect(page.getByText("ホスト").first()).toBeVisible();
+
+    await page.getByRole("button", { name: "開始" }).click();
+    await expect(
+      page.getByRole("heading", { name: "抽選中", level: 2 }),
+    ).toBeVisible();
+
+    await page.getByRole("button", { name: "停止" }).click();
+    await expect(
+      page.getByRole("heading", { name: "停止中", level: 2 }),
+    ).toBeVisible();
+    await expect(page.getByText("当選")).toBeVisible();
   });
 
   test("build output keeps share button icons contained on desktop and mobile", async ({

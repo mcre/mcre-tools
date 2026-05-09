@@ -201,8 +201,7 @@ jobs:
             pushd "./backend/lambda/src/${short_name}"
             cp ../util.py ./
             if [ "$short_name" = "api" ]; then
-              mkdir -p realtime
-              cp ../realtime/repository.py realtime/repository.py
+              cp -R ../group_roulette_core ./group_roulette_core
             fi
             rm -f package.zip
             zip -r package.zip .

@@ -6,13 +6,19 @@ MCRE TOOLS is a public web app that provides small utility and fun tools. The ca
 
 - Japanese home: https://tools.mcre.info/ja/
 - English home: https://tools.mcre.info/en/
+- グループルーレット / Group Roulette: https://tools.mcre.info/ja/group-roulette
+- Group Roulette in English: https://tools.mcre.info/en/group-roulette
 - 熟語パズル / Jukugo Puzzle: https://tools.mcre.info/ja/jukugo
 - Jukugo Puzzle in English: https://tools.mcre.info/en/jukugo
 - Sitemap: https://tools.mcre.info/sitemap.xml
 - Source code: https://github.com/mcre/mcre-tools
 - License: https://github.com/mcre/mcre-tools/blob/main/LICENSE
 
-## Main Tool
+## Main Tools
+
+### グループルーレット / Group Roulette
+
+This tool creates a shared room where multiple users add options and see the same roulette spin and result in real time. Room URLs may contain a `roomId` query parameter, but room-specific URLs are private-ish and should not be indexed.
 
 ### 熟語パズル / Jukugo Puzzle
 
@@ -29,4 +35,5 @@ These endpoints search two-character jukugo entries that place the given kanji o
 
 - Prefer canonical localized URLs under `/ja/` or `/en/`.
 - Query parameters on `/jukugo` represent shareable puzzle states.
+- Query parameters on `/group-roulette` represent room URLs and should be treated as `noindex`.
 - The site is statically generated with `vite-ssg`; crawler-visible HTML in `dist/` is the primary output.

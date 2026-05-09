@@ -26,6 +26,33 @@
     "returnToHome": "Return to Home"
   },
   "tools": {
+    "group-roulette": {
+      "title": "Group Roulette",
+      "descriptionShort": "Spin the same roulette wheel with a group.",
+      "description": "Create a room, share the URL, and keep options, spins, and results synced across everyone’s screen.",
+      "privacyNotice": "Option names, display names, and raw spin history are stored for administrator review for a limited period.",
+      "idle": "Create a room",
+      "waiting": "Waiting",
+      "spinning": "Spinning",
+      "stopping": "Stopping",
+      "result": "Result",
+      "expired": "Expired",
+      "createRoom": "Create room",
+      "shareUrl": "Share URL",
+      "copyShareUrl": "Copy share URL",
+      "displayName": "Display name (optional)",
+      "enterRoom": "Join room",
+      "optionLabel": "Option name",
+      "addOption": "Add option",
+      "removeOption": "Remove option",
+      "guestAddEnabled": "Allow guests to add options",
+      "startSpin": "Start",
+      "stopSpin": "Stop",
+      "memberRoleHost": "Host",
+      "memberRoleGuest": "Guest",
+      "winner": "Winner",
+      "noOptions": "No options yet"
+    },
     "jukugo": {
       "title": "Jukugo Puzzle",
       "descriptionShort": "Automatically solves the Jukugo Puzzle.",

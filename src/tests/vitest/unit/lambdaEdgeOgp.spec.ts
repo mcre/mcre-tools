@@ -19,6 +19,10 @@ const locales = {
       title: "MCRE Tools",
     },
     tools: {
+      "group-roulette": {
+        title: "グループルーレット",
+        description: "同じルーレットを複数人で回すツール",
+      },
       jukugo: {
         title: "熟語パズル",
         description: "漢字一文字を入れて熟語を完成させるパズル",
@@ -31,6 +35,10 @@ const locales = {
       title: "MCRE Tools",
     },
     tools: {
+      "group-roulette": {
+        title: "Group Roulette",
+        description: "Spin the same roulette wheel with a group",
+      },
       jukugo: {
         title: "Jukugo Puzzle",
         description: "A kanji compound word puzzle",
@@ -181,6 +189,31 @@ describe("Lambda@Edge OGP response", () => {
 
     expect(response.status).toBeUndefined();
     expect(response.uri).toBe("/ja/jukugo/index.html");
+  });
+
+  it("returns noindex non-query-specific OGP HTML for group roulette room URLs", async () => {
+    const handler = loadHandler();
+    const response = await handler(
+      createEvent(
+        createRequest({
+          uri: "/ja/group-roulette",
+          querystring: "roomId=room_abc",
+        }),
+      ),
+    );
+
+    expect(response.status).toBe("200");
+    expect(metaContent(response.body, "name", "robots")).toBe(
+      "noindex,nofollow",
+    );
+    expect(metaContent(response.body, "property", "og:url")).toBe(
+      "https://tools.mcre.info/ja/group-roulette",
+    );
+    expect(metaContent(response.body, "property", "og:image")).toBe(
+      "https://tools.mcre.info/img/group-roulette/180.png",
+    );
+    expect(response.body).not.toContain("tools-ogp.mcre.info");
+    expect(response.body).not.toContain("room_abc");
   });
 
   it("rejects requests without authorization when Basic auth is enabled", async () => {

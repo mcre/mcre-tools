@@ -14,6 +14,8 @@ const BOTS = [
 ];
 
 const LOCALES = @{LOCALES};
+const QUERY_SPECIFIC_OGP_TOOLS = ['jukugo'];
+const NOINDEX_QUERY_TOOLS = ['group-roulette'];
 
 const getHeader = (headers, name) => {
   const values = headers[name.toLowerCase()];
@@ -32,7 +34,15 @@ const unauthorized = () => ({
   },
 });
 
-const generateContent = ({ lang, toolName, toolMessages, requestUrl, imageUrl }) => {
+const generateContent = ({
+  lang,
+  toolName,
+  toolMessages,
+  requestUrl,
+  imageUrl,
+  robots = 'all',
+  card = 'summary_large_image',
+}) => {
   const siteName = LOCALES[lang].common.title
   return `
     <!doctype html>
@@ -51,10 +61,10 @@ const generateContent = ({ lang, toolName, toolMessages, requestUrl, imageUrl })
       <meta property="og:url" content="${requestUrl}" />
       <meta property="og:image" content="${imageUrl}" />
       <meta property="og:description" content="${toolMessages.description}" />
-      <meta name="note:card" content="summary_large_image" />
-      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="note:card" content="${card}" />
+      <meta name="twitter:card" content="${card}" />
       <meta name="twitter:image" content="${imageUrl}" />
-      <meta name="robots" content="all">
+      <meta name="robots" content="${robots}">
       <title>${toolMessages.title} - ${siteName}</title>
     </head>
     <body>
@@ -85,13 +95,43 @@ exports.handler = async (event) => {
 
   const isBot = BOTS.some((v) => userAgent.includes(v));
   if (isBot && queryString) {
-    const toolName = Object.keys(tools).find((tool) => uri.includes("/" + tool));
+    const toolName = Object.keys(tools)
+      .filter((tool) => QUERY_SPECIFIC_OGP_TOOLS.includes(tool))
+      .find((tool) => uri.includes("/" + tool));
     if (toolName) {
       const toolMessages = tools[toolName];
       const imageUrl = `https://@{DOMAIN_NAME_OGP}${uri}?${queryString}`;
       const requestUrl = `${URL_DIST}${uri}?${queryString}`;
 
       const body = generateContent({ lang, toolName, toolMessages, requestUrl, imageUrl });
+
+      return {
+        status: '200',
+        statusDescription: 'OK',
+        headers: {
+          'content-type': [{ key: 'Content-Type', value: 'text/html' }],
+        },
+        body,
+      };
+    }
+
+    const noindexToolName = Object.keys(tools)
+      .filter((tool) => NOINDEX_QUERY_TOOLS.includes(tool))
+      .find((tool) => uri.includes("/" + tool));
+    if (noindexToolName) {
+      const toolMessages = tools[noindexToolName];
+      const imageUrl = `${URL_DIST}/img/${noindexToolName}/180.png`;
+      const requestUrl = `${URL_DIST}${uri}`;
+
+      const body = generateContent({
+        lang,
+        toolName: noindexToolName,
+        toolMessages,
+        requestUrl,
+        imageUrl,
+        robots: 'noindex,nofollow',
+        card: 'summary',
+      });
 
       return {
         status: '200',

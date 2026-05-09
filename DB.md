@@ -44,7 +44,7 @@ Lambda 実装では次の配置・責務分担を基本にする。
 
 現状は一覧取得や複合条件検索がないため、GSI は持たない。将来、一覧・集計・フィルタが必要になった場合は、参照先プロジェクトと同様に `search_key_n` と `order` を追加し、`search_key_n-order-index` 形式の GSI を検討する。
 
-GSI は結果整合であるため、ユーザー操作の正当性判定や抽選結果の決定には使わない。正とする状態は `GetItem` または条件付き更新で扱える単一 item に持たせ、GSI は一覧表示、監査、broadcast 対象取得などの補助用途に限定する。
+GSI は結果整合であるため、ユーザー操作の正当性判定や抽選結果の決定には使わない。正とする状態は `GetItem` または条件付き更新で扱える単一 item に持たせ、GSI は一覧表示、監査、将来通知層の補助などに限定する。
 
 ## レコード種別
 
@@ -121,19 +121,20 @@ python delete_records.py <aws_profile> <table_name>
 
 このスクリプトは `id` が `jukugo|` で始まるレコードを Scan で探して削除する。GSI を持たない現行設計では運用用の一括削除として扱い、API の通常処理では Scan に依存しない。
 
-## GroupRoulette（計画中）
+## GroupRoulette
 
-グループルーレットを追加する場合も primary table 1 つを使う。`search_key_1-order-index` と TTL を追加する場合は、この節の取得パターンと CDK のテーブル定義を同時に更新する。
+グループルーレットも primary table 1 つを使う。`search_key_1-order-index` と TTL を使うため、この節の取得パターンと CDK のテーブル定義を同時に維持する。
 
 ### 方針
 
 - `GroupRouletteRoom|{roomId}` を room の canonical state とする。
 - 抽選スナップショット、候補の表示順、候補の有効/削除状態、`revision`、各種 sequence は `GroupRouletteRoom` に持たせる。
-- `GroupRouletteOption`、`GroupRouletteEvent`、`RealtimeConnection` は履歴、監査、broadcast、補助一覧に使う。
+- `GroupRouletteOption`、`GroupRouletteEvent`、`GroupRouletteRequest` は履歴、監査、冪等性確認、補助一覧に使う。
 - `startSpin` の候補スナップショットは `GroupRouletteRoom` から作る。`GroupRouletteOption` の GSI Query 結果から作らない。
-- `joinRoom` 直後の connection が GSI に反映される前に broadcast から漏れる可能性は許容し、クライアントは `revision` の欠落を検知したら `roomState` を再取得する。
+- MVP は REST 操作 API と `GET roomState` polling で同期し、`RealtimeConnection` は必須 record として持たない。
+- 将来 AppSync Events または API Gateway WebSocket を追加する場合も、通知層は `revision` 変更を知らせるだけにし、クライアントは `roomState` を再取得する。
 - `expires_at` はすべての操作で明示的に判定する。TTL は 90 日後の物理削除補助であり、ユーザー向け期限判定には使わない。
-- タイマーやストップウォッチのような高頻度 tick は永続化しない。必要な場合は開始時刻、基準時刻、状態だけを保存し、各クライアントで表示を補間する。
+- タイマーやストップウォッチのような高頻度 tick は永続化しない。必要な場合は `started_at`、`ends_at`、`server_time`、基準時刻、状態だけを保存/返却し、各クライアントで表示を補間する。
 
 ### レコード種別
 
@@ -156,13 +157,7 @@ python delete_records.py <aws_profile> <table_name>
   - `search_key_1`: `GroupRouletteMember|room_id={roomId}`
   - `order`: 作成時刻または入室順
   - `ttl`: 生データ削除時刻
-  - `display_name`, `role`, `connected`
-- `RealtimeConnection`
-  - `id`: `RealtimeConnection|{connectionId}`
-  - `search_key_1`: `RealtimeConnection|tool=group-roulette|room_id={roomId}`
-  - `order`: 接続時刻または最終更新時刻
-  - `ttl`: connection cleanup 用の削除時刻
-  - `tool`, `room_id`, `member_id`, `connected_at`, `last_seen_at`
+  - `display_name`, `role`, `last_seen_at`
 - `GroupRouletteOption`
   - `id`: `GroupRouletteOption|{roomId}|{optionId}`
   - `search_key_1`: `GroupRouletteOption|room_id={roomId}`
@@ -175,8 +170,8 @@ python delete_records.py <aws_profile> <table_name>
   - `order`: 発生時刻
   - `ttl`: 生データ削除時刻
   - 候補追加、削除、開始、停止などの生履歴
-- `RealtimeRequest`
-  - `id`: `RealtimeRequest|{roomId}|{requestId}`
+- `GroupRouletteRequest`
+  - `id`: `GroupRouletteRequest|{roomId}|{requestId}`
   - `ttl`: 冪等性確認用の短期削除時刻
   - `tool`, `room_id`, `member_id`, `type`, `created_at`
 
@@ -184,8 +179,8 @@ python delete_records.py <aws_profile> <table_name>
 
 - `addOption`, `removeOption`, `startSpin`, `stopSpin` は `TransactWriteItems` または `UpdateItem` の条件付き更新で処理する。
 - これらの操作では、`GroupRouletteRoom` の `revision`、期限、状態、権限、候補数を条件に含める。
-- `addOption` は `GroupRouletteRoom.active_options` と `option_sequence` を更新し、同じ transaction で `GroupRouletteOption`、`GroupRouletteEvent`、`RealtimeRequest` を書き込む。
-- `removeOption` は `GroupRouletteRoom.active_options` から対象候補を外し、同じ transaction で `GroupRouletteOption.archived`、`GroupRouletteEvent`、`RealtimeRequest` を更新する。
-- `startSpin` は `GroupRouletteRoom.active_options` から `current_spin` を作成し、同じ transaction で状態、`revision`、`GroupRouletteEvent`、`RealtimeRequest` を更新する。
-- `stopSpin` は `GroupRouletteRoom.current_spin` を正として当選候補を確定し、同じ transaction で状態、`revision`、`GroupRouletteEvent`、`RealtimeRequest` を更新する。
+- `addOption` は `GroupRouletteRoom.active_options` と `option_sequence` を更新し、同じ transaction で `GroupRouletteOption`、`GroupRouletteEvent`、`GroupRouletteRequest` を書き込む。
+- `removeOption` は `GroupRouletteRoom.active_options` から対象候補を外し、同じ transaction で `GroupRouletteOption.archived`、`GroupRouletteEvent`、`GroupRouletteRequest` を更新する。
+- `startSpin` は `GroupRouletteRoom.active_options` から `current_spin` を作成し、同じ transaction で状態、`revision`、`GroupRouletteEvent`、`GroupRouletteRequest` を更新する。
+- `stopSpin` は `GroupRouletteRoom.current_spin` を正として当選候補を確定し、同じ transaction で状態、`revision`、`GroupRouletteEvent`、`GroupRouletteRequest` を更新する。
 - GSI Query は room state の正を作るためには使わない。

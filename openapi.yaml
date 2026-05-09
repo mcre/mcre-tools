@@ -61,7 +61,164 @@ paths:
         "400":
           description: リクエスト不正
 
+  /v1/group-roulette/rooms/{roomId}/state:
+    get:
+      summary: グループルーレットの roomState を取得
+      parameters:
+        - in: path
+          name: roomId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: memberId
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: roomState 取得成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupRouletteRoomStateResponse"
+        "404":
+          description: 部屋なし
+
+  /v1/group-roulette/rooms/{roomId}/join:
+    post:
+      summary: グループルーレットの部屋に入室
+      parameters:
+        - $ref: "#/components/parameters/GroupRouletteRoomId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GroupRouletteJoinRoomRequest"
+      responses:
+        "200":
+          description: 入室成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupRouletteRoomStateResponse"
+
+  /v1/group-roulette/rooms/{roomId}/options:
+    post:
+      summary: グループルーレットの候補を追加
+      parameters:
+        - $ref: "#/components/parameters/GroupRouletteRoomId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GroupRouletteAddOptionRequest"
+      responses:
+        "200":
+          description: 候補追加成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupRouletteRoomStateResponse"
+
+  /v1/group-roulette/rooms/{roomId}/options/{optionId}:
+    delete:
+      summary: グループルーレットの候補を削除
+      parameters:
+        - $ref: "#/components/parameters/GroupRouletteRoomId"
+        - in: path
+          name: optionId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GroupRouletteHostMutationRequest"
+      responses:
+        "200":
+          description: 候補削除成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupRouletteRoomStateResponse"
+
+  /v1/group-roulette/rooms/{roomId}/guest-add-enabled:
+    patch:
+      summary: ゲスト候補追加可否を変更
+      parameters:
+        - $ref: "#/components/parameters/GroupRouletteRoomId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GroupRouletteSetGuestAddEnabledRequest"
+      responses:
+        "200":
+          description: 変更成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupRouletteRoomStateResponse"
+
+  /v1/group-roulette/rooms/{roomId}/spins/start:
+    post:
+      summary: グループルーレットを開始
+      parameters:
+        - $ref: "#/components/parameters/GroupRouletteRoomId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/GroupRouletteHostMutationRequest"
+                - type: object
+                  properties:
+                    durationMs:
+                      type: integer
+                      minimum: 1000
+                      maximum: 30000
+      responses:
+        "200":
+          description: 開始成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupRouletteRoomStateResponse"
+
+  /v1/group-roulette/rooms/{roomId}/spins/stop:
+    post:
+      summary: グループルーレットを停止
+      parameters:
+        - $ref: "#/components/parameters/GroupRouletteRoomId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GroupRouletteHostMutationRequest"
+      responses:
+        "200":
+          description: 停止成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GroupRouletteRoomStateResponse"
+
 components:
+  parameters:
+    GroupRouletteRoomId:
+      in: path
+      name: roomId
+      required: true
+      schema:
+        type: string
   schemas:
     JukugoSearchResponse:
       type: array
@@ -78,22 +235,187 @@ components:
             type: integer
             description: 熟語生成コスト
     GroupRouletteCreateRoomResponse:
+      allOf:
+        - $ref: "#/components/schemas/GroupRouletteRoomStateResponse"
+        - type: object
+          required:
+            - hostToken
+          properties:
+            hostToken:
+              type: string
+              description: ホスト操作用 token。作成レスポンスでのみ返す。
+              example: host_abc123
+    GroupRouletteRoomStatus:
+      type: string
+      enum:
+        - waiting
+        - spinning
+        - stopping
+        - result
+        - expired
+    GroupRouletteMember:
       type: object
       required:
-        - roomId
-        - hostToken
-        - expiresAt
+        - id
+        - displayName
+        - role
       properties:
-        roomId:
+        id:
           type: string
-          description: 部屋 ID
-          example: room_abc123
-        hostToken:
+        displayName:
           type: string
-          description: ホスト操作用 token。作成レスポンスでのみ返す。
-          example: host_abc123
+        role:
+          type: string
+          enum:
+            - host
+            - guest
+    GroupRouletteOption:
+      type: object
+      required:
+        - id
+        - label
+        - order
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        order:
+          type: integer
+        addedByMemberId:
+          type: string
+    GroupRouletteSpin:
+      type: object
+      required:
+        - id
+        - options
+      properties:
+        id:
+          type: string
+        startedAt:
+          type: string
+          format: date-time
+        durationMs:
+          type: integer
+        options:
+          type: array
+          items:
+            $ref: "#/components/schemas/GroupRouletteOption"
+        winnerOptionId:
+          type: string
+        stopAt:
+          type: string
+          format: date-time
+    GroupRouletteRoomStatePayload:
+      type: object
+      required:
+        - status
+        - expiresAt
+        - guestAddEnabled
+        - activeOptions
+        - currentSpin
+      properties:
+        status:
+          $ref: "#/components/schemas/GroupRouletteRoomStatus"
         expiresAt:
           type: string
           format: date-time
-          description: 部屋のユーザー向け有効期限
-          example: "2026-05-09T09:30:00Z"
+        guestAddEnabled:
+          type: boolean
+        activeOptions:
+          type: array
+          items:
+            $ref: "#/components/schemas/GroupRouletteOption"
+        currentSpin:
+          anyOf:
+            - $ref: "#/components/schemas/GroupRouletteSpin"
+            - type: "null"
+        member:
+          $ref: "#/components/schemas/GroupRouletteMember"
+    GroupRouletteRoomStateResponse:
+      type: object
+      required:
+        - protocolVersion
+        - tool
+        - type
+        - roomId
+        - revision
+        - serverTime
+        - payload
+      properties:
+        protocolVersion:
+          type: integer
+          const: 1
+        tool:
+          type: string
+          const: group-roulette
+        type:
+          type: string
+          enum:
+            - roomState
+            - roomExpired
+        roomId:
+          type: string
+        requestId:
+          anyOf:
+            - type: string
+            - type: "null"
+        revision:
+          type: integer
+        serverTime:
+          type: string
+          format: date-time
+        payload:
+          $ref: "#/components/schemas/GroupRouletteRoomStatePayload"
+    GroupRouletteMutationRequest:
+      type: object
+      required:
+        - requestId
+        - memberId
+      properties:
+        requestId:
+          type: string
+        memberId:
+          type: string
+    GroupRouletteHostMutationRequest:
+      allOf:
+        - $ref: "#/components/schemas/GroupRouletteMutationRequest"
+        - type: object
+          required:
+            - hostToken
+          properties:
+            hostToken:
+              type: string
+    GroupRouletteJoinRoomRequest:
+      type: object
+      required:
+        - requestId
+      properties:
+        requestId:
+          type: string
+        memberId:
+          type: string
+        displayName:
+          type: string
+        hostToken:
+          type: string
+    GroupRouletteAddOptionRequest:
+      allOf:
+        - $ref: "#/components/schemas/GroupRouletteMutationRequest"
+        - type: object
+          required:
+            - label
+          properties:
+            label:
+              type: string
+            hostToken:
+              type: string
+    GroupRouletteSetGuestAddEnabledRequest:
+      allOf:
+        - $ref: "#/components/schemas/GroupRouletteHostMutationRequest"
+        - type: object
+          required:
+            - enabled
+          properties:
+            enabled:
+              type: boolean

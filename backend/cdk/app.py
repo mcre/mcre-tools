@@ -15,7 +15,6 @@ from resources import (
     create_lambda_function,
     create_lambda_layer,
     create_s3_bucket,
-    create_websocket_api,
     vite_env_output,
 )
 
@@ -59,6 +58,7 @@ policy_dynamodb_primary_rw = iam.PolicyStatement(
         "dynamodb:UpdateItem",
         "dynamodb:DeleteItem",
         "dynamodb:TransactWriteItems",
+        "dynamodb:ConditionCheckItem",
     ],
     resources=[
         dynamodb_primary_table.table_arn,
@@ -83,14 +83,6 @@ lambda_api = create_lambda_function(
         "DYNAMO_DB_PRIMARY_TABLE_NAME": dynamodb_primary_table.table_name,
     },
 )
-lambda_realtime = create_lambda_function(
-    stack_jp,
-    "realtime",
-    policies=[policy_dynamodb_primary_rw],
-    environment={
-        "DYNAMO_DB_PRIMARY_TABLE_NAME": dynamodb_primary_table.table_name,
-    },
-)
 lambda_ogp = create_lambda_function(
     stack_jp,
     "ogp",
@@ -101,7 +93,7 @@ lambda_ogp = create_lambda_function(
     },
     layers=[layer_pillow],
 )
-github_actions_lambda_deploy_targets = [lambda_api, lambda_realtime, lambda_ogp]
+github_actions_lambda_deploy_targets = [lambda_api, lambda_ogp]
 github_actions_cdk_deploy_regions = ["ap-northeast-1", "us-east-1"]
 github_actions_cdk_bootstrap_role_types = [
     "deploy-role",
@@ -119,9 +111,13 @@ dist_domain_name = (
 app_cors_allow_origins = [
     f"https://{dist_domain_name}",
     "http://localhost:3000",
+    "http://127.0.0.1:3000",
     "http://localhost:3001",
+    "http://127.0.0.1:3001",
     "http://localhost:4173",
+    "http://127.0.0.1:4173",
     "http://localhost:5173",
+    "http://127.0.0.1:5173",
 ]
 
 acm_result_api = create_acm_certificate(
@@ -139,25 +135,6 @@ acm_result_ogp = create_acm_certificate(
     stack_jp, "ogp", config["api-gateway"]["ogp"]["domain"]
 )
 create_apigateway(stack_jp, "ogp", lambda_ogp, acm_result_ogp)
-
-acm_result_websocket = create_acm_certificate(
-    stack_jp, "websocket", config["api-gateway"]["websocket"]["domain"]
-)
-websocket_api = create_websocket_api(
-    stack_jp,
-    "websocket",
-    lambda_realtime,
-    acm_result_websocket,
-)
-lambda_realtime.add_to_role_policy(
-    iam.PolicyStatement(
-        actions=["execute-api:ManageConnections"],
-        resources=[
-            f"arn:{Aws.PARTITION}:execute-api:{Aws.REGION}:{Aws.ACCOUNT_ID}:{websocket_api.api_id}/*"
-        ],
-    )
-)
-
 
 stack_us = Stack(
     app,
@@ -253,7 +230,6 @@ iam_role_github_actions = create_iam_role_github_actions(stack_us, policies)
 CfnOutput(stack_jp, "Prefix", value=config["prefix"])
 CfnOutput(stack_jp, "DomainNameApi", value=acm_result_api["domain_name"])
 CfnOutput(stack_jp, "DomainNameOgp", value=acm_result_ogp["domain_name"])
-CfnOutput(stack_jp, "DomainNameWebsocket", value=acm_result_websocket["domain_name"])
 CfnOutput(
     stack_jp,
     "LambdaFunctions",
@@ -272,7 +248,6 @@ CfnOutput(
             **config.get("vite_env", {}),
             "VITE_API_DOMAIN_NAME": acm_result_api["domain_name"],
             "VITE_OGP_DOMAIN_NAME": acm_result_ogp["domain_name"],
-            "VITE_REALTIME_WS_URL": f"wss://{acm_result_websocket['domain_name']}",
         }
     ),
 )

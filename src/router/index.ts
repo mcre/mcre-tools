@@ -3,10 +3,12 @@ import { availableLocales } from "@/plugins/i18n";
 
 const Layout = () => import("@/layouts/default.vue");
 const Index = () => import("@/pages/index.vue");
+const GroupRoulette = () => import("@/pages/group-roulette.vue");
 const Jukugo = () => import("@/pages/jukugo.vue");
 const NotFound = () => import("@/pages/not-found.vue");
 
 const toolsComponents = {
+  "group-roulette": GroupRoulette,
   jukugo: Jukugo,
 };
 export const tools = Object.keys(toolsComponents);

@@ -26,6 +26,33 @@
     "returnToHome": "トップページに戻る"
   },
   "tools": {
+    "group-roulette": {
+      "title": "グループルーレット",
+      "descriptionShort": "複数人で同じルーレットを回せます",
+      "description": "部屋 URL を共有して、候補追加から抽選結果まで全員の画面で同期するルーレットツールです。",
+      "privacyNotice": "候補名、表示名、抽選履歴などの入力内容は管理者確認用として一定期間保存されます。",
+      "idle": "部屋を作成",
+      "waiting": "待機中",
+      "spinning": "抽選中",
+      "stopping": "停止中",
+      "result": "結果",
+      "expired": "期限切れ",
+      "createRoom": "部屋を作成",
+      "shareUrl": "共有 URL",
+      "copyShareUrl": "共有 URL をコピー",
+      "displayName": "表示名（任意）",
+      "enterRoom": "入室",
+      "optionLabel": "候補名",
+      "addOption": "候補を追加",
+      "removeOption": "候補を削除",
+      "guestAddEnabled": "ゲストの候補追加を許可",
+      "startSpin": "開始",
+      "stopSpin": "停止",
+      "memberRoleHost": "ホスト",
+      "memberRoleGuest": "ゲスト",
+      "winner": "当選",
+      "noOptions": "候補はまだありません"
+    },
     "jukugo": {
       "title": "熟語パズル",
       "descriptionShort": "和同開珎を自動で解きます",

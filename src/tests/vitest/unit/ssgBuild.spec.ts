@@ -13,6 +13,7 @@ describeWhenDistExists("SSG build output", () => {
       "ja/index.html",
       "en/index.html",
       "ja/jukugo/index.html",
+      "ja/group-roulette/index.html",
       "llms.txt",
       "robots.txt",
       "sitemap.xml",
@@ -22,6 +23,10 @@ describeWhenDistExists("SSG build output", () => {
 
     const jukugoHtml = readFileSync(
       resolve(dist, "ja/jukugo/index.html"),
+      "utf8",
+    );
+    const groupRouletteHtml = readFileSync(
+      resolve(dist, "ja/group-roulette/index.html"),
       "utf8",
     );
     const indexHtml = readFileSync(resolve(dist, "ja/index.html"), "utf8");
@@ -55,8 +60,16 @@ describeWhenDistExists("SSG build output", () => {
     expect(jukugoHtml).toContain('"@type":"WebApplication"');
     expect(jukugoHtml).toContain('"@type":"BreadcrumbList"');
 
+    expect(groupRouletteHtml).toContain(
+      'rel="canonical" href="https://tools.mcre.info/ja/group-roulette"',
+    );
+    expect(groupRouletteHtml).toContain("グループルーレット - MCRE TOOLS");
+    expect(groupRouletteHtml).toContain("/img/group-roulette/32.png");
+    expect(groupRouletteHtml).toContain('name="robots" content="all"');
+
     expect(llmsTxt).toContain("# MCRE TOOLS");
     expect(llmsTxt).toContain("https://tools.mcre.info/ja/jukugo");
+    expect(llmsTxt).toContain("https://tools.mcre.info/ja/group-roulette");
     expect(llmsTxt).toContain("/v1/jukugo/{character}/left-search");
 
     expect(robotsTxt).toContain("User-agent: OAI-SearchBot");
