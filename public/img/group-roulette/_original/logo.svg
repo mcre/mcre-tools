@@ -1,0 +1,15 @@
+<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Group roulette icon">
+  <title>Group roulette icon</title>
+  <path d="M 58.000 42.574 A 64 64 0 0 1 122.000 42.574 L 95.500 88.474 A 11 11 0 0 0 84.500 88.474 Z" fill="#FF8A8A" stroke="#FFFFFF" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M 122.000 42.574 A 64 64 0 0 1 154.000 98.000 L 101.000 98.000 A 11 11 0 0 0 95.500 88.474 Z" fill="#91BFF2" stroke="#FFFFFF" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M 154.000 98.000 A 64 64 0 0 1 122.000 153.426 L 95.500 107.526 A 11 11 0 0 0 101.000 98.000 Z" fill="#9DDDBA" stroke="#FFFFFF" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M 122.000 153.426 A 64 64 0 0 1 58.000 153.426 L 84.500 107.526 A 11 11 0 0 0 95.500 107.526 Z" fill="#FF8A8A" stroke="#FFFFFF" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M 58.000 153.426 A 64 64 0 0 1 26.000 98.000 L 79.000 98.000 A 11 11 0 0 0 84.500 107.526 Z" fill="#91BFF2" stroke="#FFFFFF" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M 26.000 98.000 A 64 64 0 0 1 58.000 42.574 L 84.500 88.474 A 11 11 0 0 0 79.000 98.000 Z" fill="#9DDDBA" stroke="#FFFFFF" stroke-width="4" stroke-linejoin="round"/>
+
+  <circle cx="90" cy="98" r="70" fill="none" stroke="#2F3336" stroke-width="10"/>
+  <circle cx="90" cy="98" r="12" fill="#2F3336" stroke="#FFFFFF" stroke-width="4"/>
+
+  <!-- Pointer: corrected to point downward -->
+  <path d="M 78 17 L 102 17 L 90 43 Z" fill="#2F3336" stroke="#2F3336" stroke-width="5" stroke-linejoin="round"/>
+</svg>
