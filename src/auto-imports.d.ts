@@ -7,15 +7,9 @@
 export {}
 declare global {
   const EffectScope: typeof import('vue').EffectScope
-  const GROUP_ROULETTE_TOOL: typeof import('./composables/useGroupRoulette').GROUP_ROULETTE_TOOL
-  const HOST_TOKEN_STORAGE_PREFIX: typeof import('./composables/useGroupRoulette').HOST_TOKEN_STORAGE_PREFIX
-  const MEMBER_ID_STORAGE_PREFIX: typeof import('./composables/useGroupRoulette').MEMBER_ID_STORAGE_PREFIX
   const computed: typeof import('vue').computed
   const createApiBaseURL: typeof import('./composables/useApi').createApiBaseURL
   const createApp: typeof import('vue').createApp
-  const createGroupRouletteController: typeof import('./composables/useGroupRoulette').createGroupRouletteController
-  const createGroupRouletteRobotsContent: typeof import('./composables/useGroupRoulette').createGroupRouletteRobotsContent
-  const createGroupRouletteShareUrl: typeof import('./composables/useGroupRoulette').createGroupRouletteShareUrl
   const createJukugoSolver: typeof import('./composables/useJukugoSolver').createJukugoSolver
   const customRef: typeof import('vue').customRef
   const defineAsyncComponent: typeof import('vue').defineAsyncComponent
@@ -50,7 +44,6 @@ declare global {
   const onWatcherCleanup: typeof import('vue').onWatcherCleanup
   const provide: typeof import('vue').provide
   const reactive: typeof import('vue').reactive
-  const readHostTokenFromHash: typeof import('./composables/useGroupRoulette').readHostTokenFromHash
   const readonly: typeof import('vue').readonly
   const ref: typeof import('vue').ref
   const resolveComponent: typeof import('vue').resolveComponent
@@ -70,7 +63,6 @@ declare global {
   const useAttrs: typeof import('vue').useAttrs
   const useCssModule: typeof import('vue').useCssModule
   const useCssVars: typeof import('vue').useCssVars
-  const useGroupRoulette: typeof import('./composables/useGroupRoulette').useGroupRoulette
   const useHeaderUtil: typeof import('./utils/headerUtil').useHeaderUtil
   const useI18nUtil: typeof import('./utils/i18nUtil').useI18nUtil
   const useId: typeof import('vue').useId
@@ -80,7 +72,6 @@ declare global {
   const useRouter: typeof import('vue-router').useRouter
   const useSlots: typeof import('vue').useSlots
   const useTemplateRef: typeof import('vue').useTemplateRef
-  const useUtil: typeof import('./utils/headerUtil')['useUtil']
   const watch: typeof import('vue').watch
   const watchEffect: typeof import('vue').watchEffect
   const watchPostEffect: typeof import('vue').watchPostEffect
@@ -91,9 +82,6 @@ declare global {
   // @ts-ignore
   export type { Component, Slot, Slots, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, ShallowRef, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
-  // @ts-ignore
-  export type { GroupRouletteStatus } from './composables/useGroupRoulette'
-  import('./composables/useGroupRoulette')
   // @ts-ignore
   export type { JukugoPosition, JukugoInputs, JukugoArrows, JukugoAnswer, JukugoSolveState, JukugoQueryState, JukugoSearch } from './composables/useJukugoSolver'
   import('./composables/useJukugoSolver')
@@ -108,15 +96,9 @@ declare module 'vue' {
   interface GlobalComponents {}
   interface ComponentCustomProperties {
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
-    readonly GROUP_ROULETTE_TOOL: UnwrapRef<typeof import('./composables/useGroupRoulette')['GROUP_ROULETTE_TOOL']>
-    readonly HOST_TOKEN_STORAGE_PREFIX: UnwrapRef<typeof import('./composables/useGroupRoulette')['HOST_TOKEN_STORAGE_PREFIX']>
-    readonly MEMBER_ID_STORAGE_PREFIX: UnwrapRef<typeof import('./composables/useGroupRoulette')['MEMBER_ID_STORAGE_PREFIX']>
     readonly computed: UnwrapRef<typeof import('vue')['computed']>
     readonly createApiBaseURL: UnwrapRef<typeof import('./composables/useApi')['createApiBaseURL']>
     readonly createApp: UnwrapRef<typeof import('vue')['createApp']>
-    readonly createGroupRouletteController: UnwrapRef<typeof import('./composables/useGroupRoulette')['createGroupRouletteController']>
-    readonly createGroupRouletteRobotsContent: UnwrapRef<typeof import('./composables/useGroupRoulette')['createGroupRouletteRobotsContent']>
-    readonly createGroupRouletteShareUrl: UnwrapRef<typeof import('./composables/useGroupRoulette')['createGroupRouletteShareUrl']>
     readonly createJukugoSolver: UnwrapRef<typeof import('./composables/useJukugoSolver')['createJukugoSolver']>
     readonly customRef: UnwrapRef<typeof import('vue')['customRef']>
     readonly defineAsyncComponent: UnwrapRef<typeof import('vue')['defineAsyncComponent']>
@@ -151,7 +133,6 @@ declare module 'vue' {
     readonly onWatcherCleanup: UnwrapRef<typeof import('vue')['onWatcherCleanup']>
     readonly provide: UnwrapRef<typeof import('vue')['provide']>
     readonly reactive: UnwrapRef<typeof import('vue')['reactive']>
-    readonly readHostTokenFromHash: UnwrapRef<typeof import('./composables/useGroupRoulette')['readHostTokenFromHash']>
     readonly readonly: UnwrapRef<typeof import('vue')['readonly']>
     readonly ref: UnwrapRef<typeof import('vue')['ref']>
     readonly resolveComponent: UnwrapRef<typeof import('vue')['resolveComponent']>
@@ -171,7 +152,6 @@ declare module 'vue' {
     readonly useAttrs: UnwrapRef<typeof import('vue')['useAttrs']>
     readonly useCssModule: UnwrapRef<typeof import('vue')['useCssModule']>
     readonly useCssVars: UnwrapRef<typeof import('vue')['useCssVars']>
-    readonly useGroupRoulette: UnwrapRef<typeof import('./composables/useGroupRoulette')['useGroupRoulette']>
     readonly useHeaderUtil: UnwrapRef<typeof import('./utils/headerUtil')['useHeaderUtil']>
     readonly useI18nUtil: UnwrapRef<typeof import('./utils/i18nUtil')['useI18nUtil']>
     readonly useId: UnwrapRef<typeof import('vue')['useId']>

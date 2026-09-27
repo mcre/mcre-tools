@@ -80,7 +80,7 @@ def create_acm_certificate(
 def create_dynamodb_primary_table(scope: Stack) -> dynamodb.Table:
     table_config = config["dynamodb"]["primary"]
     deletion_protection = table_config["deletion_protection"]
-    table = dynamodb.Table(
+    return dynamodb.Table(
         scope,
         "dynamodb-primary",
         table_name=f"{config['prefix']}-primary",
@@ -95,17 +95,7 @@ def create_dynamodb_primary_table(scope: Stack) -> dynamodb.Table:
             RemovalPolicy.RETAIN if deletion_protection else RemovalPolicy.DESTROY
         ),
         partition_key=dynamodb.Attribute(name="id", type=dynamodb.AttributeType.STRING),
-        time_to_live_attribute="ttl",
     )
-    table.add_global_secondary_index(
-        index_name="search_key_1-order-index",
-        partition_key=dynamodb.Attribute(
-            name="search_key_1", type=dynamodb.AttributeType.STRING
-        ),
-        sort_key=dynamodb.Attribute(name="order", type=dynamodb.AttributeType.NUMBER),
-        projection_type=dynamodb.ProjectionType.ALL,
-    )
-    return table
 
 
 def create_s3_bucket(

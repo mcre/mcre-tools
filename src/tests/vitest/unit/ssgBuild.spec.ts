@@ -13,20 +13,22 @@ describeWhenDistExists("SSG build output", () => {
       "ja/index.html",
       "en/index.html",
       "ja/jukugo/index.html",
-      "ja/group-roulette/index.html",
       "llms.txt",
       "robots.txt",
       "sitemap.xml",
     ]) {
       expect(existsSync(resolve(dist, path)), path).toBe(true);
     }
+    expect(existsSync(resolve(dist, "ja/group-roulette/index.html"))).toBe(
+      false,
+    );
+    expect(existsSync(resolve(dist, "en/group-roulette/index.html"))).toBe(
+      false,
+    );
+    expect(existsSync(resolve(dist, "img/group-roulette"))).toBe(false);
 
     const jukugoHtml = readFileSync(
       resolve(dist, "ja/jukugo/index.html"),
-      "utf8",
-    );
-    const groupRouletteHtml = readFileSync(
-      resolve(dist, "ja/group-roulette/index.html"),
       "utf8",
     );
     const indexHtml = readFileSync(resolve(dist, "ja/index.html"), "utf8");
@@ -46,6 +48,7 @@ describeWhenDistExists("SSG build output", () => {
     expect(indexHtml).toContain('content="https://tools.mcre.info/ja/"');
     expect(indexHtml).toContain("/img/jukugo/32.png");
     expect(indexHtml).toContain("熟語パズル");
+    expect(indexHtml).not.toContain("グループルーレット");
     expect(indexHtml).toContain("利用規約");
     expect(indexHtml).toContain('type="application/ld+json"');
     expect(indexHtml).toContain('"@type":"WebSite"');
@@ -60,16 +63,9 @@ describeWhenDistExists("SSG build output", () => {
     expect(jukugoHtml).toContain('"@type":"WebApplication"');
     expect(jukugoHtml).toContain('"@type":"BreadcrumbList"');
 
-    expect(groupRouletteHtml).toContain(
-      'rel="canonical" href="https://tools.mcre.info/ja/group-roulette"',
-    );
-    expect(groupRouletteHtml).toContain("グループルーレット - MCRE TOOLS");
-    expect(groupRouletteHtml).toContain("/img/group-roulette/32.png");
-    expect(groupRouletteHtml).toContain('name="robots" content="all"');
-
     expect(llmsTxt).toContain("# MCRE TOOLS");
     expect(llmsTxt).toContain("https://tools.mcre.info/ja/jukugo");
-    expect(llmsTxt).toContain("https://tools.mcre.info/ja/group-roulette");
+    expect(llmsTxt).not.toContain("group-roulette");
     expect(llmsTxt).toContain("/v1/jukugo/{character}/left-search");
 
     expect(robotsTxt).toContain("User-agent: OAI-SearchBot");

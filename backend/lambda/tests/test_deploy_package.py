@@ -14,11 +14,6 @@ def build_package_names(short_name: str) -> set[str]:
         stage = pathlib.Path(temp_dir) / short_name
         shutil.copytree(SRC_ROOT / short_name, stage)
         shutil.copy2(SRC_ROOT / "util.py", stage / "util.py")
-        if short_name == "api":
-            shutil.copytree(
-                SRC_ROOT / "group_roulette_core",
-                stage / "group_roulette_core",
-            )
 
         package_path = pathlib.Path(temp_dir) / "package.zip"
         with zipfile.ZipFile(package_path, "w") as archive:
@@ -35,9 +30,7 @@ class LambdaDeployPackageTest(unittest.TestCase):
         package_names = build_package_names("api")
 
         self.assertIn("main.py", package_names)
-        self.assertIn("group_roulette.py", package_names)
         self.assertIn("util.py", package_names)
-        self.assertIn("group_roulette_core/repository.py", package_names)
 
     def test_ogp_package_includes_shared_util_and_image_assets(self):
         package_names = build_package_names("ogp")

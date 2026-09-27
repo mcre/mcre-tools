@@ -23,11 +23,6 @@ package_lambda() {
   cp -R "${ROOT_DIR}/backend/lambda/src/${short_name}/." "${stage_dir}/"
   cp "${ROOT_DIR}/backend/lambda/src/util.py" "${stage_dir}/"
 
-  if [ "${short_name}" = "api" ]; then
-    cp -R "${ROOT_DIR}/backend/lambda/src/group_roulette_core" \
-      "${stage_dir}/group_roulette_core"
-  fi
-
   python3 -m py_compile $(find "${stage_dir}" -name "*.py" -type f | sort)
 
   (

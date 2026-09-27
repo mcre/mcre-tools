@@ -125,37 +125,15 @@ class ModernizedStackTest(unittest.TestCase):
         jp_template.has_output("ViteEnvJp", Match.any_value())
         us_template.has_output("ViteEnvUs", Match.any_value())
 
-    def test_primary_table_has_group_room_lookup_index_and_ttl(self):
+    def test_primary_table_has_no_group_room_index_or_ttl(self):
         templates = self._templates()
         jp_template = templates["mcre-tools-dev-ap-northeast-1"]
+        table = next(iter(jp_template.find_resources("AWS::DynamoDB::Table").values()))
+        properties = table["Properties"]
+        self.assertNotIn("GlobalSecondaryIndexes", properties)
+        self.assertNotIn("TimeToLiveSpecification", properties)
 
-        jp_template.has_resource_properties(
-            "AWS::DynamoDB::Table",
-            {
-                "TimeToLiveSpecification": {
-                    "AttributeName": "ttl",
-                    "Enabled": True,
-                },
-                "GlobalSecondaryIndexes": Match.array_with(
-                    [
-                        Match.object_like(
-                            {
-                                "IndexName": "search_key_1-order-index",
-                                "KeySchema": [
-                                    {
-                                        "AttributeName": "search_key_1",
-                                        "KeyType": "HASH",
-                                    },
-                                    {"AttributeName": "order", "KeyType": "RANGE"},
-                                ],
-                            }
-                        )
-                    ]
-                ),
-            },
-        )
-
-    def test_polling_mvp_does_not_create_websocket_resources(self):
+    def test_stack_does_not_create_websocket_resources(self):
         templates = self._templates()
         jp_template = templates["mcre-tools-dev-ap-northeast-1"]
         template_json = jp_template.to_json()
@@ -168,7 +146,7 @@ class ModernizedStackTest(unittest.TestCase):
         )
         self.assertNotIn("tools-ws-dev.mcre.info", json.dumps(template_json))
 
-    def test_api_lambda_has_group_room_permissions_and_deploy_output(self):
+    def test_api_lambda_has_deploy_output(self):
         templates = self._templates()
         jp_template = templates["mcre-tools-dev-ap-northeast-1"]
         template_json = jp_template.to_json()
@@ -196,26 +174,6 @@ class ModernizedStackTest(unittest.TestCase):
             },
         )
 
-        api_role = next(
-            resource
-            for resource in template_json["Resources"].values()
-            if resource["Type"] == "AWS::IAM::Role"
-            and resource["Properties"].get("RoleName")
-            == "mcre-tools-dev-lambda-api"
-        )
-        api_policy_statements = [
-            statement
-            for policy in api_role["Properties"]["Policies"]
-            for statement in policy["PolicyDocument"]["Statement"]
-        ]
-        self.assertTrue(
-            any(
-                "dynamodb:TransactWriteItems" in statement["Action"]
-                and "dynamodb:Query" in statement["Action"]
-                and "dynamodb:ConditionCheckItem" in statement["Action"]
-                for statement in api_policy_statements
-            )
-        )
         self.assertNotIn("execute-api:ManageConnections", json.dumps(template_json))
         self.assertNotIn("mcre-tools-dev-realtime", json.dumps(template_json))
 

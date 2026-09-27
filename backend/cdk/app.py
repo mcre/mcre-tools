@@ -57,8 +57,6 @@ policy_dynamodb_primary_rw = iam.PolicyStatement(
         "dynamodb:PutItem",
         "dynamodb:UpdateItem",
         "dynamodb:DeleteItem",
-        "dynamodb:TransactWriteItems",
-        "dynamodb:ConditionCheckItem",
     ],
     resources=[
         dynamodb_primary_table.table_arn,

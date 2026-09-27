@@ -11,6 +11,7 @@
 - 開発・検証コマンド: `package.json`
 - サイト概要とセットアップ: `README.md`
 - API 契約と生成型: `openapi.yaml`、`src/composables/useApi.ts`
+- DynamoDB の現行設計と拡張時の指針: `DB.md`
 - フロントエンド: `src/main.ts`、`src/router/index.ts`、対象の `src/pages/` または `src/components/`
 - SSG / build 設定と E2E: `vite.config.mts`、`playwright.config.ts`、`src/tests/playwright/`
 - Lambda API: `backend/lambda/src/AGENTS.md`、対象の `backend/lambda/src/` と `backend/lambda/tests/`
@@ -55,6 +56,14 @@
 
 - API のパスやリクエスト・レスポンス型を変える場合は `openapi.yaml` を更新し、`npm run api:build` で `src/apis/` を再生成する。
 - 公開 API の挙動を変える場合は、対応する Lambda の unittest とフロントエンドのテストで互換性を確認する。
+
+## DynamoDB / 共有状態の設計
+
+- 現行のデータモデルと取得パターンは `DB.md` を正とする。新しい共有機能を設計するときは、更新判定に使う状態を単一 item に集約し、結果整合の GSI は一覧・監査の補助に使う。
+- ユーザー向け期限は `expires_at` などの明示フィールドで判定する。TTL を導入する場合は物理削除の補助として扱う。
+- 共有状態の変更はサーバーで確定し、条件付き更新・transaction、`revision`、`requestId` で競合と重複を扱う。クライアントは操作後と polling で正本を再取得し、古い revision を反映しない。
+- 操作レスポンスと状態取得は `revision`・`serverTime` を含む同じ形式にし、将来の通知層は revision を知らせる再取得のきっかけとして扱う。高頻度の表示更新は基準時刻からクライアントで補間する。
+- 認証用 token を設ける場合は hash だけを保存し、共有 URL の query、OGP、ログに含めない。個別の共有 URL は `noindex` を検討する。
 
 ## Lambda
 

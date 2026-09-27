@@ -61,9 +61,6 @@ describe("deploy workflow", () => {
     expect(deployLambdaSteps).toContain("pushd");
     expect(deployLambdaSteps).toContain("backend/lambda/src/${short_name}");
     expect(deployLambdaSteps).toContain("cp ../util.py ./");
-    expect(deployLambdaSteps).toContain(
-      "cp -R ../group_roulette_core ./group_roulette_core",
-    );
     expect(deployLambdaSteps).not.toContain("cp ../realtime/repository.py");
     expect(deployLambdaSteps).toContain("zip -r package.zip .");
   });
