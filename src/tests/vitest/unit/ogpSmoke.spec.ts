@@ -18,12 +18,10 @@ const loadRunOgpSmoke = async (): Promise<RunOgpSmoke> => {
 
 describe("OGP smoke script", () => {
   afterEach(() => {
-    delete process.env.OGP_SMOKE_BASIC_AUTH;
     vi.unstubAllGlobals();
   });
 
-  it("sends optional Basic auth only to the OGP page request", async () => {
-    process.env.OGP_SMOKE_BASIC_AUTH = "mcre:53";
+  it("requests the public OGP page without authorization", async () => {
     const pageUrl =
       "https://tools-dev.mcre.info/ja/jukugo?t=%E9%95%B7&a=%E8%80%81";
     const imageUrl =
@@ -59,14 +57,8 @@ describe("OGP smoke script", () => {
     await runOgpSmoke(pageUrl);
 
     expect(fetchMock).toHaveBeenCalledTimes(3);
-    expect(fetchMock.mock.calls[0][1]?.headers).toMatchObject({
-      authorization: "Basic bWNyZTo1Mw==",
-    });
-    expect(fetchMock.mock.calls[1][1]?.headers).not.toHaveProperty(
-      "authorization",
-    );
-    expect(fetchMock.mock.calls[2][1]?.headers).not.toHaveProperty(
-      "authorization",
-    );
+    for (const call of fetchMock.mock.calls) {
+      expect(call[1]?.headers).not.toHaveProperty("authorization");
+    }
   });
 });

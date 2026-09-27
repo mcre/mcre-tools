@@ -114,7 +114,10 @@ export const useHeaderUtil = () => {
       meta: [
         {
           name: "robots",
-          content: "all",
+          content:
+            import.meta.env.VITE_SITE_NOINDEX === "true"
+              ? "noindex, nofollow"
+              : "all",
         },
         {
           name: "description",

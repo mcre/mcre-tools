@@ -4,6 +4,27 @@ import { describe, expect, it } from "vitest";
 import { parse } from "yaml";
 
 describe("deploy workflow", () => {
+  it("deploys dev without Basic auth and keeps the OGP smoke test public", () => {
+    const devConfig = JSON.parse(
+      readFileSync(
+        resolve(__dirname, "../../../../backend/cdk/config/dev.json"),
+        "utf8",
+      ),
+    ) as {
+      cloudfront: {
+        dist: { basic_auth?: unknown; noindex: boolean };
+      };
+    };
+    const workflow = readFileSync(
+      resolve(__dirname, "../../../../.github/workflows/deploy.yaml"),
+      "utf8",
+    );
+
+    expect(devConfig.cloudfront.dist.basic_auth).toBeUndefined();
+    expect(devConfig.cloudfront.dist.noindex).toBe(true);
+    expect(workflow).not.toContain("OGP_SMOKE_BASIC_AUTH");
+  });
+
   it("dev/main branch deploys with modern runtimes and npm scripts", () => {
     const workflow = parse(
       readFileSync(
@@ -84,7 +105,7 @@ describe("deploy workflow", () => {
     expect(JSON.stringify(jobs["ogp-smoke"].steps)).toContain(
       "node scripts/verify-ogp-smoke.mjs",
     );
-    expect(JSON.stringify(jobs["ogp-smoke"].steps)).toContain(
+    expect(JSON.stringify(jobs["ogp-smoke"].steps)).not.toContain(
       "OGP_SMOKE_BASIC_AUTH",
     );
   });

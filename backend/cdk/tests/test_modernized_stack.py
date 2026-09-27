@@ -242,16 +242,10 @@ class ModernizedStackTest(unittest.TestCase):
             next(iter(cache_policy_resources)).startswith("distCustomCachePolicy")
         )
 
-    def test_dev_dist_cloudfront_basic_auth_is_configured_for_all_site_behaviors(self):
+    def test_dev_dist_is_public_and_noindex_on_all_site_behaviors(self):
         config = importlib.import_module("config").get_env_config()
-        self.assertEqual(
-            {
-                "enabled": True,
-                "username": "mcre",
-                "password": "53",
-            },
-            config["cloudfront"]["dist"]["basic_auth"],
-        )
+        self.assertNotIn("basic_auth", config["cloudfront"]["dist"])
+        self.assertTrue(config["cloudfront"]["dist"]["noindex"])
 
         templates = self._templates()
         us_template = templates["mcre-tools-dev-us-east-1"]
@@ -262,6 +256,29 @@ class ModernizedStackTest(unittest.TestCase):
         )
         distribution_config = distribution["Properties"]["DistributionConfig"]
 
+        response_policies = us_template.find_resources(
+            "AWS::CloudFront::ResponseHeadersPolicy"
+        )
+        self.assertEqual(len(response_policies), 1)
+        policy_id, policy = next(iter(response_policies.items()))
+        custom_headers = policy["Properties"]["ResponseHeadersPolicyConfig"][
+            "CustomHeadersConfig"
+        ]["Items"]
+        self.assertIn(
+            {"Header": "X-Robots-Tag", "Value": "noindex, nofollow", "Override": True},
+            custom_headers,
+        )
+        security_headers = policy["Properties"]["ResponseHeadersPolicyConfig"][
+            "SecurityHeadersConfig"
+        ]
+        self.assertTrue(security_headers["ContentTypeOptions"]["Override"])
+        self.assertEqual(
+            security_headers["FrameOptions"]["FrameOption"], "SAMEORIGIN"
+        )
+        self.assertTrue(
+            security_headers["StrictTransportSecurity"]["IncludeSubdomains"]
+        )
+
         def has_viewer_request_lambda(behavior):
             return any(
                 association.get("EventType") == "viewer-request"
@@ -271,6 +288,10 @@ class ModernizedStackTest(unittest.TestCase):
         self.assertTrue(
             has_viewer_request_lambda(distribution_config["DefaultCacheBehavior"])
         )
+        self.assertEqual(
+            distribution_config["DefaultCacheBehavior"]["ResponseHeadersPolicyId"],
+            {"Ref": policy_id},
+        )
 
         behavior_by_path = {
             behavior["PathPattern"]: behavior
@@ -278,6 +299,10 @@ class ModernizedStackTest(unittest.TestCase):
         }
         for path_pattern in ["/assets/*", "/img/*"]:
             self.assertTrue(has_viewer_request_lambda(behavior_by_path[path_pattern]))
+            self.assertEqual(
+                behavior_by_path[path_pattern]["ResponseHeadersPolicyId"],
+                {"Ref": policy_id},
+            )
 
     def test_github_actions_role_can_assume_cdk_bootstrap_roles(self):
         templates = self._templates()
