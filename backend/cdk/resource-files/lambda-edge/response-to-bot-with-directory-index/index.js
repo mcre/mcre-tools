@@ -1,6 +1,5 @@
 const URL_DIST = 'https://@{DOMAIN_NAME_DIST}';
-const BASIC_AUTH_ENABLED = @{BASIC_AUTH_ENABLED};
-const BASIC_AUTH_HEADER = '@{BASIC_AUTH_HEADER}';
+const NOINDEX = @{NOINDEX};
 const BOTS = [
   'Twitterbot',
   'facebookexternalhit',
@@ -22,15 +21,6 @@ const getHeader = (headers, name) => {
   }
   return values[0].value;
 };
-
-const unauthorized = () => ({
-  status: '401',
-  statusDescription: 'Unauthorized',
-  headers: {
-    'www-authenticate': [{ key: 'WWW-Authenticate', value: 'Basic' }],
-    'cache-control': [{ key: 'Cache-Control', value: 'no-store' }],
-  },
-});
 
 const generateContent = ({ lang, toolName, toolMessages, requestUrl, imageUrl }) => {
   const siteName = LOCALES[lang].common.title
@@ -54,7 +44,7 @@ const generateContent = ({ lang, toolName, toolMessages, requestUrl, imageUrl })
       <meta name="note:card" content="summary_large_image" />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:image" content="${imageUrl}" />
-      <meta name="robots" content="all">
+      <meta name="robots" content="${NOINDEX ? 'noindex, nofollow' : 'all'}">
       <title>${toolMessages.title} - ${siteName}</title>
     </head>
     <body>
@@ -70,10 +60,6 @@ exports.handler = async (event) => {
   const userAgent = getHeader(request.headers, 'user-agent');
 
   console.log('URL: ' + uri + ', UA: ' + userAgent + ', QS: ' + queryString);
-
-  if (BASIC_AUTH_ENABLED && getHeader(request.headers, 'authorization') !== BASIC_AUTH_HEADER) {
-    return unauthorized();
-  }
 
   let lang = 'ja';
   const uriLang = uri.split('/')[1];
@@ -98,6 +84,9 @@ exports.handler = async (event) => {
         statusDescription: 'OK',
         headers: {
           'content-type': [{ key: 'Content-Type', value: 'text/html' }],
+          ...(NOINDEX ? {
+            'x-robots-tag': [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }],
+          } : {}),
         },
         body,
       };

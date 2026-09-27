@@ -322,6 +322,46 @@ def create_cloudfront(
             )
         ]
 
+    response_headers_policy = cloudfront.ResponseHeadersPolicy.SECURITY_HEADERS
+    if config["cloudfront"][name].get("noindex", False):
+        response_headers_policy = cloudfront.ResponseHeadersPolicy(
+            scope,
+            f"noindex-response-headers-policy-{name}",
+            response_headers_policy_name=f"{config['prefix']}-{name}-noindex",
+            custom_headers_behavior=cloudfront.ResponseCustomHeadersBehavior(
+                custom_headers=[
+                    cloudfront.ResponseCustomHeader(
+                        header="X-Robots-Tag",
+                        value="noindex, nofollow",
+                        override=True,
+                    )
+                ]
+            ),
+            security_headers_behavior=cloudfront.ResponseSecurityHeadersBehavior(
+                content_type_options=cloudfront.ResponseHeadersContentTypeOptions(
+                    override=True
+                ),
+                frame_options=cloudfront.ResponseHeadersFrameOptions(
+                    frame_option=cloudfront.HeadersFrameOption.SAMEORIGIN,
+                    override=True,
+                ),
+                referrer_policy=cloudfront.ResponseHeadersReferrerPolicy(
+                    referrer_policy=cloudfront.HeadersReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN,
+                    override=True,
+                ),
+                strict_transport_security=cloudfront.ResponseHeadersStrictTransportSecurity(
+                    access_control_max_age=Duration.days(365),
+                    include_subdomains=True,
+                    override=True,
+                ),
+                xss_protection=cloudfront.ResponseHeadersXSSProtection(
+                    protection=True,
+                    mode_block=True,
+                    override=True,
+                ),
+            ),
+        )
+
     html_cache_policy = cloudfront.CachePolicy(
         scope,
         f"custom-cache-policy-{name}",
@@ -343,7 +383,7 @@ def create_cloudfront(
         origin=cloudfront_origins.S3BucketOrigin.with_origin_access_control(bucket),
         viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         cache_policy=html_cache_policy,
-        response_headers_policy=cloudfront.ResponseHeadersPolicy.SECURITY_HEADERS,
+        response_headers_policy=response_headers_policy,
         edge_lambdas=viewer_request_edge_lambdas(),
     )
 
@@ -375,7 +415,7 @@ def create_cloudfront(
                 ),
                 viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
                 cache_policy=cloudfront.CachePolicy.CACHING_OPTIMIZED,
-                response_headers_policy=cloudfront.ResponseHeadersPolicy.SECURITY_HEADERS,
+                response_headers_policy=response_headers_policy,
                 edge_lambdas=viewer_request_edge_lambdas(),
             ),
             "/img/*": cloudfront.BehaviorOptions(
@@ -384,7 +424,7 @@ def create_cloudfront(
                 ),
                 viewer_protocol_policy=cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
                 cache_policy=cloudfront.CachePolicy.CACHING_OPTIMIZED,
-                response_headers_policy=cloudfront.ResponseHeadersPolicy.SECURITY_HEADERS,
+                response_headers_policy=response_headers_policy,
                 edge_lambdas=viewer_request_edge_lambdas(),
             ),
         },

@@ -16,7 +16,7 @@
     "test:e2e": "npm run e2e",
     "test:e2e:debug": "playwright test --config=playwright.debug.config.ts",
     "build": "run-p type-check build-only",
-    "build:dev": "VITE_DISTRIBUTION_DOMAIN_NAME=tools-dev.mcre.info VITE_API_DOMAIN_NAME=tools-api-dev.mcre.info VITE_OGP_DOMAIN_NAME=tools-ogp-dev.mcre.info npm run build",
+    "build:dev": "VITE_DISTRIBUTION_DOMAIN_NAME=tools-dev.mcre.info VITE_API_DOMAIN_NAME=tools-api-dev.mcre.info VITE_OGP_DOMAIN_NAME=tools-ogp-dev.mcre.info VITE_SITE_NOINDEX=true npm run build",
     "build-only": "vite-ssg build",
     "preview": "vite preview --host 127.0.0.1 --port 4173",
     "preview:dev": "npm run build:dev && npm run preview",
