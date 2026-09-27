@@ -20,6 +20,161 @@ const expectLoadedImage = async (locator: Locator) => {
   expect(loaded).toBe(true);
 };
 
+const expectWheelLabelsInsideWheel = async (page: Page) => {
+  const wheelBox = await page.locator(".roulette-wheel").boundingBox();
+  expect(wheelBox).not.toBeNull();
+
+  const labels = page.locator(".roulette-wheel__label-character");
+  const count = await labels.count();
+  expect(count).toBeGreaterThan(0);
+
+  for (let index = 0; index < count; index += 1) {
+    const labelBox = await labels.nth(index).boundingBox();
+    expect(labelBox).not.toBeNull();
+    expect(labelBox!.x).toBeGreaterThanOrEqual(wheelBox!.x - 1);
+    expect(labelBox!.y).toBeGreaterThanOrEqual(wheelBox!.y - 1);
+    expect(labelBox!.x + labelBox!.width).toBeLessThanOrEqual(
+      wheelBox!.x + wheelBox!.width + 1,
+    );
+    expect(labelBox!.y + labelBox!.height).toBeLessThanOrEqual(
+      wheelBox!.y + wheelBox!.height + 1,
+    );
+  }
+};
+
+type GroupRouletteMemberFixture = {
+  id: string;
+  displayName: string;
+  role: "host" | "guest";
+};
+
+const mockGroupRouletteRoom = async (
+  page: Page,
+  {
+    addOptionDelayMs = 0,
+    createMember = {
+      id: "member_host",
+      displayName: "ホスト",
+      role: "host",
+    },
+    joinMember = createMember,
+  }: {
+    addOptionDelayMs?: number;
+    createMember?: GroupRouletteMemberFixture;
+    joinMember?: GroupRouletteMemberFixture;
+  } = {},
+) => {
+  let activeOptions: Array<{ id: string; label: string; order: number }> = [];
+  let status = "waiting";
+  let currentSpin: Record<string, unknown> | null = null;
+  let revision = 1;
+  const envelope = (payload: Record<string, unknown> = {}) => ({
+    protocolVersion: 1,
+    tool: "group-roulette",
+    type: "roomState",
+    roomId: "room_abc",
+    revision: revision++,
+    serverTime: "2026-05-08T09:30:00.000Z",
+    payload: {
+      status,
+      expiresAt: "2026-05-09T09:30:00Z",
+      guestAddEnabled: true,
+      activeOptions,
+      currentSpin,
+      ...payload,
+    },
+  });
+
+  await page.route("**/v1/group-roulette/rooms", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      status: 201,
+      body: JSON.stringify({
+        ...envelope({ member: createMember }),
+        hostToken: "host_secret",
+      }),
+    });
+  });
+  await page.route(
+    "**/v1/group-roulette/rooms/room_abc/join",
+    async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        status: 200,
+        body: JSON.stringify(envelope({ member: joinMember })),
+      });
+    },
+  );
+  await page.route(
+    "**/v1/group-roulette/rooms/room_abc/state**",
+    async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        status: 200,
+        body: JSON.stringify(envelope()),
+      });
+    },
+  );
+  await page.route(
+    "**/v1/group-roulette/rooms/room_abc/options",
+    async (route) => {
+      const request = route.request().postDataJSON() as { label: string };
+      activeOptions = [
+        ...activeOptions,
+        {
+          id: `option_${activeOptions.length + 1}`,
+          label: request.label,
+          order: activeOptions.length + 1,
+        },
+      ];
+      if (addOptionDelayMs > 0) {
+        await new Promise((resolve) => setTimeout(resolve, addOptionDelayMs));
+      }
+      await route.fulfill({
+        contentType: "application/json",
+        status: 200,
+        body: JSON.stringify(envelope()),
+      });
+    },
+  );
+  await page.route(
+    "**/v1/group-roulette/rooms/room_abc/spins/start",
+    async (route) => {
+      status = "spinning";
+      currentSpin = {
+        id: "spin_1",
+        startedAt: "2026-05-08T09:30:00Z",
+        durationMs: 5000,
+        options: activeOptions,
+      };
+      await route.fulfill({
+        contentType: "application/json",
+        status: 200,
+        body: JSON.stringify(envelope()),
+      });
+    },
+  );
+  await page.route(
+    "**/v1/group-roulette/rooms/room_abc/spins/stop",
+    async (route) => {
+      status = "stopping";
+      currentSpin = {
+        id: "spin_1",
+        startedAt: "2026-05-08T09:30:00Z",
+        durationMs: 5000,
+        options: activeOptions,
+        winnerOptionId: activeOptions[1]?.id ?? activeOptions[0]?.id,
+        stopAt: "2026-05-08T09:30:03Z",
+      };
+      await route.fulfill({
+        contentType: "application/json",
+        status: 200,
+        body: JSON.stringify(envelope()),
+      });
+    },
+  );
+};
+
 const expectShareButtonIconContained = async (button: Locator) => {
   await expect(button).toBeVisible();
 
@@ -268,7 +423,18 @@ test.describe("SSG preview layout", () => {
       page.locator('img[src="/img/group-roulette/32.png"]').first(),
     );
     await expect(
-      page.getByRole("button", { name: "部屋を作成" }),
+      page.getByRole("button", { name: "部屋を作る" }),
+    ).toBeVisible();
+    await expect(
+      page.getByText(
+        "部屋 URL を共有して、ルーレットに入れる項目から抽選結果まで全員の画面で同期できます。",
+      ),
+    ).toBeVisible();
+    await expect(
+      page.locator(".text-caption").filter({
+        hasText:
+          "追加した項目名、表示名、抽選履歴などの入力内容は、管理者確認用として一定期間保存されます。",
+      }),
     ).toBeVisible();
     await expectInsideViewport(page.locator(".group-roulette-shell"), 1280);
   });
@@ -392,30 +558,215 @@ test.describe("SSG preview layout", () => {
     );
 
     await page.goto("/ja/group-roulette");
-    await page.getByRole("button", { name: "部屋を作成" }).click();
+    await page.getByRole("button", { name: "部屋を作る" }).click();
     await expect(page).toHaveURL(/roomId=room_abc/);
     await expect(
-      page.getByRole("heading", { name: "待機中", level: 2 }),
+      page.getByRole("heading", { name: "準備中", level: 2 }),
     ).toBeVisible();
     expect(joinRequests).toBe(0);
-    await expect(page.getByRole("button", { name: "入室" })).toBeHidden();
+    await expect(page.getByRole("button", { name: "入室する" })).toBeHidden();
 
-    await page.getByLabel("候補名").fill("Pizza");
-    await page.getByRole("button", { name: "候補を追加" }).click();
+    await page.getByLabel("項目名").fill("Pizza");
+    await page.getByRole("button", { name: "項目を追加" }).click();
 
-    await expect(page.getByText("Pizza")).toBeVisible();
+    await expect(
+      page.getByLabel("ルーム操作").getByText("Pizza"),
+    ).toBeVisible();
+    await expect(
+      page.locator(".roulette-wheel__label", { hasText: "Pizza" }),
+    ).toBeVisible();
     await expect(page.getByText("ホスト").first()).toBeVisible();
 
-    await page.getByRole("button", { name: "開始" }).click();
+    await page.getByRole("button", { name: "ルーレットを回す" }).click();
     await expect(
-      page.getByRole("heading", { name: "抽選中", level: 2 }),
+      page.getByRole("heading", { name: "ルーレット中", level: 2 }),
     ).toBeVisible();
 
-    await page.getByRole("button", { name: "停止" }).click();
+    await page.getByRole("button", { name: "結果を出す" }).click();
     await expect(
-      page.getByRole("heading", { name: "停止中", level: 2 }),
+      page.getByRole("heading", { name: "結果発表中", level: 2 }),
     ).toBeVisible();
-    await expect(page.getByText("当選")).toBeVisible();
+    await expect(
+      page.locator(".stage-outcome").getByText("結果", { exact: true }),
+    ).toBeVisible();
+  });
+
+  test("group roulette redesign keeps the roulette stage as the desktop primary surface", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await mockGroupRouletteRoom(page);
+
+    await page.goto("/ja/group-roulette");
+    await page.getByRole("button", { name: "部屋を作る" }).click();
+    await expect(
+      page.getByText(
+        "部屋 URL を共有して、ルーレットに入れる項目から抽選結果まで全員の画面で同期できます。",
+      ),
+    ).toBeVisible();
+    await expect(
+      page.getByText("項目を集めて、全員で同じルーレットを見ながら決めます。"),
+    ).toBeHidden();
+
+    const stage = page.locator(".group-roulette-stage");
+    const rail = page.locator(".group-roulette-rail");
+    await expect(stage).toBeVisible();
+    await expect(rail).toBeVisible();
+    await expect(stage.getByRole("heading", { name: "準備中" })).toBeVisible();
+    await expect(
+      stage.getByRole("button", { name: "ルーレットを回す" }),
+    ).toBeVisible();
+
+    const stageBox = await stage.boundingBox();
+    const railBox = await rail.boundingBox();
+    expect(stageBox).not.toBeNull();
+    expect(railBox).not.toBeNull();
+    expect(stageBox!.width).toBeGreaterThan(railBox!.width);
+    await expect(page.getByText(/room_abc/)).toBeHidden();
+    await expect(
+      page.getByRole("button", { name: "共有 URL をコピー" }),
+    ).toBeVisible();
+  });
+
+  test("group roulette guest room hides host-only spin controls", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await mockGroupRouletteRoom(page, {
+      joinMember: {
+        id: "member_guest",
+        displayName: "ゲスト1",
+        role: "guest",
+      },
+    });
+
+    await page.goto("/ja/group-roulette?roomId=room_abc");
+    await page.getByLabel("表示名（任意）").fill("ゲスト1");
+    await page.getByRole("button", { name: "入室する" }).click();
+
+    await expect(page.getByText("ホストの開始を待っています")).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "ルーレットを回す" }),
+    ).toBeHidden();
+    await expect(page.getByRole("button", { name: "結果を出す" })).toBeHidden();
+    await expectInsideViewport(page.locator(".group-roulette-shell"), 390);
+  });
+
+  test("group roulette result is announced as the central stage outcome", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await mockGroupRouletteRoom(page);
+
+    await page.goto("/ja/group-roulette");
+    await page.getByRole("button", { name: "部屋を作る" }).click();
+    for (const label of ["Pizza", "寿司", "掃除当番", "旅行先", "ランチ"]) {
+      await page.getByLabel("項目名").fill(label);
+      await page.getByRole("button", { name: "項目を追加" }).click();
+    }
+
+    await expect(page.locator(".roulette-wheel__label")).toContainText([
+      "Pizza",
+      "寿司",
+      "掃除当番",
+      "旅行先",
+      "ランチ",
+    ]);
+    await expect(
+      page.locator(".roulette-wheel__label-character").first(),
+    ).toBeVisible();
+    await expect(
+      page.locator(".roulette-wheel__label-character").first(),
+    ).toHaveAttribute("style", /--label-character-rotation: 180deg/);
+    await expect(
+      page.locator(".roulette-wheel__label-character").first(),
+    ).toHaveAttribute(
+      "style",
+      /--label-character-offset: calc\(100% - var\(--label-edge-margin\) - 0em\)/,
+    );
+    await expect(page.locator(".roulette-wheel__separator")).toHaveCount(5);
+    await expectWheelLabelsInsideWheel(page);
+
+    await page.getByRole("button", { name: "ルーレットを回す" }).click();
+    await page.getByRole("button", { name: "結果を出す" }).click();
+
+    const outcome = page.locator("[aria-live='polite']").filter({
+      hasText: "結果",
+    });
+    await expect(outcome).toBeVisible();
+    await expect(outcome).toContainText("寿司");
+    await expect(page.locator(".roulette-wheel__center")).toHaveText("");
+    const outcomeBox = await outcome.boundingBox();
+    const wheelBox = await page.locator(".roulette-wheel").boundingBox();
+    expect(outcomeBox).not.toBeNull();
+    expect(wheelBox).not.toBeNull();
+    expect(outcomeBox!.width).toBeGreaterThan(wheelBox!.width * 0.45);
+  });
+
+  test("group roulette wheel labels stay inside the wheel on mobile", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await mockGroupRouletteRoom(page);
+
+    await page.goto("/ja/group-roulette");
+    await page.getByRole("button", { name: "部屋を作る" }).click();
+    for (const label of [
+      "Pizza",
+      "寿司",
+      "掃除当番",
+      "旅行先",
+      "ランチ",
+      "とても長い項目名のサンプルですです",
+      "会議室",
+      "映画",
+    ]) {
+      await page.getByLabel("項目名").fill(label);
+      await page.getByRole("button", { name: "項目を追加" }).click();
+    }
+
+    await expect(page.locator(".roulette-wheel__label")).toContainText([
+      "Pizza",
+      "寿司",
+      "掃除当番",
+      "旅行先",
+      "ランチ",
+    ]);
+    await expect(
+      page.locator(".roulette-wheel__label-character").first(),
+    ).toBeVisible();
+    await expect(
+      page.locator(".roulette-wheel__label-character").first(),
+    ).toHaveAttribute("style", /--label-character-rotation: 180deg/);
+    await expect(
+      page.locator(".roulette-wheel__label", { hasText: "..." }),
+    ).toBeVisible();
+    await expectInsideViewport(page.locator(".roulette-wheel"), 390);
+    await expectWheelLabelsInsideWheel(page);
+  });
+
+  test("group roulette option add shows a loading state while the request is pending", async ({
+    page,
+  }) => {
+    await mockGroupRouletteRoom(page, {
+      addOptionDelayMs: 500,
+    });
+
+    await page.goto("/ja/group-roulette");
+    await page.getByRole("button", { name: "部屋を作る" }).click();
+
+    await page.getByLabel("項目名").fill("Pizza");
+    const addButton = page.getByRole("button", { name: "項目を追加" });
+    await addButton.click();
+
+    await expect(page.getByLabel("項目名")).toBeDisabled();
+    await expect(addButton).toHaveClass(/v-btn--loading/);
+    await expect(
+      page.locator(".group-roulette-option-editor .v-progress-circular"),
+    ).toBeVisible();
+    await expect(
+      page.locator(".roulette-wheel__label", { hasText: "Pizza" }),
+    ).toBeVisible();
   });
 
   test("build output keeps share button icons contained on desktop and mobile", async ({

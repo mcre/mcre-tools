@@ -13,6 +13,7 @@
 - `POST /v1/group-roulette/rooms` は部屋作成と host member 作成を同一操作で行い、作成時点で表示名 `ホスト` の host として入室済みにする。
 - `GroupRouletteRoom|{roomId}` を canonical state とし、候補追加、削除、ゲスト追加許可、開始、停止、期限切れ、hostToken 権限、revision、冪等性をサーバー側で扱う。
 - `/ja/group-roulette` と `/en/group-roulette` の SSG ページ、状態管理 composable、ルーティング、i18n、アイコンを追加済み。
+- グループルーレットの UI は抽選ステージ主役の構成へ刷新済み。デスクトップはステージ + 操作レール、モバイルはステージ優先の縦順にし、ホスト/ゲストの操作表示を分離済み。
 - フロントエンドは操作成功後に即時 `roomState` refetch し、通常時は状態別 interval で polling する。将来通知層は revision hint から refetch する構造で後付けできる。
 - 旧 WebSocket Lambda source、CDK WebSocket API、`VITE_REALTIME_WS_URL` output は MVP から削除済み。
 - dev 環境も CDK と API/OGP Lambda を更新済み。dev API smoke test で room 作成、host 入室、候補追加、開始、停止、`stopAt` 後の `result` 遷移まで確認済み。
@@ -83,3 +84,5 @@
 - 2026-05-08: polling first に再設計。REST の `getRoomState`、`joinRoom`、`addOption`、`removeOption`、`setGuestAddEnabled`、`startSpin`、`stopSpin` を追加し、frontend は WebSocket 接続ではなく `roomState` polling と操作直後 refetch に差し替えた。旧 WebSocket Lambda source、CDK WebSocket API、`VITE_REALTIME_WS_URL` output は MVP から削除。`npm run lambda:test`、`npm run cdk:test`、`npm run test:unit`、`npm run type-check`、`npm run build`、`npm run e2e`、`npm run lint` で確認。
 - 2026-05-08: dev 環境へ polling first 版をデプロイ。cross-region export 削除順の都合で `us-east-1` stack から旧 realtime import を先に外し、`ap-northeast-1` stack の rollback を復旧してから `npm run cdk:deploy:dev -- --require-approval never` と `npm run lambda:deploy:dev` を実行。dev API smoke test で room 作成、host 入室、候補追加、開始、停止、`stopAt` 後の `result` 遷移まで確認。
 - 2026-05-10: `createRoom` を room 作成のみから「room 作成 + host member 作成」へ変更。作成レスポンスは `roomState` envelope に統一し、作成時だけ top-level `hostToken` を返す。フロントは `createRoom()` 後の別 `joinRoom("")` をやめ、作成直後から `ホスト` として入室済みにする。
+- 2026-05-11: グループルーレット UI を抽選ステージ主役へ刷新。`GroupRouletteStage`、共有、候補追加、候補一覧、状態表示のコンポーネントに分割し、共有 URL の常時長文表示をやめ、ゲストにはホスト専用操作を出さない構成に変更。Vitest と Playwright mocked preview に UI 退行防止を追加し、`npm run lint`、`npm run format:check`、`npm run type-check`、`npm run test:unit`、`npm run build`、`npm run e2e` で確認。
+- 2026-05-11: UI 刷新後の見出しとリード文を熟語パズルページの構造へ寄せ、ページ骨格を `v-container` / `v-row` / `v-col` 中心に戻した。操作欄とステージ外枠は `v-sheet` を使い、独自 CSS をルーレット描画と最小限の配置調整に縮小。

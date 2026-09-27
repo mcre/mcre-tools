@@ -11,6 +11,11 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    GroupRouletteOptionEditor: typeof import('./components/GroupRouletteOptionEditor.vue')['default']
+    GroupRouletteOptionList: typeof import('./components/GroupRouletteOptionList.vue')['default']
+    GroupRouletteShareBar: typeof import('./components/GroupRouletteShareBar.vue')['default']
+    GroupRouletteStage: typeof import('./components/GroupRouletteStage.vue')['default']
+    GroupRouletteStatusAlert: typeof import('./components/GroupRouletteStatusAlert.vue')['default']
     JukugoArrowButton: typeof import('./components/JukugoArrowButton.vue')['default']
     JukugoCharacterField: typeof import('./components/JukugoCharacterField.vue')['default']
     LanguageSwitcher: typeof import('./components/LanguageSwitcher.vue')['default']
