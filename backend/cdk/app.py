@@ -1,3 +1,4 @@
+import base64
 import json
 from pathlib import Path
 
@@ -108,9 +109,13 @@ dist_domain_name = (
 app_cors_allow_origins = [
     f"https://{dist_domain_name}",
     "http://localhost:3000",
+    "http://127.0.0.1:3000",
     "http://localhost:3001",
+    "http://127.0.0.1:3001",
     "http://localhost:4173",
+    "http://127.0.0.1:4173",
     "http://localhost:5173",
+    "http://127.0.0.1:5173",
 ]
 
 acm_result_api = create_acm_certificate(
@@ -128,7 +133,6 @@ acm_result_ogp = create_acm_certificate(
     stack_jp, "ogp", config["api-gateway"]["ogp"]["domain"]
 )
 create_apigateway(stack_jp, "ogp", lambda_ogp, acm_result_ogp)
-
 
 stack_us = Stack(
     app,
@@ -149,6 +153,17 @@ for filename in locales_dir_path.iterdir():
     if filename.suffix == ".json":
         locales_data[filename.stem] = json.loads(filename.read_text())
 
+dist_basic_auth_config = config["cloudfront"]["dist"].get("basic_auth", {})
+dist_basic_auth_enabled = bool(dist_basic_auth_config.get("enabled", False))
+dist_basic_auth_header = ""
+if dist_basic_auth_enabled:
+    dist_basic_auth_credentials = (
+        f"{dist_basic_auth_config['username']}:{dist_basic_auth_config['password']}"
+    )
+    dist_basic_auth_header = "Basic " + base64.b64encode(
+        dist_basic_auth_credentials.encode()
+    ).decode()
+
 lambda_edge_version_response_to_bot_with_directory_index = (
     create_lambda_edge_function_version(
         stack_us,
@@ -157,6 +172,8 @@ lambda_edge_version_response_to_bot_with_directory_index = (
             "LOCALES": json.dumps(locales_data, ensure_ascii=False),
             "DOMAIN_NAME_OGP": acm_result_ogp["domain_name"],
             "DOMAIN_NAME_DIST": acm_result_dist["domain_name"],
+            "BASIC_AUTH_ENABLED": json.dumps(dist_basic_auth_enabled),
+            "BASIC_AUTH_HEADER": dist_basic_auth_header,
         },
     )
 )

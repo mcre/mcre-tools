@@ -25,9 +25,11 @@
     </template>
   </v-app-bar>
 
-  <v-navigation-drawer v-for="tool in tools" :key="tool" v-model="drawer">
+  <v-navigation-drawer v-model="drawer">
     <v-list lines="two" :role="null">
       <v-list-item
+        v-for="tool in tools"
+        :key="tool"
         :subtitle="$t(`tools.${tool}.descriptionShort`)"
         :title="$t(`tools.${tool}.title`)"
         :to="i18nUtil.path(tool)"

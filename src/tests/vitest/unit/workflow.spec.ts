@@ -58,8 +58,10 @@ describe("deploy workflow", () => {
       workflow.jobs["deploy-lambda"].steps,
     );
 
+    expect(deployLambdaSteps).toContain("pushd");
+    expect(deployLambdaSteps).toContain("backend/lambda/src/${short_name}");
     expect(deployLambdaSteps).toContain("cp ../util.py ./");
-    expect(deployLambdaSteps).toContain("cp -R ../../ogp/assets ./assets");
+    expect(deployLambdaSteps).not.toContain("cp ../realtime/repository.py");
     expect(deployLambdaSteps).toContain("zip -r package.zip .");
   });
 
@@ -81,6 +83,9 @@ describe("deploy workflow", () => {
     );
     expect(JSON.stringify(jobs["ogp-smoke"].steps)).toContain(
       "node scripts/verify-ogp-smoke.mjs",
+    );
+    expect(JSON.stringify(jobs["ogp-smoke"].steps)).toContain(
+      "OGP_SMOKE_BASIC_AUTH",
     );
   });
 });

@@ -68,6 +68,11 @@
   },
   "cloudfront": {
     "dist": {
+      "basic_auth": {
+        "enabled": true,
+        "username": "mcre",
+        "password": "53"
+      },
       "domain": {
         "name": "tools-dev",
         "zone_name": "mcre.info",

@@ -125,6 +125,97 @@ class ModernizedStackTest(unittest.TestCase):
         jp_template.has_output("ViteEnvJp", Match.any_value())
         us_template.has_output("ViteEnvUs", Match.any_value())
 
+    def test_primary_table_has_no_group_room_index_or_ttl(self):
+        templates = self._templates()
+        jp_template = templates["mcre-tools-dev-ap-northeast-1"]
+        table = next(iter(jp_template.find_resources("AWS::DynamoDB::Table").values()))
+        properties = table["Properties"]
+        self.assertNotIn("GlobalSecondaryIndexes", properties)
+        self.assertNotIn("TimeToLiveSpecification", properties)
+
+    def test_stack_does_not_create_websocket_resources(self):
+        templates = self._templates()
+        jp_template = templates["mcre-tools-dev-ap-northeast-1"]
+        template_json = jp_template.to_json()
+
+        self.assertFalse(
+            any(
+                resource["Type"].startswith("AWS::ApiGatewayV2::")
+                for resource in template_json["Resources"].values()
+            )
+        )
+        self.assertNotIn("tools-ws-dev.mcre.info", json.dumps(template_json))
+
+    def test_api_lambda_has_deploy_output(self):
+        templates = self._templates()
+        jp_template = templates["mcre-tools-dev-ap-northeast-1"]
+        template_json = jp_template.to_json()
+
+        jp_template.has_resource_properties(
+            "AWS::Lambda::Function",
+            {
+                "FunctionName": "mcre-tools-dev-api",
+                "Runtime": "python3.13",
+                "Environment": {
+                    "Variables": {
+                        "DYNAMO_DB_PRIMARY_TABLE_NAME": {
+                            "Ref": Match.string_like_regexp("dynamodbprimary")
+                        },
+                        "LOG_LEVEL": "DEBUG",
+                    }
+                },
+            },
+        )
+        jp_template.has_resource_properties(
+            "Custom::LogRetention",
+            {
+                "LogGroupName": "/aws/lambda/mcre-tools-dev-api",
+                "RetentionInDays": 90,
+            },
+        )
+
+        self.assertNotIn("execute-api:ManageConnections", json.dumps(template_json))
+        self.assertNotIn("mcre-tools-dev-realtime", json.dumps(template_json))
+
+    def test_api_cors_allows_localhost_and_loopback_preview_origins(self):
+        templates = self._templates()
+        jp_template = templates["mcre-tools-dev-ap-northeast-1"]
+        template_json = jp_template.to_json()
+
+        options_methods = [
+            resource
+            for resource in template_json["Resources"].values()
+            if resource["Type"] == "AWS::ApiGateway::Method"
+            and resource.get("Properties", {}).get("HttpMethod") == "OPTIONS"
+        ]
+        self.assertEqual(len(options_methods), 1)
+        response_templates = options_methods[0]["Properties"]["Integration"][
+            "IntegrationResponses"
+        ][0]["ResponseTemplates"]
+        cors_template = response_templates["application/json"]
+
+        for origin in [
+            "http://localhost:4173",
+            "http://127.0.0.1:4173",
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+        ]:
+            self.assertIn(origin, cors_template)
+
+        jp_template.has_output("LambdaFunctions", {"Value": Match.any_value()})
+        lambda_functions_output = template_json["Outputs"]["LambdaFunctions"]["Value"]
+        self.assertIn("api", json.dumps(lambda_functions_output))
+        self.assertIn("ogp", json.dumps(lambda_functions_output))
+        self.assertNotIn("realtime", json.dumps(lambda_functions_output))
+
+    def test_vite_env_excludes_realtime_websocket_url(self):
+        templates = self._templates()
+        jp_template = templates["mcre-tools-dev-ap-northeast-1"]
+        vite_env_output = jp_template.to_json()["Outputs"]["ViteEnvJp"]["Value"]
+
+        self.assertNotIn("VITE_REALTIME_WS_URL", json.dumps(vite_env_output))
+        self.assertNotIn("tools-ws-dev.mcre.info", json.dumps(vite_env_output))
+
     def test_cloudfront_cache_policy_uses_consistent_construct_id_without_replacement(
         self,
     ):
@@ -150,6 +241,43 @@ class ModernizedStackTest(unittest.TestCase):
         self.assertTrue(
             next(iter(cache_policy_resources)).startswith("distCustomCachePolicy")
         )
+
+    def test_dev_dist_cloudfront_basic_auth_is_configured_for_all_site_behaviors(self):
+        config = importlib.import_module("config").get_env_config()
+        self.assertEqual(
+            {
+                "enabled": True,
+                "username": "mcre",
+                "password": "53",
+            },
+            config["cloudfront"]["dist"]["basic_auth"],
+        )
+
+        templates = self._templates()
+        us_template = templates["mcre-tools-dev-us-east-1"]
+        distribution = next(
+            resource
+            for resource in us_template.to_json()["Resources"].values()
+            if resource["Type"] == "AWS::CloudFront::Distribution"
+        )
+        distribution_config = distribution["Properties"]["DistributionConfig"]
+
+        def has_viewer_request_lambda(behavior):
+            return any(
+                association.get("EventType") == "viewer-request"
+                for association in behavior.get("LambdaFunctionAssociations", [])
+            )
+
+        self.assertTrue(
+            has_viewer_request_lambda(distribution_config["DefaultCacheBehavior"])
+        )
+
+        behavior_by_path = {
+            behavior["PathPattern"]: behavior
+            for behavior in distribution_config["CacheBehaviors"]
+        }
+        for path_pattern in ["/assets/*", "/img/*"]:
+            self.assertTrue(has_viewer_request_lambda(behavior_by_path[path_pattern]))
 
     def test_github_actions_role_can_assume_cdk_bootstrap_roles(self):
         templates = self._templates()

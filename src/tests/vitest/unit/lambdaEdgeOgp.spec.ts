@@ -8,6 +8,7 @@ type CloudFrontRequest = {
   querystring: string;
   headers: {
     "user-agent": Array<{ key: string; value: string }>;
+    authorization?: Array<{ key: string; value: string }>;
   };
 };
 
@@ -38,7 +39,14 @@ const locales = {
   },
 };
 
-const loadHandler = () => {
+const BASIC_AUTH_HEADER = "Basic bWNyZTo1Mw==";
+
+const loadHandler = (
+  options: {
+    basicAuthEnabled?: boolean;
+    basicAuthHeader?: string;
+  } = {},
+) => {
   const template = readFileSync(
     resolve(
       __dirname,
@@ -49,7 +57,9 @@ const loadHandler = () => {
   const source = template
     .replace("@{LOCALES}", JSON.stringify(locales))
     .replaceAll("@{DOMAIN_NAME_DIST}", "tools.mcre.info")
-    .replaceAll("@{DOMAIN_NAME_OGP}", "tools-ogp.mcre.info");
+    .replaceAll("@{DOMAIN_NAME_OGP}", "tools-ogp.mcre.info")
+    .replace("@{BASIC_AUTH_ENABLED}", String(options.basicAuthEnabled ?? false))
+    .replace("@{BASIC_AUTH_HEADER}", options.basicAuthHeader ?? "");
   const sandbox = {
     exports: {} as {
       handler?: (event: unknown) => Promise<any>;
@@ -171,5 +181,47 @@ describe("Lambda@Edge OGP response", () => {
 
     expect(response.status).toBeUndefined();
     expect(response.uri).toBe("/ja/jukugo/index.html");
+  });
+
+  it("rejects requests without authorization when Basic auth is enabled", async () => {
+    const handler = loadHandler({
+      basicAuthEnabled: true,
+      basicAuthHeader: BASIC_AUTH_HEADER,
+    });
+    const response = await handler(
+      createEvent(
+        createRequest({
+          headers: {
+            "user-agent": [{ key: "User-Agent", value: "Mozilla/5.0" }],
+          },
+        }),
+      ),
+    );
+
+    expect(response.status).toBe("401");
+    expect(response.statusDescription).toBe("Unauthorized");
+    expect(response.headers["www-authenticate"][0].value).toContain("Basic");
+  });
+
+  it("allows authenticated bot access when Basic auth is enabled", async () => {
+    const handler = loadHandler({
+      basicAuthEnabled: true,
+      basicAuthHeader: BASIC_AUTH_HEADER,
+    });
+    const response = await handler(
+      createEvent(
+        createRequest({
+          headers: {
+            "user-agent": [{ key: "User-Agent", value: "Twitterbot/1.0" }],
+            authorization: [{ key: "Authorization", value: BASIC_AUTH_HEADER }],
+          },
+        }),
+      ),
+    );
+
+    expect(response.status).toBe("200");
+    expect(metaContent(response.body, "property", "og:url")).toBe(
+      "https://tools.mcre.info/ja/jukugo?t=%E9%95%B7&a=%E8%80%81",
+    );
   });
 });

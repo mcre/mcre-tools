@@ -193,7 +193,9 @@ test.describe("SSG preview layout", () => {
     await expect(page.locator(".v-app-bar")).toBeVisible();
     await expect(page.locator("#termsOfUseTitle")).toHaveText("利用規約");
 
-    const toolCard = page.locator(".v-card").first();
+    const toolCard = page
+      .getByRole("main")
+      .getByRole("link", { name: /熟語パズル/ });
     await expect(toolCard).toBeVisible();
     await expectInsideViewport(toolCard, 1280);
     expect((await toolCard.boundingBox())!.width).toBeGreaterThan(600);

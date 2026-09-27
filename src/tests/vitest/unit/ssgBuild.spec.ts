@@ -19,6 +19,13 @@ describeWhenDistExists("SSG build output", () => {
     ]) {
       expect(existsSync(resolve(dist, path)), path).toBe(true);
     }
+    expect(existsSync(resolve(dist, "ja/group-roulette/index.html"))).toBe(
+      false,
+    );
+    expect(existsSync(resolve(dist, "en/group-roulette/index.html"))).toBe(
+      false,
+    );
+    expect(existsSync(resolve(dist, "img/group-roulette"))).toBe(false);
 
     const jukugoHtml = readFileSync(
       resolve(dist, "ja/jukugo/index.html"),
@@ -41,6 +48,7 @@ describeWhenDistExists("SSG build output", () => {
     expect(indexHtml).toContain('content="https://tools.mcre.info/ja/"');
     expect(indexHtml).toContain("/img/jukugo/32.png");
     expect(indexHtml).toContain("熟語パズル");
+    expect(indexHtml).not.toContain("グループルーレット");
     expect(indexHtml).toContain("利用規約");
     expect(indexHtml).toContain('type="application/ld+json"');
     expect(indexHtml).toContain('"@type":"WebSite"');
@@ -57,6 +65,7 @@ describeWhenDistExists("SSG build output", () => {
 
     expect(llmsTxt).toContain("# MCRE TOOLS");
     expect(llmsTxt).toContain("https://tools.mcre.info/ja/jukugo");
+    expect(llmsTxt).not.toContain("group-roulette");
     expect(llmsTxt).toContain("/v1/jukugo/{character}/left-search");
 
     expect(robotsTxt).toContain("User-agent: OAI-SearchBot");

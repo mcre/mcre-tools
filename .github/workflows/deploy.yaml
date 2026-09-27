@@ -200,10 +200,6 @@ jobs:
             short_name="${fn/${{ needs.deploy-cdk.outputs.PREFIX }}-/}"
             pushd "./backend/lambda/src/${short_name}"
             cp ../util.py ./
-            if [ "$short_name" = "ogp" ]; then
-              rm -rf assets
-              cp -R ../../ogp/assets ./assets
-            fi
             rm -f package.zip
             zip -r package.zip .
             popd
@@ -295,4 +291,7 @@ jobs:
 
       - name: OGP smoke test
         run: |
+          if [ "${{ env.ENV_NAME }}" = "dev" ]; then
+            export OGP_SMOKE_BASIC_AUTH="mcre:53"
+          fi
           node scripts/verify-ogp-smoke.mjs "https://${{ needs.deploy-cdk.outputs.DOMAIN_NAME_DISTRIBUTION }}/ja/jukugo?t=%E9%95%B7&a=%E8%80%81"
