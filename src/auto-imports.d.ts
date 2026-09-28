@@ -6,10 +6,12 @@
 // biome-ignore lint: disable
 export {}
 declare global {
+  const COLOR_METRONOME_STORAGE_KEY: typeof import('./composables/useColorMetronomeSettings').COLOR_METRONOME_STORAGE_KEY
   const EffectScope: typeof import('vue').EffectScope
   const computed: typeof import('vue').computed
   const createApiBaseURL: typeof import('./composables/useApi').createApiBaseURL
   const createApp: typeof import('vue').createApp
+  const createColorMetronomeSettings: typeof import('./composables/useColorMetronomeSettings').createColorMetronomeSettings
   const createJukugoSolver: typeof import('./composables/useJukugoSolver').createJukugoSolver
   const customRef: typeof import('vue').customRef
   const defineAsyncComponent: typeof import('vue').defineAsyncComponent
@@ -61,12 +63,15 @@ declare global {
   const unref: typeof import('vue').unref
   const useApi: typeof import('./composables/useApi').useApi
   const useAttrs: typeof import('vue').useAttrs
+  const useColorMetronome: typeof import('./composables/useColorMetronome').useColorMetronome
+  const useColorMetronomeSettings: typeof import('./composables/useColorMetronomeSettings').useColorMetronomeSettings
   const useCssModule: typeof import('vue').useCssModule
   const useCssVars: typeof import('vue').useCssVars
   const useHeaderUtil: typeof import('./utils/headerUtil').useHeaderUtil
   const useI18nUtil: typeof import('./utils/i18nUtil').useI18nUtil
   const useId: typeof import('vue').useId
   const useJukugoUtil: typeof import('./utils/jukugoUtil').useJukugoUtil
+  const useMetronomeFullscreen: typeof import('./composables/useMetronomeFullscreen').useMetronomeFullscreen
   const useModel: typeof import('vue').useModel
   const useRoute: typeof import('vue-router').useRoute
   const useRouter: typeof import('vue-router').useRouter
@@ -83,6 +88,9 @@ declare global {
   export type { Component, Slot, Slots, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, ShallowRef, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
   // @ts-ignore
+  export type { ColorMetronomeSettings } from './composables/useColorMetronomeSettings'
+  import('./composables/useColorMetronomeSettings')
+  // @ts-ignore
   export type { JukugoPosition, JukugoInputs, JukugoArrows, JukugoAnswer, JukugoSolveState, JukugoQueryState, JukugoSearch } from './composables/useJukugoSolver'
   import('./composables/useJukugoSolver')
   // @ts-ignore
@@ -95,10 +103,12 @@ import { UnwrapRef } from 'vue'
 declare module 'vue' {
   interface GlobalComponents {}
   interface ComponentCustomProperties {
+    readonly COLOR_METRONOME_STORAGE_KEY: UnwrapRef<typeof import('./composables/useColorMetronomeSettings')['COLOR_METRONOME_STORAGE_KEY']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
     readonly computed: UnwrapRef<typeof import('vue')['computed']>
     readonly createApiBaseURL: UnwrapRef<typeof import('./composables/useApi')['createApiBaseURL']>
     readonly createApp: UnwrapRef<typeof import('vue')['createApp']>
+    readonly createColorMetronomeSettings: UnwrapRef<typeof import('./composables/useColorMetronomeSettings')['createColorMetronomeSettings']>
     readonly createJukugoSolver: UnwrapRef<typeof import('./composables/useJukugoSolver')['createJukugoSolver']>
     readonly customRef: UnwrapRef<typeof import('vue')['customRef']>
     readonly defineAsyncComponent: UnwrapRef<typeof import('vue')['defineAsyncComponent']>
@@ -150,12 +160,15 @@ declare module 'vue' {
     readonly unref: UnwrapRef<typeof import('vue')['unref']>
     readonly useApi: UnwrapRef<typeof import('./composables/useApi')['useApi']>
     readonly useAttrs: UnwrapRef<typeof import('vue')['useAttrs']>
+    readonly useColorMetronome: UnwrapRef<typeof import('./composables/useColorMetronome')['useColorMetronome']>
+    readonly useColorMetronomeSettings: UnwrapRef<typeof import('./composables/useColorMetronomeSettings')['useColorMetronomeSettings']>
     readonly useCssModule: UnwrapRef<typeof import('vue')['useCssModule']>
     readonly useCssVars: UnwrapRef<typeof import('vue')['useCssVars']>
     readonly useHeaderUtil: UnwrapRef<typeof import('./utils/headerUtil')['useHeaderUtil']>
     readonly useI18nUtil: UnwrapRef<typeof import('./utils/i18nUtil')['useI18nUtil']>
     readonly useId: UnwrapRef<typeof import('vue')['useId']>
     readonly useJukugoUtil: UnwrapRef<typeof import('./utils/jukugoUtil')['useJukugoUtil']>
+    readonly useMetronomeFullscreen: UnwrapRef<typeof import('./composables/useMetronomeFullscreen')['useMetronomeFullscreen']>
     readonly useModel: UnwrapRef<typeof import('vue')['useModel']>
     readonly useRoute: UnwrapRef<typeof import('vue-router')['useRoute']>
     readonly useRouter: UnwrapRef<typeof import('vue-router')['useRouter']>

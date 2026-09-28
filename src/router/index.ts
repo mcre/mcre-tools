@@ -4,10 +4,12 @@ import { availableLocales } from "@/plugins/i18n";
 const Layout = () => import("@/layouts/default.vue");
 const Index = () => import("@/pages/index.vue");
 const Jukugo = () => import("@/pages/jukugo.vue");
+const ColorMetronome = () => import("@/pages/color-metronome.vue");
 const NotFound = () => import("@/pages/not-found.vue");
 
 const toolsComponents = {
   jukugo: Jukugo,
+  "color-metronome": ColorMetronome,
 };
 export const tools = Object.keys(toolsComponents);
 

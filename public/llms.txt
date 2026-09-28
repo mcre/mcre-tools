@@ -8,11 +8,17 @@ MCRE TOOLS is a public web app that provides small utility and fun tools. The ca
 - English home: https://tools.mcre.info/en/
 - 熟語パズル / Jukugo Puzzle: https://tools.mcre.info/ja/jukugo
 - Jukugo Puzzle in English: https://tools.mcre.info/en/jukugo
+- 色メトロノーム / Color Metronome: https://tools.mcre.info/ja/color-metronome
+- Color Metronome in English: https://tools.mcre.info/en/color-metronome
 - Sitemap: https://tools.mcre.info/sitemap.xml
 - Source code: https://github.com/mcre/mcre-tools
 - License: https://github.com/mcre/mcre-tools/blob/main/LICENSE
 
-## Main Tool
+## Tools
+
+### 色メトロノーム / Color Metronome
+
+A metronome that changes the screen color instead of making a sound. Users can set the BPM, beats per measure, subdivisions, and each beat's color, or enter the tempo by tapping. Fullscreen is supported, and settings are saved locally in the browser.
 
 ### 熟語パズル / Jukugo Puzzle
 
