@@ -101,3 +101,7 @@ npm run cdk:deploy:prod
 ## License
 
 see [LICENSE](./LICENSE)
+
+`npm run build` は、配布するJavaScriptに含まれる依存ライブラリのライセンスを
+Viteで収集し、上記LICENSEと合わせて `dist/licenses.txt` を生成します。
+サイトの「ライセンスに関して」から確認できます。
