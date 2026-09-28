@@ -75,6 +75,14 @@
         <p>
           {{ $t("index.termsOfUseDescription2") }}
         </p>
+
+        <p>
+          {{ $t("index.termsOfUseDescription3") }}
+        </p>
+
+        <p>
+          {{ $t("index.termsOfUseDescription4") }}
+        </p>
       </v-col>
     </v-row>
   </v-container>
@@ -136,7 +144,7 @@
         <div class="reference-link">
           <v-btn
             :aria-label="$t('index.aboutLicensesLinkLabel')"
-            href="https://github.com/mcre/mcre-tools/blob/main/LICENSE"
+            href="/licenses.txt"
             :icon="mdiCertificateOutline"
             rel="noopener noreferrer"
             size="small"
