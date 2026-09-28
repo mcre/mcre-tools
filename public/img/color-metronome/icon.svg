@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60">
+  <clipPath id="corners"><rect width="60" height="60" rx="12" /></clipPath>
+  <g clip-path="url(#corners)">
+    <path fill="#4169e1" d="M0 0h20v60H0z" />
+    <path fill="#3cb371" d="M20 0h20v60H20z" />
+    <path fill="#ff6347" d="M40 0h20v60H40z" />
+  </g>
+</svg>

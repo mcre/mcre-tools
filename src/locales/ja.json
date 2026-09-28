@@ -26,6 +26,30 @@
     "returnToHome": "トップページに戻る"
   },
   "tools": {
+    "color-metronome": {
+      "title": "色メトロノーム",
+      "descriptionShort": "音を鳴らすかわりに、画面の色が変わるメトロノームです。",
+      "description": "音を鳴らすかわりに、画面の色が変わるメトロノームです。",
+      "start": "開始",
+      "stop": "停止",
+      "fullscreen": "全画面",
+      "exitFullscreen": "全画面を解除",
+      "decreaseBpm": "BPMを1減らす",
+      "increaseBpm": "BPMを1増やす",
+      "tap": "タップ",
+      "bpmPresets": "BPMの選択",
+      "resetSettings": "設定をリセット",
+      "beats": "1小節の拍数",
+      "subdivision": "1拍の分割",
+      "beatColors": "各拍の色",
+      "beatColor": "{beat}拍目の色",
+      "subdivisions": {
+        "1": "なし",
+        "2": "2分割",
+        "3": "3連符",
+        "4": "4分割"
+      }
+    },
     "jukugo": {
       "title": "熟語パズル",
       "descriptionShort": "和同開珎を自動で解きます",

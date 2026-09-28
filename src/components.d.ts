@@ -16,6 +16,7 @@ declare module 'vue' {
     LanguageSwitcher: typeof import('./components/LanguageSwitcher.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    ToolHeading: typeof import('./components/ToolHeading.vue')['default']
     XShareButton: typeof import('./components/XShareButton.vue')['default']
   }
 }
