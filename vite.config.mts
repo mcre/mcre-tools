@@ -1,3 +1,4 @@
+import { appendFileSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath, URL } from "node:url";
 import VueI18nPlugin from "@intlify/unplugin-vue-i18n/vite";
@@ -54,6 +55,12 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       cssCodeSplit: false,
+      license: { fileName: "licenses.txt" },
+      rolldownOptions: {
+        output: {
+          postBanner: "/* Third-party licenses: /licenses.txt */",
+        },
+      },
     },
     ssr: {
       noExternal: ["vuetify", "aspida", "@aspida/fetch"],
@@ -64,6 +71,12 @@ export default defineConfig(({ mode }) => {
       dirStyle: "nested",
       beastiesOptions: false,
       onFinished() {
+        // Include the project, dictionary and source-level notices alongside
+        // Vite's automatically collected licenses for bundled dependencies.
+        appendFileSync(
+          path.resolve(__dirname, "dist/licenses.txt"),
+          `\n\n${readFileSync(path.resolve(__dirname, "LICENSE"), "utf8")}`,
+        );
         generateSitemap({
           hostname: `https://${env.VITE_DISTRIBUTION_DOMAIN_NAME}`,
           exclude: ["/", "/404"],
