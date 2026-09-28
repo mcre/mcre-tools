@@ -7,7 +7,7 @@ const cases = [
     description: /無料.*1024px.*PNG/,
     lead: "シンプルなQRコード生成ツール",
     guide: "使い方・保存について",
-    answer: "作成したQRコードに有効期限はありますか？",
+    answer: "画像のサイズや誤り訂正は変更できますか？",
   },
   {
     path: "/en/qr-code",
@@ -15,7 +15,7 @@ const cases = [
     description: /free.*1024px PNG/,
     lead: "A simple QR code generator",
     guide: "How to create and save a QR code",
-    answer: "Does the QR code expire?",
+    answer: "Can I change the image size or error correction?",
   },
 ];
 

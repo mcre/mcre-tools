@@ -112,7 +112,7 @@
       </div>
     </div>
 
-    <tool-guide :tool="tool" :topics="['expiry', 'image', 'draft']">
+    <tool-guide :tool="tool" :topics="['image', 'draft']">
       <router-link
         class="qr-tool__terms-link"
         :to="`/${$i18n.locale}/#termsOfUseTitle`"

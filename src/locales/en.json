@@ -123,10 +123,6 @@
       "guide": {
         "title": "How to create and save a QR code",
         "intro": "Enter a URL or text to generate a QR code immediately. This free tool works on phones and computers, with no account required. Copy the resulting image or save it as a PNG.",
-        "expiry": {
-          "question": "Does the QR code expire?",
-          "answer": "The QR code itself has no expiry date. It stores your URL or text directly and does not rely on a redirect service from this tool. A link can still stop working if its destination page is removed. You cannot change the destination of an existing QR code with this tool."
-        },
         "image": {
           "question": "Can I change the image size or error correction?",
           "answer": "To keep things simple, the image is fixed to a black-and-white 1024×1024-pixel PNG with the common error correction level M (approximately 15% data restoration). The pattern density adjusts automatically to your input, with a white margin at least four modules wide on every side. The on-screen preview is scaled down. Longer text creates a denser pattern, so display or print the saved PNG at a sufficient size and check that it scans before distributing it. If image copying is unavailable, use Save PNG."
