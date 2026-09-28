@@ -64,7 +64,12 @@ describe("deploy workflow", () => {
     expect(verifySteps).toContain(
       "python3 scripts/verify_ogp_layer_image_generation.py",
     );
-    expect(verifySteps).toContain("npm run cdk -- synth --all");
+    const synthStep = jobs.verify.steps.find(
+      (step: { name: string }) => step.name === "CDK synth",
+    );
+    expect(synthStep.run.trim()).toBe(
+      'CDK_ENV="${{ env.ENV_NAME }}" npm run cdk -- synth',
+    );
   });
 
   it("packages Lambda functions with shared util and OGP assets", () => {
