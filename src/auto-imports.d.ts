@@ -9,6 +9,8 @@ declare global {
   const COLOR_METRONOME_STORAGE_KEY: typeof import('./composables/useColorMetronomeSettings').COLOR_METRONOME_STORAGE_KEY
   const EffectScope: typeof import('vue').EffectScope
   const computed: typeof import('vue').computed
+  const countCharacters: typeof import('./utils/characterCounter').countCharacters
+  const countTextDetails: typeof import('./utils/characterCounter').countTextDetails
   const createApiBaseURL: typeof import('./composables/useApi').createApiBaseURL
   const createApp: typeof import('vue').createApp
   const createColorMetronomeSettings: typeof import('./composables/useColorMetronomeSettings').createColorMetronomeSettings
@@ -77,6 +79,8 @@ declare global {
   const useRouter: typeof import('vue-router').useRouter
   const useSlots: typeof import('vue').useSlots
   const useTemplateRef: typeof import('vue').useTemplateRef
+  const useTextClipboard: typeof import('./composables/useTextClipboard').useTextClipboard
+  const useTextDraft: typeof import('./composables/useTextDraft').useTextDraft
   const watch: typeof import('vue').watch
   const watchEffect: typeof import('vue').watchEffect
   const watchPostEffect: typeof import('vue').watchPostEffect
@@ -106,6 +110,8 @@ declare module 'vue' {
     readonly COLOR_METRONOME_STORAGE_KEY: UnwrapRef<typeof import('./composables/useColorMetronomeSettings')['COLOR_METRONOME_STORAGE_KEY']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
     readonly computed: UnwrapRef<typeof import('vue')['computed']>
+    readonly countCharacters: UnwrapRef<typeof import('./utils/characterCounter')['countCharacters']>
+    readonly countTextDetails: UnwrapRef<typeof import('./utils/characterCounter')['countTextDetails']>
     readonly createApiBaseURL: UnwrapRef<typeof import('./composables/useApi')['createApiBaseURL']>
     readonly createApp: UnwrapRef<typeof import('vue')['createApp']>
     readonly createColorMetronomeSettings: UnwrapRef<typeof import('./composables/useColorMetronomeSettings')['createColorMetronomeSettings']>
@@ -174,6 +180,8 @@ declare module 'vue' {
     readonly useRouter: UnwrapRef<typeof import('vue-router')['useRouter']>
     readonly useSlots: UnwrapRef<typeof import('vue')['useSlots']>
     readonly useTemplateRef: UnwrapRef<typeof import('vue')['useTemplateRef']>
+    readonly useTextClipboard: UnwrapRef<typeof import('./composables/useTextClipboard')['useTextClipboard']>
+    readonly useTextDraft: UnwrapRef<typeof import('./composables/useTextDraft')['useTextDraft']>
     readonly watch: UnwrapRef<typeof import('vue')['watch']>
     readonly watchEffect: UnwrapRef<typeof import('vue')['watchEffect']>
     readonly watchPostEffect: UnwrapRef<typeof import('vue')['watchPostEffect']>
