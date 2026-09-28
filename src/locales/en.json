@@ -61,6 +61,56 @@
       "hideAnswer": "Hide answer",
       "showAnswer": "Show answer",
       "reset": "Reset inputs"
+    },
+    "character-count": {
+      "title": "Character Count",
+      "descriptionShort": "A simple character counter",
+      "description": "A simple character counter",
+      "seoTitle": "Character Counter {'|'} Free Online Tool",
+      "seoDescription": "Count characters in Japanese, English, and emoji instantly. Check counts without spaces or line breaks, lines, paragraphs, English words, and UTF-8 bytes. No sign-up required.",
+      "guide": {
+        "title": "How to use and count characters",
+        "intro": "Type or paste your text to see the character count immediately. This free tool works on phones and computers, with no account required.",
+        "counting": {
+          "question": "How are spaces, line breaks, and emoji counted?",
+          "answer": "Each visible character counts as one, whether it is full-width or half-width. Each of あ, A, 😊, and the combined family emoji 👨‍👩‍👧‍👦 counts as one character. The main count includes spaces and line breaks. The second count excludes half-width and full-width spaces, tabs, and line breaks. If a submission has its own counting rules, check those requirements."
+        },
+        "details": {
+          "question": "Can I also check word and byte counts?",
+          "answer": "Open More counts to see lines, paragraphs, English words, and UTF-8 bytes. The English word count counts groups of Latin letters. Bytes measure data size: A uses 1 byte and あ uses 3 bytes in UTF-8."
+        },
+        "draft": {
+          "question": "Is my text saved?",
+          "answer": "Counting runs in your browser without sending the text to a server for processing. Your text is not automatically saved and is cleared when you reload or leave the page. After Clear all, you can use Undo until you enter new text."
+        }
+      },
+      "total": "Characters",
+      "withoutWhitespace": "Without spaces or line breaks",
+      "input": "Text",
+      "placeholder": "Type or paste your text here",
+      "selection": "Selected",
+      "copy": "Copy all text",
+      "paste": "Paste",
+      "copied": "Copied",
+      "pasted": "Pasted",
+      "copyFailed": "Could not copy. Select the text and use your browser's Copy command.",
+      "pasteFailed": "Could not paste. Use the text field's menu or your keyboard shortcut.",
+      "countingNote": "“あ”, “A”, and “😊” each count as one character. Spaces and line breaks also count as one.",
+      "moreCounts": "More counts",
+      "detailLabels": {
+        "lines": "Lines",
+        "paragraphs": "Paragraphs",
+        "words": "English words",
+        "utf8Bytes": "UTF-8 bytes"
+      },
+      "detailNotes": {
+        "lines": "Lines separated by line breaks, including blank lines.",
+        "paragraphs": "Blocks of text separated by blank lines.",
+        "words": "Latin-letter groups. Each of don't and well-known counts as one word.",
+        "utf8Bytes": "Size of the full text, with LF line breaks (1 byte each)."
+      },
+      "clear": "Clear all",
+      "undo": "Undo"
     }
   }
 }

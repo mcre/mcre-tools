@@ -2,7 +2,7 @@ import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 
 export const useHeaderUtil = () => {
-  const { t, locale, availableLocales, fallbackLocale } = useI18n();
+  const { t, te, locale, availableLocales, fallbackLocale } = useI18n();
   const i18nUtil = useI18nUtil();
 
   const getHead = (tool?: string) => {
@@ -12,14 +12,20 @@ export const useHeaderUtil = () => {
     const localeValue = computed(() => locale.value);
     const path = computed(() => i18nUtil.path(tool || "/"));
     const canonicalUrl = computed(() => `${distUrl}${path.value}`);
-    const title = computed(() =>
-      tool ? `${t(`tools.${tool}.title`)} - ${site.value}` : site.value,
-    );
+    const title = computed(() => {
+      if (!tool) return site.value;
+      const key = te(`tools.${tool}.seoTitle`) ? "seoTitle" : "title";
+      return `${t(`tools.${tool}.${key}`)} - ${site.value}`;
+    });
     const iconDir = tool || "favicon";
     const imageUrl = computed(() => `${distUrl}/img/${iconDir}/180.png`);
-    const description = computed(() =>
-      tool ? t(`tools.${tool}.description`) : t(`common.description`),
-    );
+    const description = computed(() => {
+      if (!tool) return t("common.description");
+      const key = te(`tools.${tool}.seoDescription`)
+        ? "seoDescription"
+        : "description";
+      return t(`tools.${tool}.${key}`);
+    });
     const structuredData = computed(() => {
       const websiteId = `${distUrl}/#website`;
       const website = {

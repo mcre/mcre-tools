@@ -10,11 +10,19 @@ MCRE TOOLS is a public web app that provides small utility and fun tools. The ca
 - Jukugo Puzzle in English: https://tools.mcre.info/en/jukugo
 - 色メトロノーム / Color Metronome: https://tools.mcre.info/ja/color-metronome
 - Color Metronome in English: https://tools.mcre.info/en/color-metronome
+- 文字数カウント / Character Count: https://tools.mcre.info/ja/character-count
+- Character Count in English: https://tools.mcre.info/en/character-count
 - Sitemap: https://tools.mcre.info/sitemap.xml
 - Source code: https://github.com/mcre/mcre-tools
 - License: https://github.com/mcre/mcre-tools/blob/main/LICENSE
 
 ## Tools
+
+### 文字数カウント / Character Count
+
+Counts characters in text immediately, with a separate count excluding whitespace and line breaks. Selecting a passage shows its character count alongside the whole text. Emoji and combining sequences are counted as graphemes. Cleared text can be restored until new text is entered. Text stays in memory and is not saved or sent to the tool's server.
+
+An optional, initially collapsed section shows line count, paragraph count, English word count (Latin-letter groups), and UTF-8 byte size for the full text. Blank lines separate paragraphs; line breaks are normalized to LF for counting and byte size.
 
 ### 色メトロノーム / Color Metronome
 
