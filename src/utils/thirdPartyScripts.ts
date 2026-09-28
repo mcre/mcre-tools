@@ -33,8 +33,10 @@ function appendScript(
 
 function injectThirdPartyScripts(win: ThirdPartyWindow) {
   win.dataLayer = win.dataLayer || [];
-  win.gtag = function gtag(...args: unknown[]) {
-    win.dataLayer?.push(args);
+  win.gtag = function gtag() {
+    // Google tag recognizes commands as Arguments objects, not rest arrays.
+    // eslint-disable-next-line prefer-rest-params
+    win.dataLayer?.push(arguments);
   };
   win.gtag("js", new Date());
   win.gtag("config", GOOGLE_TAG_ID);
