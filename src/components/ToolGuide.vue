@@ -12,6 +12,8 @@
         <h2>{{ $t(`tools.${tool}.guide.${topic}.question`) }}</h2>
         <p>{{ $t(`tools.${tool}.guide.${topic}.answer`) }}</p>
       </section>
+
+      <slot />
     </div>
   </details>
 </template>

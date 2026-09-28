@@ -12,6 +12,8 @@ MCRE TOOLS is a public web app that provides small utility and fun tools. The ca
 - Color Metronome in English: https://tools.mcre.info/en/color-metronome
 - 文字数カウント / Character Count: https://tools.mcre.info/ja/character-count
 - Character Count in English: https://tools.mcre.info/en/character-count
+- QRコード作成 / QR Code Generator: https://tools.mcre.info/ja/qr-code
+- QR Code Generator in English: https://tools.mcre.info/en/qr-code
 - Sitemap: https://tools.mcre.info/sitemap.xml
 - Source code: https://github.com/mcre/mcre-tools
 - License: https://github.com/mcre/mcre-tools/blob/main/LICENSE
@@ -23,6 +25,10 @@ MCRE TOOLS is a public web app that provides small utility and fun tools. The ca
 Counts characters in text immediately, with a separate count excluding whitespace and line breaks. Selecting a passage shows its character count alongside the whole text. Emoji and combining sequences are counted as graphemes. Cleared text can be restored until new text is entered. Text stays in memory and is not saved or sent to the tool's server.
 
 An optional, initially collapsed section shows line count, paragraph count, English word count (Latin-letter groups), and UTF-8 byte size for the full text. Blank lines separate paragraphs; line breaks are normalized to LF for counting and byte size.
+
+### QRコード作成 / QR Code Generator
+
+Creates a black-and-white QR code from a URL or text in the browser. Users can copy the image or save a 1024px PNG with error correction level M and a white margin of at least four modules on every side. The input is encoded as entered, without a redirect service. No account or settings are required. Input stays in memory, is not added to the page URL or automatically saved, and is cleared on reload or when switching to another tool. Share the resulting QR image, which contains the input. The site uses Google Analytics and Google AdSense.
 
 ### 色メトロノーム / Color Metronome
 

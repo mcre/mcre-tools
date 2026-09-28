@@ -20,6 +20,13 @@ export const createApp = ViteSSG(
       app.use(vuetify);
 
       router.beforeEach((to) => {
+        // Discard text parameters from links made by the earlier QR prototype.
+        if (/\/qr-code\/?$/.test(to.path) && "text" in to.query) {
+          const query = { ...to.query };
+          delete query.text;
+          return { path: to.path, query, hash: to.hash, replace: true };
+        }
+
         const locale = availableLocales.find((loc) =>
           to.path.startsWith(`/${loc}`),
         );

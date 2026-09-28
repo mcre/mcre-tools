@@ -75,6 +75,14 @@
         <p>
           {{ $t("index.termsOfUseDescription2") }}
         </p>
+
+        <p>
+          {{ $t("index.termsOfUseDescription3") }}
+        </p>
+
+        <p>
+          {{ $t("index.termsOfUseDescription4") }}
+        </p>
       </v-col>
     </v-row>
   </v-container>
