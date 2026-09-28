@@ -30,7 +30,7 @@ export const useQrClipboard = (image: Ref<string>) => {
     status.value = "copying";
     try {
       const bytes = Uint8Array.from(
-        atob(image.value.split(",")[1]),
+        atob(image.value.split(",", 2)[1]),
         (character) => character.codePointAt(0)!,
       );
       const blob = new Blob([bytes], { type: "image/png" });

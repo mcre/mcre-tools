@@ -40,7 +40,7 @@ export default defineConfig(({ mode }) => {
         },
       }),
       VueI18nPlugin({
-        include: path.resolve(__dirname, "./src/locales"),
+        include: path.resolve(import.meta.dirname, "./src/locales"),
       }),
     ],
     define: { "process.env": {} },
@@ -74,8 +74,8 @@ export default defineConfig(({ mode }) => {
         // Include the project, dictionary and source-level notices alongside
         // Vite's automatically collected licenses for bundled dependencies.
         appendFileSync(
-          path.resolve(__dirname, "dist/licenses.txt"),
-          `\n\n${readFileSync(path.resolve(__dirname, "LICENSE"), "utf8")}`,
+          path.resolve(import.meta.dirname, "dist/licenses.txt"),
+          `\n\n${readFileSync(path.resolve(import.meta.dirname, "LICENSE"), "utf8")}`,
         );
         generateSitemap({
           hostname: `https://${env.VITE_DISTRIBUTION_DOMAIN_NAME}`,

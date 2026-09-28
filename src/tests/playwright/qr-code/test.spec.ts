@@ -62,7 +62,7 @@ test("exports a readable QR, updates it, and keeps input off the URL", async ({
     .poll(async () => {
       const source = await page.getByTestId("qr-image").getAttribute("src");
       return source
-        ? decode(Buffer.from(source.split(",")[1], "base64"))
+        ? decode(Buffer.from(source.split(",", 2)[1], "base64"))
         : null;
     })
     .toBe("メモ\n👍🏽");

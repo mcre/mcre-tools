@@ -94,7 +94,7 @@ jobs:
 
       - name: CDK synth
         run: |
-          CDK_ENV="${{ env.ENV_NAME }}" npm run cdk -- synth --all
+          CDK_ENV="${{ env.ENV_NAME }}" npm run cdk -- synth
 
   deploy-cdk:
     runs-on: ubuntu-latest

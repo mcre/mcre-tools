@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable unicorn/no-exports-in-scripts -- Also imported by the OGP smoke unit tests. */
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 

@@ -44,12 +44,12 @@ export default defineConfig({
       dts: "src/components.d.ts",
     }),
     VueI18nPlugin({
-      include: resolve(__dirname, "./src/locales"),
+      include: resolve(import.meta.dirname, "./src/locales"),
     }),
   ],
   resolve: {
     alias: {
-      "@": resolve(__dirname, "src"),
+      "@": resolve(import.meta.dirname, "src"),
     },
   },
 });

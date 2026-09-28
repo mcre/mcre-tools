@@ -10,7 +10,7 @@ describe("QR image generation", () => {
     "  メモ\n👨‍👩‍👧‍👦 & <hello>  ",
   ])("creates a PNG that decodes to the unmodified input", async (text) => {
     const image = await generateQrCode(text);
-    const png = PNG.sync.read(Buffer.from(image.split(",")[1], "base64"));
+    const png = PNG.sync.read(Buffer.from(image.split(",", 2)[1], "base64"));
     expect(png.width).toBeGreaterThanOrEqual(800);
     expect(png.width).toBe(png.height);
     expect([...png.data.subarray(0, 4)]).toEqual([255, 255, 255, 255]);
@@ -30,7 +30,7 @@ describe("QR image generation", () => {
     "keeps dense codes readable at the full PNG resolution (%#)",
     async (text) => {
       const image = await generateQrCode(text);
-      const png = PNG.sync.read(Buffer.from(image.split(",")[1], "base64"));
+      const png = PNG.sync.read(Buffer.from(image.split(",", 2)[1], "base64"));
       expect(png.width).toBe(1024);
       expect(png.height).toBe(1024);
       const decoded = jsQR(
