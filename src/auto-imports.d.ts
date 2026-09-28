@@ -19,6 +19,7 @@ declare global {
   const defineAsyncComponent: typeof import('vue').defineAsyncComponent
   const defineComponent: typeof import('vue').defineComponent
   const effectScope: typeof import('vue').effectScope
+  const generateQrCode: typeof import('./utils/qrCode').generateQrCode
   const getCurrentInstance: typeof import('vue').getCurrentInstance
   const getCurrentScope: typeof import('vue').getCurrentScope
   const getCurrentWatcher: typeof import('vue').getCurrentWatcher
@@ -75,6 +76,8 @@ declare global {
   const useJukugoUtil: typeof import('./utils/jukugoUtil').useJukugoUtil
   const useMetronomeFullscreen: typeof import('./composables/useMetronomeFullscreen').useMetronomeFullscreen
   const useModel: typeof import('vue').useModel
+  const useQrClipboard: typeof import('./composables/useQrClipboard').useQrClipboard
+  const useQrCode: typeof import('./composables/useQrCode').useQrCode
   const useRoute: typeof import('vue-router').useRoute
   const useRouter: typeof import('vue-router').useRouter
   const useSlots: typeof import('vue').useSlots
@@ -120,6 +123,7 @@ declare module 'vue' {
     readonly defineAsyncComponent: UnwrapRef<typeof import('vue')['defineAsyncComponent']>
     readonly defineComponent: UnwrapRef<typeof import('vue')['defineComponent']>
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
+    readonly generateQrCode: UnwrapRef<typeof import('./utils/qrCode')['generateQrCode']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
     readonly getCurrentWatcher: UnwrapRef<typeof import('vue')['getCurrentWatcher']>
@@ -176,6 +180,8 @@ declare module 'vue' {
     readonly useJukugoUtil: UnwrapRef<typeof import('./utils/jukugoUtil')['useJukugoUtil']>
     readonly useMetronomeFullscreen: UnwrapRef<typeof import('./composables/useMetronomeFullscreen')['useMetronomeFullscreen']>
     readonly useModel: UnwrapRef<typeof import('vue')['useModel']>
+    readonly useQrClipboard: UnwrapRef<typeof import('./composables/useQrClipboard')['useQrClipboard']>
+    readonly useQrCode: UnwrapRef<typeof import('./composables/useQrCode')['useQrCode']>
     readonly useRoute: UnwrapRef<typeof import('vue-router')['useRoute']>
     readonly useRouter: UnwrapRef<typeof import('vue-router')['useRouter']>
     readonly useSlots: UnwrapRef<typeof import('vue')['useSlots']>

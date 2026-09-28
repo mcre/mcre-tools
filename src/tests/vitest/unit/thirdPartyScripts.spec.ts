@@ -4,6 +4,7 @@ import { scheduleThirdPartyScripts } from "@/utils/thirdPartyScripts";
 describe("third-party scripts", () => {
   beforeEach(() => {
     vi.useFakeTimers();
+    window.history.replaceState({}, "", "/ja/");
     vi.spyOn(document, "readyState", "get").mockReturnValue("loading");
     vi.stubGlobal("dataLayer", []);
     vi.stubGlobal("gtag", undefined);
@@ -84,5 +85,51 @@ describe("third-party scripts", () => {
       "page_view",
       eventParameters,
     ]);
+  });
+
+  it.each([
+    "/ja/qr-code?text=private",
+    "/en/qr-code/?text=private",
+    "/qr-code?text=private",
+    "/ja/qr-code/index.html?text=private",
+  ])("keeps analytics and ads enabled on %s", (path) => {
+    window.history.replaceState({}, "", path);
+    scheduleThirdPartyScripts({
+      allowedHostnames: [window.location.hostname],
+      delayMs: 0,
+    });
+    window.dispatchEvent(new Event("load"));
+    vi.runAllTimers();
+    expect(document.querySelector("#third-party-google-tag")).not.toBeNull();
+    expect(document.querySelector("#third-party-adsense")).not.toBeNull();
+    expect(
+      (window as Window & { dataLayer: unknown[] }).dataLayer,
+    ).toHaveLength(2);
+  });
+
+  it("keeps analytics and ads enabled when entering QR during the delay", () => {
+    scheduleThirdPartyScripts({
+      allowedHostnames: [window.location.hostname],
+      delayMs: 5000,
+    });
+    window.dispatchEvent(new Event("load"));
+    window.history.replaceState({}, "", "/ja/qr-code?text=private");
+    vi.runAllTimers();
+    expect(document.querySelector("#third-party-google-tag")).not.toBeNull();
+    expect(document.querySelector("#third-party-adsense")).not.toBeNull();
+  });
+
+  it("keeps analytics and ads enabled after leaving a QR page", () => {
+    vi.spyOn(document, "referrer", "get").mockReturnValue(
+      "https://tools.mcre.info/ja/qr-code?text=private",
+    );
+    scheduleThirdPartyScripts({
+      allowedHostnames: [window.location.hostname],
+      delayMs: 0,
+    });
+    window.dispatchEvent(new Event("load"));
+    vi.runAllTimers();
+    expect(document.querySelector("#third-party-google-tag")).not.toBeNull();
+    expect(document.querySelector("#third-party-adsense")).not.toBeNull();
   });
 });
