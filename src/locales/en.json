@@ -26,6 +26,30 @@
     "returnToHome": "Return to Home"
   },
   "tools": {
+    "color-metronome": {
+      "title": "Color Metronome",
+      "descriptionShort": "A metronome that changes the screen color instead of making a sound.",
+      "description": "A metronome that changes the screen color instead of making a sound.",
+      "start": "Start",
+      "stop": "Stop",
+      "fullscreen": "Fullscreen",
+      "exitFullscreen": "Exit fullscreen",
+      "decreaseBpm": "Decrease BPM by 1",
+      "increaseBpm": "Increase BPM by 1",
+      "tap": "Tap",
+      "bpmPresets": "BPM presets",
+      "resetSettings": "Reset settings",
+      "beats": "Beats per measure",
+      "subdivision": "Beat subdivision",
+      "beatColors": "Beat colors",
+      "beatColor": "Beat {beat} color",
+      "subdivisions": {
+        "1": "None",
+        "2": "Eighth notes",
+        "3": "Triplets",
+        "4": "Sixteenth notes"
+      }
+    },
     "jukugo": {
       "title": "Jukugo Puzzle",
       "descriptionShort": "Automatically solves the Jukugo Puzzle.",
