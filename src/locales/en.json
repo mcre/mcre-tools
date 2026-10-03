@@ -2,6 +2,7 @@
   "languageName": "English",
   "localeName": "en_US",
   "common": {
+    "qrCodeTrademark": "QR Code is a registered trademark of DENSO WAVE INCORPORATED in Japan and in other countries.",
     "title": "MCRE TOOLS",
     "moveToHome": "Move to Home",
     "toggleMenu": "Toggle the Menu",
