@@ -54,6 +54,14 @@
       <router-view />
     </v-container>
   </v-main>
+
+  <footer>
+    <v-container max-width="1140">
+      <p class="text-caption text-medium-emphasis mb-0">
+        {{ $t("common.qrCodeTrademark") }}
+      </p>
+    </v-container>
+  </footer>
 </template>
 
 <script lang="ts" setup>

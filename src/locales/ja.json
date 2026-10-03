@@ -2,6 +2,7 @@
   "languageName": "日本語",
   "localeName": "ja_JP",
   "common": {
+    "qrCodeTrademark": "QRコードは株式会社デンソーウェーブの登録商標です。",
     "title": "MCRE TOOLS",
     "moveToHome": "トップページへ移動",
     "toggleMenu": "メニューを開閉する",
