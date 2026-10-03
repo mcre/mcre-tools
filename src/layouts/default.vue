@@ -47,6 +47,12 @@
         </template>
       </v-list-item>
     </v-list>
+
+    <template #append>
+      <p class="text-caption text-medium-emphasis px-4 py-3 mb-0">
+        {{ $t("common.qrCodeTrademark") }}
+      </p>
+    </template>
   </v-navigation-drawer>
 
   <v-main style="--v-layout-top: 56px">
@@ -54,14 +60,6 @@
       <router-view />
     </v-container>
   </v-main>
-
-  <footer>
-    <v-container max-width="1140">
-      <p class="text-caption text-medium-emphasis mb-0">
-        {{ $t("common.qrCodeTrademark") }}
-      </p>
-    </v-container>
-  </footer>
 </template>
 
 <script lang="ts" setup>
