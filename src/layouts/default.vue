@@ -49,7 +49,7 @@
     </v-list>
 
     <template #append>
-      <p class="text-caption text-medium-emphasis px-4 py-3 mb-0">
+      <p class="text-body-small text-medium-emphasis px-4 py-3 mb-0">
         {{ $t("common.qrCodeTrademark") }}
       </p>
     </template>

@@ -120,7 +120,7 @@
       >
     </tool-guide>
 
-    <p class="text-caption text-medium-emphasis mt-6 mb-0">
+    <p class="text-body-small text-medium-emphasis mt-6 mb-0">
       {{ $t("common.qrCodeTrademark") }}
     </p>
   </v-container>
