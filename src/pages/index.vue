@@ -83,6 +83,10 @@
         <p>
           {{ $t("index.termsOfUseDescription4") }}
         </p>
+
+        <p class="text-body-small text-medium-emphasis mt-4 mb-0">
+          {{ $t("common.qrCodeTrademark") }}
+        </p>
       </v-col>
     </v-row>
   </v-container>

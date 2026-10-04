@@ -119,6 +119,10 @@
         >{{ $t("index.termsOfUse") }}</router-link
       >
     </tool-guide>
+
+    <p class="text-body-small text-medium-emphasis mt-6 mb-0">
+      {{ $t("common.qrCodeTrademark") }}
+    </p>
   </v-container>
 </template>
 
