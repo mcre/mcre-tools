@@ -8,8 +8,15 @@
 // biome-ignore lint: disable
 export {}
 declare global {
+  const AREA_MAX_SECTORS: typeof import('./utils/piArea').AREA_MAX_SECTORS
   const COLOR_METRONOME_STORAGE_KEY: typeof import('./composables/useColorMetronomeSettings').COLOR_METRONOME_STORAGE_KEY
   const EffectScope: typeof import('vue').EffectScope
+  const MAX_POLYGON_SIDES: typeof import('./utils/piExperiments').MAX_POLYGON_SIDES
+  const MONTE_CARLO_DRAW_LIMIT: typeof import('./composables/useMonteCarloExperiment').MONTE_CARLO_DRAW_LIMIT
+  const POLYGON_VERTEX_LIMIT: typeof import('./utils/piExperiments').POLYGON_VERTEX_LIMIT
+  const circleAreaGeometry: typeof import('./utils/piArea').circleAreaGeometry
+  const circleAreaSectorPath: typeof import('./utils/piArea').circleAreaSectorPath
+  const circleAreaSectors: typeof import('./utils/piArea').circleAreaSectors
   const computed: typeof import('vue').computed
   const countCharacters: typeof import('./utils/characterCounter').countCharacters
   const countTextDetails: typeof import('./utils/characterCounter').countTextDetails
@@ -17,16 +24,19 @@ declare global {
   const createApp: typeof import('vue').createApp
   const createColorMetronomeSettings: typeof import('./composables/useColorMetronomeSettings').createColorMetronomeSettings
   const createJukugoSolver: typeof import('./composables/useJukugoSolver').createJukugoSolver
+  const createMonteCarloHistory: typeof import('./utils/monteCarloHistory').createMonteCarloHistory
   const customRef: typeof import('vue').customRef
   const defineAsyncComponent: typeof import('vue').defineAsyncComponent
   const defineComponent: typeof import('vue').defineComponent
   const effectScope: typeof import('vue').effectScope
+  const estimatePi: typeof import('./utils/piExperiments').estimatePi
   const generateQrCode: typeof import('./utils/qrCode').generateQrCode
   const getCurrentInstance: typeof import('vue').getCurrentInstance
   const getCurrentScope: typeof import('vue').getCurrentScope
   const getCurrentWatcher: typeof import('vue').getCurrentWatcher
   const h: typeof import('vue').h
   const inject: typeof import('vue').inject
+  const isInsideUnitCircle: typeof import('./utils/piExperiments').isInsideUnitCircle
   const isProxy: typeof import('vue').isProxy
   const isReactive: typeof import('vue').isReactive
   const isReadonly: typeof import('vue').isReadonly
@@ -34,6 +44,9 @@ declare global {
   const isShallow: typeof import('vue').isShallow
   const jukugoPositions: typeof import('./composables/useJukugoSolver').jukugoPositions
   const markRaw: typeof import('vue').markRaw
+  const monteCarloBatchSize: typeof import('./utils/piExperiments').monteCarloBatchSize
+  const monteCarloGraphRange: typeof import('./utils/piExperiments').monteCarloGraphRange
+  const monteCarloGraphY: typeof import('./utils/piExperiments').monteCarloGraphY
   const nextTick: typeof import('vue').nextTick
   const onActivated: typeof import('vue').onActivated
   const onBeforeMount: typeof import('vue').onBeforeMount
@@ -49,12 +62,20 @@ declare global {
   const onUnmounted: typeof import('vue').onUnmounted
   const onUpdated: typeof import('vue').onUpdated
   const onWatcherCleanup: typeof import('vue').onWatcherCleanup
+  const polygonBounds: typeof import('./utils/piExperiments').polygonBounds
+  const polygonDisplayValues: typeof import('./utils/piExperiments').polygonDisplayValues
+  const polygonSidesForPosition: typeof import('./utils/piExperiments').polygonSidesForPosition
+  const polygonSliderPosition: typeof import('./utils/piExperiments').polygonSliderPosition
+  const polygonVertices: typeof import('./utils/piExperiments').polygonVertices
+  const polygonVerticesForDisplay: typeof import('./utils/piExperiments').polygonVerticesForDisplay
   const provide: typeof import('vue').provide
   const reactive: typeof import('vue').reactive
   const readonly: typeof import('vue').readonly
   const ref: typeof import('vue').ref
   const resolveComponent: typeof import('vue').resolveComponent
+  const rollingCircle: typeof import('./utils/piExperiments').rollingCircle
   const routerOptions: typeof import('./router/index').routerOptions
+  const sampleSquarePoint: typeof import('./utils/piExperiments').sampleSquarePoint
   const scheduleThirdPartyScripts: typeof import('./utils/thirdPartyScripts').scheduleThirdPartyScripts
   const shallowReactive: typeof import('vue').shallowReactive
   const shallowReadonly: typeof import('vue').shallowReadonly
@@ -78,6 +99,9 @@ declare global {
   const useJukugoUtil: typeof import('./utils/jukugoUtil').useJukugoUtil
   const useMetronomeFullscreen: typeof import('./composables/useMetronomeFullscreen').useMetronomeFullscreen
   const useModel: typeof import('vue').useModel
+  const useMonteCarloExperiment: typeof import('./composables/useMonteCarloExperiment').useMonteCarloExperiment
+  const usePiAreaExperiment: typeof import('./composables/usePiAreaExperiment').usePiAreaExperiment
+  const usePiPlayback: typeof import('./composables/usePiPlayback').usePiPlayback
   const useQrClipboard: typeof import('./composables/useQrClipboard').useQrClipboard
   const useQrCode: typeof import('./composables/useQrCode').useQrCode
   const useRoute: typeof import('vue-router').useRoute
@@ -103,6 +127,9 @@ declare global {
   export type { JukugoPosition, JukugoInputs, JukugoArrows, JukugoAnswer, JukugoSolveState, JukugoQueryState, JukugoSearch } from './composables/useJukugoSolver'
   import('./composables/useJukugoSolver')
   // @ts-ignore
+  export type { SquarePoint, MonteCarloGraphRange } from './utils/piExperiments'
+  import('./utils/piExperiments')
+  // @ts-ignore
   export type { ThirdPartyScriptsOptions } from './utils/thirdPartyScripts'
   import('./utils/thirdPartyScripts')
 }
@@ -112,8 +139,15 @@ import { UnwrapRef } from 'vue'
 declare module 'vue' {
   interface GlobalComponents {}
   interface ComponentCustomProperties {
+    readonly AREA_MAX_SECTORS: UnwrapRef<typeof import('./utils/piArea')['AREA_MAX_SECTORS']>
     readonly COLOR_METRONOME_STORAGE_KEY: UnwrapRef<typeof import('./composables/useColorMetronomeSettings')['COLOR_METRONOME_STORAGE_KEY']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
+    readonly MAX_POLYGON_SIDES: UnwrapRef<typeof import('./utils/piExperiments')['MAX_POLYGON_SIDES']>
+    readonly MONTE_CARLO_DRAW_LIMIT: UnwrapRef<typeof import('./composables/useMonteCarloExperiment')['MONTE_CARLO_DRAW_LIMIT']>
+    readonly POLYGON_VERTEX_LIMIT: UnwrapRef<typeof import('./utils/piExperiments')['POLYGON_VERTEX_LIMIT']>
+    readonly circleAreaGeometry: UnwrapRef<typeof import('./utils/piArea')['circleAreaGeometry']>
+    readonly circleAreaSectorPath: UnwrapRef<typeof import('./utils/piArea')['circleAreaSectorPath']>
+    readonly circleAreaSectors: UnwrapRef<typeof import('./utils/piArea')['circleAreaSectors']>
     readonly computed: UnwrapRef<typeof import('vue')['computed']>
     readonly countCharacters: UnwrapRef<typeof import('./utils/characterCounter')['countCharacters']>
     readonly countTextDetails: UnwrapRef<typeof import('./utils/characterCounter')['countTextDetails']>
@@ -121,16 +155,19 @@ declare module 'vue' {
     readonly createApp: UnwrapRef<typeof import('vue')['createApp']>
     readonly createColorMetronomeSettings: UnwrapRef<typeof import('./composables/useColorMetronomeSettings')['createColorMetronomeSettings']>
     readonly createJukugoSolver: UnwrapRef<typeof import('./composables/useJukugoSolver')['createJukugoSolver']>
+    readonly createMonteCarloHistory: UnwrapRef<typeof import('./utils/monteCarloHistory')['createMonteCarloHistory']>
     readonly customRef: UnwrapRef<typeof import('vue')['customRef']>
     readonly defineAsyncComponent: UnwrapRef<typeof import('vue')['defineAsyncComponent']>
     readonly defineComponent: UnwrapRef<typeof import('vue')['defineComponent']>
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
+    readonly estimatePi: UnwrapRef<typeof import('./utils/piExperiments')['estimatePi']>
     readonly generateQrCode: UnwrapRef<typeof import('./utils/qrCode')['generateQrCode']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
     readonly getCurrentWatcher: UnwrapRef<typeof import('vue')['getCurrentWatcher']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
     readonly inject: UnwrapRef<typeof import('vue')['inject']>
+    readonly isInsideUnitCircle: UnwrapRef<typeof import('./utils/piExperiments')['isInsideUnitCircle']>
     readonly isProxy: UnwrapRef<typeof import('vue')['isProxy']>
     readonly isReactive: UnwrapRef<typeof import('vue')['isReactive']>
     readonly isReadonly: UnwrapRef<typeof import('vue')['isReadonly']>
@@ -138,6 +175,9 @@ declare module 'vue' {
     readonly isShallow: UnwrapRef<typeof import('vue')['isShallow']>
     readonly jukugoPositions: UnwrapRef<typeof import('./composables/useJukugoSolver')['jukugoPositions']>
     readonly markRaw: UnwrapRef<typeof import('vue')['markRaw']>
+    readonly monteCarloBatchSize: UnwrapRef<typeof import('./utils/piExperiments')['monteCarloBatchSize']>
+    readonly monteCarloGraphRange: UnwrapRef<typeof import('./utils/piExperiments')['monteCarloGraphRange']>
+    readonly monteCarloGraphY: UnwrapRef<typeof import('./utils/piExperiments')['monteCarloGraphY']>
     readonly nextTick: UnwrapRef<typeof import('vue')['nextTick']>
     readonly onActivated: UnwrapRef<typeof import('vue')['onActivated']>
     readonly onBeforeMount: UnwrapRef<typeof import('vue')['onBeforeMount']>
@@ -153,12 +193,20 @@ declare module 'vue' {
     readonly onUnmounted: UnwrapRef<typeof import('vue')['onUnmounted']>
     readonly onUpdated: UnwrapRef<typeof import('vue')['onUpdated']>
     readonly onWatcherCleanup: UnwrapRef<typeof import('vue')['onWatcherCleanup']>
+    readonly polygonBounds: UnwrapRef<typeof import('./utils/piExperiments')['polygonBounds']>
+    readonly polygonDisplayValues: UnwrapRef<typeof import('./utils/piExperiments')['polygonDisplayValues']>
+    readonly polygonSidesForPosition: UnwrapRef<typeof import('./utils/piExperiments')['polygonSidesForPosition']>
+    readonly polygonSliderPosition: UnwrapRef<typeof import('./utils/piExperiments')['polygonSliderPosition']>
+    readonly polygonVertices: UnwrapRef<typeof import('./utils/piExperiments')['polygonVertices']>
+    readonly polygonVerticesForDisplay: UnwrapRef<typeof import('./utils/piExperiments')['polygonVerticesForDisplay']>
     readonly provide: UnwrapRef<typeof import('vue')['provide']>
     readonly reactive: UnwrapRef<typeof import('vue')['reactive']>
     readonly readonly: UnwrapRef<typeof import('vue')['readonly']>
     readonly ref: UnwrapRef<typeof import('vue')['ref']>
     readonly resolveComponent: UnwrapRef<typeof import('vue')['resolveComponent']>
+    readonly rollingCircle: UnwrapRef<typeof import('./utils/piExperiments')['rollingCircle']>
     readonly routerOptions: UnwrapRef<typeof import('./router/index')['routerOptions']>
+    readonly sampleSquarePoint: UnwrapRef<typeof import('./utils/piExperiments')['sampleSquarePoint']>
     readonly scheduleThirdPartyScripts: UnwrapRef<typeof import('./utils/thirdPartyScripts')['scheduleThirdPartyScripts']>
     readonly shallowReactive: UnwrapRef<typeof import('vue')['shallowReactive']>
     readonly shallowReadonly: UnwrapRef<typeof import('vue')['shallowReadonly']>
@@ -182,6 +230,9 @@ declare module 'vue' {
     readonly useJukugoUtil: UnwrapRef<typeof import('./utils/jukugoUtil')['useJukugoUtil']>
     readonly useMetronomeFullscreen: UnwrapRef<typeof import('./composables/useMetronomeFullscreen')['useMetronomeFullscreen']>
     readonly useModel: UnwrapRef<typeof import('vue')['useModel']>
+    readonly useMonteCarloExperiment: UnwrapRef<typeof import('./composables/useMonteCarloExperiment')['useMonteCarloExperiment']>
+    readonly usePiAreaExperiment: UnwrapRef<typeof import('./composables/usePiAreaExperiment')['usePiAreaExperiment']>
+    readonly usePiPlayback: UnwrapRef<typeof import('./composables/usePiPlayback')['usePiPlayback']>
     readonly useQrClipboard: UnwrapRef<typeof import('./composables/useQrClipboard')['useQrClipboard']>
     readonly useQrCode: UnwrapRef<typeof import('./composables/useQrCode')['useQrCode']>
     readonly useRoute: UnwrapRef<typeof import('vue-router')['useRoute']>

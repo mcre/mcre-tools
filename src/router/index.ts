@@ -7,6 +7,7 @@ const Jukugo = () => import("@/pages/jukugo.vue");
 const ColorMetronome = () => import("@/pages/color-metronome.vue");
 const CharacterCount = () => import("@/pages/character-count.vue");
 const QrCode = () => import("@/pages/qr-code.vue");
+const PiLab = () => import("@/pages/pi-lab.vue");
 const NotFound = () => import("@/pages/not-found.vue");
 
 const toolsComponents = {
@@ -14,6 +15,7 @@ const toolsComponents = {
   "color-metronome": ColorMetronome,
   "character-count": CharacterCount,
   "qr-code": QrCode,
+  "pi-lab": PiLab,
 };
 export const tools = Object.keys(toolsComponents);
 
