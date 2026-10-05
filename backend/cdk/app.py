@@ -4,6 +4,7 @@ from pathlib import Path
 from aws_cdk import App, Aws, CfnOutput, Environment, Stack, aws_iam as iam
 
 from config import get_env_config
+from ogp_locales import load_ogp_locales
 from resources import (
     create_acm_certificate,
     create_apigateway,
@@ -147,10 +148,7 @@ acm_result_dist = create_acm_certificate(
 )
 
 locales_dir_path = cdk_root.parents[1] / "src" / "locales"
-locales_data = {}
-for filename in locales_dir_path.iterdir():
-    if filename.suffix == ".json":
-        locales_data[filename.stem] = json.loads(filename.read_text())
+locales_data = load_ogp_locales(locales_dir_path)
 
 dist_noindex = bool(config["cloudfront"]["dist"].get("noindex", False))
 

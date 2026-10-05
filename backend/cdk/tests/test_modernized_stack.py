@@ -5,6 +5,7 @@ import pathlib
 import sys
 import unittest
 import zipfile
+from unittest.mock import patch
 
 from aws_cdk import App, Stack
 from aws_cdk.assertions import Match, Template
@@ -32,6 +33,101 @@ class ModernizedStackTest(unittest.TestCase):
             for stack in cdk_app.app.node.children
             if isinstance(stack, Stack)
         }
+
+    def _edge_source(self, change_locale=None):
+        read_text = pathlib.Path.read_text
+        locales_dir = CDK_ROOT.parents[1] / "src" / "locales"
+
+        def read_locale(path, *args, **kwargs):
+            content = read_text(path, *args, **kwargs)
+            if change_locale and path.parent == locales_dir and path.suffix == ".json":
+                data = json.loads(content)
+                change_locale(path.stem, data)
+                return json.dumps(data, ensure_ascii=False)
+            return content
+
+        sys.modules.pop("app", None)
+        with patch.object(pathlib.Path, "read_text", autospec=True, side_effect=read_locale):
+            self._templates()
+        return (
+            CDK_ROOT / "work" / "response-to-bot-with-directory-index" / "index.js"
+        ).read_text()
+
+    def _embedded_locales(self, source):
+        return json.loads(source.split("const LOCALES = ", 1)[1].split(";\n", 1)[0])
+
+    def test_edge_source_contains_only_metadata_used_by_the_handler(self):
+        embedded = self._embedded_locales(self._edge_source())
+        locales_dir = CDK_ROOT.parents[1] / "src" / "locales"
+        originals = {
+            path.stem: json.loads(path.read_text()) for path in locales_dir.glob("*.json")
+        }
+        self.assertEqual(set(embedded), set(originals))
+        for locale, original in originals.items():
+            with self.subTest(locale=locale):
+                self.assertEqual(
+                    embedded[locale],
+                    {
+                        "localeName": original["localeName"],
+                        "common": {"title": original["common"]["title"]},
+                        "tools": {
+                            tool: {
+                                "title": messages["title"],
+                                "description": messages["description"],
+                            }
+                            for tool, messages in original["tools"].items()
+                        },
+                    },
+                )
+                self.assertEqual(
+                    list(embedded[locale]["tools"]), list(original["tools"])
+                )
+
+    def test_interface_copy_changes_leave_the_generated_edge_source_unchanged(self):
+        before = self._edge_source()
+
+        def change_copy(locale, data):
+            data["common"]["moveToHome"] = f"Updated home label ({locale})"
+            data["tools"]["pi-lab"]["monte"]["addOne"] = "Updated dot label"
+            data["tools"]["pi-lab"]["seoTitle"] = "Updated static page title"
+            data["tools"]["pi-lab"]["descriptionShort"] = "Updated card text"
+
+        self.assertEqual(before, self._edge_source(change_copy))
+
+    def test_ogp_metadata_and_new_tools_change_the_generated_edge_source(self):
+        before = self._edge_source()
+
+        def change_metadata(locale, data):
+            data["localeName"] = f"updated_{locale}"
+            data["common"]["title"] = f"Updated site ({locale})"
+            data["tools"]["pi-lab"]["title"] = f"Updated tool ({locale})"
+            data["tools"]["pi-lab"]["description"] = f"Updated description ({locale})"
+            data["tools"]["new-tool"] = {
+                "title": f"New tool ({locale})",
+                "description": f"New description ({locale})",
+                "button": "An interface label",
+            }
+
+        after = self._edge_source(change_metadata)
+        self.assertNotEqual(before, after)
+        for locale, metadata in self._embedded_locales(after).items():
+            with self.subTest(locale=locale):
+                self.assertEqual(metadata["localeName"], f"updated_{locale}")
+                self.assertEqual(metadata["common"]["title"], f"Updated site ({locale})")
+                self.assertEqual(
+                    metadata["tools"]["pi-lab"]["title"], f"Updated tool ({locale})"
+                )
+                self.assertEqual(
+                    metadata["tools"]["pi-lab"]["description"],
+                    f"Updated description ({locale})",
+                )
+                self.assertEqual(
+                    metadata["tools"]["new-tool"],
+                    {
+                        "title": f"New tool ({locale})",
+                        "description": f"New description ({locale})",
+                    },
+                )
 
     def test_dev_config_is_selected_by_cdk_env(self):
         config = importlib.import_module("config").get_env_config()
