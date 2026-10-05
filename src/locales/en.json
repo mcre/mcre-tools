@@ -199,6 +199,7 @@
         "description": "Roll the circle once without slipping. The distance traveled is its circumference; divide it by the diameter to get pi.",
         "visual": "A circle with diameter {diameter} rolls right without slipping. It has made {turns} turns. The horizontal dimension line crosses the center and joins both edges, showing the diameter. The blue spoke and rim marker show rotation. The blue arc matches the distance traveled. The upper scale shows distance; the lower scale shows distance divided by diameter.",
         "diameter": "Diameter",
+        "diameterValue": "Diameter: {diameter}",
         "ratio": "Distance ÷ diameter",
         "complete": "One full turn: circumference ÷ diameter ≈ π",
         "play": "Play",

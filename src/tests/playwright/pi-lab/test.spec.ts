@@ -594,17 +594,19 @@ test("changes diameter on a fixed distance scale and shows both axes", async ({
     const disc = section.locator(".pi-lab__wheel-disc");
     const diameterCaption = section.getByTestId("wheel-diameter-caption");
     await expect(diameterCaption).toHaveText(
-      locale === "ja" ? "直径" : "Diameter",
+      locale === "ja" ? "直径: 1" : "Diameter: 1",
     );
     await expect(diameterCaption).toBeVisible();
+    await expect(section.getByTestId("wheel-disc-diameter")).toHaveCount(0);
     for (const value of [0.5, 1, 2]) {
       await diameter.fill(String(value));
       await expect(section.getByTestId("wheel-diameter")).toHaveText(
         String(value),
       );
-      const discDiameter = section.getByTestId("wheel-disc-diameter");
-      await expect(discDiameter).toHaveText(String(value));
-      await expect(discDiameter).toBeVisible();
+      await expect(diameterCaption).toHaveText(
+        `${locale === "ja" ? "直径" : "Diameter"}: ${value}`,
+      );
+      await expect(diameterCaption).toBeVisible();
       await rotation.press("Home");
       const start = Number(await disc.getAttribute("cx"));
       const radius = Number(await disc.getAttribute("r"));
@@ -624,17 +626,21 @@ test("changes diameter on a fixed distance scale and shows both axes", async ({
       expect(dimension.x).toBeCloseTo(end, 4);
       expect(dimension.y).toBeCloseTo(Number(await disc.getAttribute("cy")), 4);
       expect(dimension.width / radius).toBeCloseTo(2, 4);
-      expect(Number(await discDiameter.getAttribute("x"))).toBeCloseTo(end, 12);
+      expect(Number(await diameterCaption.getAttribute("x"))).toBeCloseTo(
+        end,
+        12,
+      );
       const discBox = (await disc.boundingBox())!;
-      const valueBox = (await discDiameter.boundingBox())!;
-      expect(valueBox.x).toBeGreaterThanOrEqual(discBox.x);
-      expect(valueBox.x + valueBox.width).toBeLessThanOrEqual(
-        discBox.x + discBox.width,
+      const captionBox = (await diameterCaption.boundingBox())!;
+      const stageBox = (await section
+        .locator(".pi-lab__wheel-stage svg")
+        .boundingBox())!;
+      expect(captionBox.x).toBeGreaterThanOrEqual(stageBox.x);
+      expect(captionBox.x + captionBox.width).toBeLessThanOrEqual(
+        stageBox.x + stageBox.width,
       );
-      expect(valueBox.y).toBeGreaterThanOrEqual(discBox.y);
-      expect(valueBox.y + valueBox.height).toBeLessThanOrEqual(
-        discBox.y + discBox.height,
-      );
+      expect(captionBox.y).toBeGreaterThanOrEqual(stageBox.y);
+      expect(captionBox.y + captionBox.height).toBeLessThanOrEqual(discBox.y);
       expect((end - start) / absoluteUnit).toBeCloseTo(Math.PI * value, 12);
       expect((end - start) / radius).toBeCloseTo(2 * Math.PI, 12);
       expect(
@@ -657,9 +663,11 @@ test("changes diameter on a fixed distance scale and shows both axes", async ({
     }
     await rotation.fill("0.5");
     await diameter.fill("1");
-    await expect(section.getByTestId("wheel-disc-diameter")).toHaveText("1");
+    await expect(diameterCaption).toHaveText(
+      locale === "ja" ? "直径: 1" : "Diameter: 1",
+    );
     expect(
-      await section.getByTestId("wheel-disc-diameter").evaluate((element) => {
+      await diameterCaption.evaluate((element) => {
         const matrix = (element as SVGTextElement).getScreenCTM()!;
         return Math.atan2(matrix.b, matrix.a);
       }),
@@ -727,6 +735,18 @@ test("fits the rolling experiment and its numeric inputs in one touch screen", a
       const stage = (await section
         .locator(".pi-lab__wheel-stage svg")
         .boundingBox())!;
+      const caption = section.getByTestId("wheel-diameter-caption");
+      await expect(caption).toHaveText(
+        locale === "ja" ? "直径: 2" : "Diameter: 2",
+      );
+      await expect(caption).toBeVisible();
+      const captionBox = (await caption.boundingBox())!;
+      expect(captionBox.x).toBeGreaterThanOrEqual(stage.x);
+      expect(captionBox.x + captionBox.width).toBeLessThanOrEqual(
+        stage.x + stage.width,
+      );
+      expect(captionBox.y).toBeGreaterThanOrEqual(stage.y);
+      expect(captionBox.y + captionBox.height).toBeLessThanOrEqual(finish.y);
       expect(finish.x + finish.width).toBeLessThanOrEqual(
         stage.x + stage.width,
       );

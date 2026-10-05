@@ -82,19 +82,11 @@
             :x="wheelX"
             :y="90 - wheelDiameter - 8"
           >
-            {{ $t(`${messages}.wheel.diameter`) }}
-          </text>
-
-          <text
-            class="pi-lab__wheel-value"
-            data-testid="wheel-disc-diameter"
-            dominant-baseline="central"
-            :font-size="Math.min(16, wheelRadius * 0.7)"
-            text-anchor="middle"
-            :x="wheelX"
-            :y="90 - wheelRadius * 1.45"
-          >
-            {{ rolling.diameter }}
+            {{
+              $t(`${messages}.wheel.diameterValue`, {
+                diameter: rolling.diameter,
+              })
+            }}
           </text>
 
           <path
@@ -1527,19 +1519,12 @@ onUnmounted(() => {
 .pi-lab__wheel-caption {
   fill: currentColor;
   font-size: 12px;
+  font-variant-numeric: tabular-nums;
 }
 .pi-lab__wheel-mark {
   fill: var(--pi-outer);
   stroke: rgb(var(--v-theme-surface));
   stroke-width: 2;
-}
-.pi-lab__wheel-value {
-  fill: currentColor;
-  stroke: rgb(var(--v-theme-surface));
-  stroke-width: 2;
-  stroke-linejoin: round;
-  paint-order: stroke;
-  font-variant-numeric: tabular-nums;
 }
 .pi-lab__diameter {
   fill: none;
