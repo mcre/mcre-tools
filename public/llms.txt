@@ -14,11 +14,17 @@ MCRE TOOLS is a public web app that provides small utility and fun tools. The ca
 - Character Count in English: https://tools.mcre.info/en/character-count
 - QRコード作成 / QR Code Generator: https://tools.mcre.info/ja/qr-code
 - QR Code Generator in English: https://tools.mcre.info/en/qr-code
+- 円周率の実験 / Pi Experiments: https://tools.mcre.info/ja/pi-lab
+- Pi Experiments in English: https://tools.mcre.info/en/pi-lab
 - Sitemap: https://tools.mcre.info/sitemap.xml
 - Source code: https://github.com/mcre/mcre-tools
 - License: https://tools.mcre.info/licenses.txt
 
 ## Tools
+
+### 円周率の実験 / Pi Experiments
+
+Four interactive experiments show how pi appears: a circle with adjustable diameter rolls without slipping, with separate axes for distance traveled and distance divided by diameter; regular polygons with 3 to 1,000,000 sides approximate circumference from inside and outside; uniformly sampled dots estimate pi as 4 times the fraction inside a circle; and equal circular sectors rearrange into a shape approaching a rectangle of width pi times radius and height one radius, explaining area = pi times radius squared. Monte Carlo uses Canvas with bounded drawing and history. Diameter, polygon count, and sector count use sliders. Rolling and rearranging start manually, with manual controls available for reduced motion. Available in Japanese and English, with no account required.
 
 ### 文字数カウント / Character Count
 
