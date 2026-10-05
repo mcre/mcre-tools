@@ -44,6 +44,14 @@ npm run cdk:deploy:prod
 
 CDK CLI は repository の npm devDependency を使う。
 
+## Lambda@Edge の翻訳データ
+
+OGP用のLambda@Edgeには、`src/locales/*.json` からサイト名、言語情報、
+各ツールの識別子・タイトル・説明だけを抽出して埋め込む。
+操作ラベルなどの変更ではLambda@Edgeのコードは変わらない。
+OGPに使う項目の変更やツール追加では、新しい関数バージョンと
+CloudFrontの関連付けを更新する。
+
 ## Outputs
 
 GitHub Actions は CDK outputs から `.env.production` を生成し、SSG build に渡す。
