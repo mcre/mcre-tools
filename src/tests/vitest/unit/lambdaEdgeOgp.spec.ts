@@ -12,6 +12,15 @@ type CloudFrontRequest = {
   };
 };
 
+type EdgeLocales = Record<
+  string,
+  {
+    localeName: string;
+    common: { title: string };
+    tools: Record<string, { title: string; description: string }>;
+  }
+>;
+
 const locales = {
   ja: {
     localeName: "ja_JP",
@@ -42,6 +51,7 @@ const locales = {
 const loadHandler = (
   options: {
     noindex?: boolean;
+    messages?: EdgeLocales;
   } = {},
 ) => {
   const template = readFileSync(
@@ -52,7 +62,7 @@ const loadHandler = (
     "utf8",
   );
   const source = template
-    .replace("@{LOCALES}", JSON.stringify(locales))
+    .replace("@{LOCALES}", JSON.stringify(options.messages ?? locales))
     .replaceAll("@{DOMAIN_NAME_DIST}", "tools.mcre.info")
     .replaceAll("@{DOMAIN_NAME_OGP}", "tools-ogp.mcre.info")
     .replace("@{NOINDEX}", String(options.noindex ?? false));
@@ -105,6 +115,79 @@ const metaContent = (
 };
 
 describe("Lambda@Edge OGP response", () => {
+  it.each(["ja", "en"])(
+    "preserves every %s tool response with only the OGP metadata embedded",
+    async (lang) => {
+      const full: EdgeLocales = Object.fromEntries(
+        ["ja", "en"].map((locale) => [
+          locale,
+          JSON.parse(
+            readFileSync(
+              resolve(__dirname, `../../../locales/${locale}.json`),
+              "utf8",
+            ),
+          ),
+        ]),
+      );
+      const reduced: EdgeLocales = Object.fromEntries(
+        Object.entries(full).map(([locale, data]) => [
+          locale,
+          {
+            localeName: data.localeName,
+            common: { title: data.common.title },
+            tools: Object.fromEntries(
+              Object.entries(data.tools).map(([tool, messages]) => [
+                tool,
+                { title: messages.title, description: messages.description },
+              ]),
+            ),
+          },
+        ]),
+      );
+      for (const noindex of [false, true]) {
+        const before = loadHandler({ messages: full, noindex });
+        const after = loadHandler({ messages: reduced, noindex });
+        for (const tool of Object.keys(full[lang]!.tools)) {
+          const request = createRequest({
+            uri: `/${lang}/${tool}`,
+            querystring: "t=%E9%95%B7&a=%E8%80%81",
+          });
+          const original = await before(createEvent(structuredClone(request)));
+          const result = await after(createEvent(structuredClone(request)));
+          expect(result).toEqual(original);
+          expect(metaContent(result.body, "property", "og:title")).toBe(
+            `${full[lang]!.tools[tool]!.title} - ${full[lang]!.common.title}`,
+          );
+          expect(metaContent(result.body, "property", "og:description")).toBe(
+            full[lang]!.tools[tool]!.description,
+          );
+        }
+        for (const request of [
+          createRequest({ uri: `/${lang}/jukugo/`, querystring: "" }),
+          createRequest({
+            uri: `/${lang}/jukugo`,
+            headers: {
+              "user-agent": [{ key: "User-Agent", value: "Mozilla/5.0" }],
+            },
+          }),
+          createRequest({ uri: "/unknown-language/jukugo" }),
+          createRequest({ uri: `/${lang}/unknown-tool` }),
+          createRequest({ uri: "/assets/app.js" }),
+          createRequest({
+            uri: `/${lang}/jukugo`,
+            headers: {
+              "user-agent": [{ key: "User-Agent", value: "Discordbot" }],
+            },
+          }),
+        ]) {
+          expect(await after(createEvent(structuredClone(request)))).toEqual(
+            await before(createEvent(structuredClone(request))),
+          );
+        }
+      }
+    },
+  );
+
   it("returns query-specific OGP HTML for bot access", async () => {
     const handler = loadHandler();
     const response = await handler(createEvent(createRequest()));
