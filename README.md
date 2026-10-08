@@ -69,6 +69,10 @@ npm audit --omit=dev
 - `vue-tsc` に必要な公開型は `import type` として残す。
 - 近代化やコンポーネント分割で、既存のコンテンツ量、リンク、カード、制作物、デザイン密度を減らさない。
 
+## Ant Observation
+
+アリ観察のモデル、編集操作、検証条件、性能測定と再実行方法は [docs/ants.md](docs/ants.md) を参照。
+
 ## Environment
 
 フロントエンドは次の Vite 環境変数を使う。

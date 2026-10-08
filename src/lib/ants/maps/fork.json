@@ -1,0 +1,20 @@
+{
+  "id": "fork",
+  "name": { "ja": "枯れる直進路", "en": "Depleting straight branch" },
+  "columns": 240,
+  "rows": 160,
+  "nest": { "x": 35, "y": 80, "radius": 5 },
+  "food": [
+    { "x": 125, "y": 80, "radius": 3, "amount": 4 },
+    { "x": 90, "y": 20, "radius": 3, "amount": 90 },
+    { "x": 90, "y": 140, "radius": 3, "amount": 90 }
+  ],
+  "walls": [
+    { "x": 0, "y": 0, "width": 80, "height": 70 },
+    { "x": 100, "y": 0, "width": 140, "height": 70 },
+    { "x": 0, "y": 91, "width": 80, "height": 69 },
+    { "x": 100, "y": 91, "width": 140, "height": 69 },
+    { "x": 0, "y": 70, "width": 20, "height": 21 },
+    { "x": 145, "y": 70, "width": 95, "height": 21 }
+  ]
+}

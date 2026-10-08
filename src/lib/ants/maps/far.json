@@ -1,0 +1,12 @@
+{
+  "id": "far",
+  "name": { "ja": "遠くの餌", "en": "Distant food" },
+  "columns": 240,
+  "rows": 160,
+  "nest": { "x": 75, "y": 80, "radius": 5 },
+  "food": [
+    { "x": 170, "y": 48, "radius": 3, "amount": 90 },
+    { "x": 185, "y": 115, "radius": 3, "amount": 90 }
+  ],
+  "walls": []
+}

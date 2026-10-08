@@ -36,7 +36,10 @@
     "cdk:diff:prod": "CDK_ENV=prod npm run cdk -- diff --all --profile mcre-main",
     "cdk:deploy:prod": "CDK_ENV=prod npm run cdk -- deploy --all --profile mcre-main",
     "api:build": "rm -rf ./tmp-apis && npx openapi2aspida -c=./aspida.config.cjs -i=./openapi.yaml -o=./tmp-apis/ && rsync -a --delete ./tmp-apis/ ./src/apis/ && rm -rf ./tmp-apis",
-    "api:watch": "chokidar ./openapi.yaml -c \"npm run api:build\""
+    "api:watch": "chokidar ./openapi.yaml -c \"npm run api:build\"",
+    "ants:icons": "node tools/generate_ant_icons.mjs",
+    "ants:benchmark": "node tools/measure_ants.mjs",
+    "ants:optimize": "node tools/optimize_ants.mjs"
   },
   "dependencies": {
     "@aspida/fetch": "^1.14.0",

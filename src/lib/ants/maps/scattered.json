@@ -1,0 +1,16 @@
+{
+  "id": "scattered",
+  "name": { "ja": "分散した餌", "en": "Scattered food" },
+  "columns": 240,
+  "rows": 160,
+  "nest": { "x": 75, "y": 80, "radius": 5 },
+  "food": [
+    { "x": 38, "y": 45, "radius": 2, "amount": 75 },
+    { "x": 110, "y": 30, "radius": 2, "amount": 75 },
+    { "x": 155, "y": 65, "radius": 2, "amount": 75 },
+    { "x": 122, "y": 120, "radius": 2, "amount": 75 },
+    { "x": 50, "y": 120, "radius": 2, "amount": 75 },
+    { "x": 188, "y": 120, "radius": 2, "amount": 75 }
+  ],
+  "walls": []
+}

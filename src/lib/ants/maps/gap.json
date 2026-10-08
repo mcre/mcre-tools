@@ -1,0 +1,15 @@
+{
+  "id": "gap",
+  "name": { "ja": "狭い通路", "en": "Narrow passage" },
+  "columns": 240,
+  "rows": 160,
+  "nest": { "x": 75, "y": 80, "radius": 5 },
+  "food": [
+    { "x": 140, "y": 55, "radius": 3, "amount": 90 },
+    { "x": 155, "y": 105, "radius": 3, "amount": 90 }
+  ],
+  "walls": [
+    { "x": 100, "y": 0, "width": 2, "height": 70 },
+    { "x": 100, "y": 91, "width": 2, "height": 69 }
+  ]
+}

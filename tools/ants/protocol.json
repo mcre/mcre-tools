@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "screen": { "seconds": 90, "seeds": [17, 29], "candidates": 36 },
+  "refine": { "seconds": 180, "seeds": [17, 29], "candidates": 18 },
+  "validation": { "seconds": 180, "seeds": [101, 211, 307, 401, 503] },
+  "followupValidation": {
+    "seconds": 180,
+    "seeds": [809, 919, 1009, 1103, 1201]
+  },
+  "depletion": {
+    "seconds": 600,
+    "seeds": [601, 701],
+    "maps": ["scattered"],
+    "amountPerCell": 20
+  },
+  "ranges": {
+    "sensorDistance": [3, 4, 5, 6, 7],
+    "sensorAngle": [0.45, 0.6, 0.75, 0.9],
+    "turnRate": [2, 2.5, 3, 4],
+    "distanceDecay": [20, 35, 50, 70],
+    "evaporation": [0.025, 0.045, 0.075, 0.12],
+    "diffusion": [0.15, 0.3, 0.6, 0.9]
+  }
+}

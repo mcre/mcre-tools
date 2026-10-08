@@ -1,0 +1,786 @@
+{
+  "version": 2,
+  "chosen": {
+    "speed": 9,
+    "sensorDistance": 5,
+    "sensorAngle": 0.7,
+    "turnRate": 4.5,
+    "randomTurn": 0.09,
+    "foodSmellRadius": 8,
+    "foodSmellTurnRate": 1.2,
+    "deposit": 2.5,
+    "distanceDecay": 35,
+    "evaporation": 0.12,
+    "diffusion": 0.6,
+    "maxPheromone": 100,
+    "explorationRate": 0,
+    "explorationDuration": 2,
+    "individuality": 0.6,
+    "pheromoneExponent": 0.9,
+    "pheromoneChoiceChance": 1,
+    "returnChoiceChance": 1,
+    "frontWeight": 2,
+    "returnRandomMultiplier": 1.5,
+    "pheromoneFloor": 0,
+    "returnExplorationRate": 0,
+    "averageSteering": 1,
+    "sensorIndividuality": 1
+  },
+  "baseline": {
+    "speed": 9,
+    "sensorDistance": 5,
+    "sensorAngle": 0.7,
+    "turnRate": 4,
+    "randomTurn": 0.09,
+    "foodSmellRadius": 8,
+    "foodSmellTurnRate": 1.2,
+    "deposit": 2.5,
+    "distanceDecay": 35,
+    "evaporation": 0.12,
+    "diffusion": 0.6,
+    "maxPheromone": 100,
+    "explorationRate": 0,
+    "explorationDuration": 2,
+    "individuality": 0,
+    "pheromoneExponent": 0,
+    "pheromoneChoiceChance": 0,
+    "returnChoiceChance": 0,
+    "frontWeight": 2,
+    "returnRandomMultiplier": 1.5,
+    "pheromoneFloor": 0,
+    "returnExplorationRate": 0,
+    "averageSteering": 0,
+    "sensorIndividuality": 0
+  },
+  "protocol": {
+    "version": 1,
+    "screen": {
+      "seconds": 420,
+      "windowSeconds": 60,
+      "seeds": [17, 29],
+      "maps": ["fork", "shortcut", "zigzag"],
+      "scenarios": {
+        "shortcut": {
+          "seconds": 600,
+          "shortcut": {
+            "x": 115,
+            "y": 77,
+            "width": 2,
+            "height": 7,
+            "openAtSeconds": 240
+          }
+        },
+        "zigzag": {
+          "seconds": 180
+        }
+      }
+    },
+    "candidates": [
+      {
+        "id": "previous",
+        "config": {}
+      },
+      {
+        "id": "sensor-individuality-0--1-0.6",
+        "config": {
+          "pheromoneExponent": 1.1,
+          "pheromoneChoiceChance": 1,
+          "returnChoiceChance": 1,
+          "individuality": 0.6,
+          "turnRate": 4.5,
+          "averageSteering": 0,
+          "sensorIndividuality": -1
+        }
+      },
+      {
+        "id": "sensor-individuality-0--1-1",
+        "config": {
+          "pheromoneExponent": 1.1,
+          "pheromoneChoiceChance": 1,
+          "returnChoiceChance": 1,
+          "individuality": 1,
+          "turnRate": 4.5,
+          "averageSteering": 0,
+          "sensorIndividuality": -1
+        }
+      },
+      {
+        "id": "sensor-individuality-0-1-0.6",
+        "config": {
+          "pheromoneExponent": 1.1,
+          "pheromoneChoiceChance": 1,
+          "returnChoiceChance": 1,
+          "individuality": 0.6,
+          "turnRate": 4.5,
+          "averageSteering": 0,
+          "sensorIndividuality": 1
+        }
+      },
+      {
+        "id": "sensor-individuality-0-1-1",
+        "config": {
+          "pheromoneExponent": 1.1,
+          "pheromoneChoiceChance": 1,
+          "returnChoiceChance": 1,
+          "individuality": 1,
+          "turnRate": 4.5,
+          "averageSteering": 0,
+          "sensorIndividuality": 1
+        }
+      },
+      {
+        "id": "sensor-individuality-1--1-0.6",
+        "config": {
+          "pheromoneExponent": 0.9,
+          "pheromoneChoiceChance": 1,
+          "returnChoiceChance": 1,
+          "individuality": 0.6,
+          "turnRate": 4.5,
+          "averageSteering": 1,
+          "sensorIndividuality": -1
+        }
+      },
+      {
+        "id": "sensor-individuality-1--1-1",
+        "config": {
+          "pheromoneExponent": 0.9,
+          "pheromoneChoiceChance": 1,
+          "returnChoiceChance": 1,
+          "individuality": 1,
+          "turnRate": 4.5,
+          "averageSteering": 1,
+          "sensorIndividuality": -1
+        }
+      },
+      {
+        "id": "sensor-individuality-1-1-0.6",
+        "config": {
+          "pheromoneExponent": 0.9,
+          "pheromoneChoiceChance": 1,
+          "returnChoiceChance": 1,
+          "individuality": 0.6,
+          "turnRate": 4.5,
+          "averageSteering": 1,
+          "sensorIndividuality": 1
+        }
+      },
+      {
+        "id": "sensor-individuality-1-1-1",
+        "config": {
+          "pheromoneExponent": 0.9,
+          "pheromoneChoiceChance": 1,
+          "returnChoiceChance": 1,
+          "individuality": 1,
+          "turnRate": 4.5,
+          "averageSteering": 1,
+          "sensorIndividuality": 1
+        }
+      }
+    ],
+    "validation": {
+      "seconds": 420,
+      "windowSeconds": 60,
+      "seeds": [1901, 2003, 2111, 2203, 2309],
+      "maps": ["fork", "loop", "rooms", "shortcut"],
+      "scenarios": {
+        "shortcut": {
+          "seconds": 600,
+          "shortcut": {
+            "x": 115,
+            "y": 77,
+            "width": 2,
+            "height": 7,
+            "openAtSeconds": 240
+          }
+        }
+      }
+    },
+    "regression": {
+      "seconds": 180,
+      "windowSeconds": 60,
+      "seeds": [1901, 2003, 2111, 2203, 2309],
+      "maps": ["open", "detour", "gap", "zigzag", "scattered", "far"]
+    }
+  },
+  "phases": {
+    "screen": {
+      "sourceHash": "b634134ae1f56ee9f9dec3523ec66945ceb4d29679915fa2a381e598da823828",
+      "ranked": [
+        {
+          "candidateId": "previous",
+          "score": 1,
+          "summary": [
+            {
+              "mapId": "fork",
+              "trials": 2,
+              "meanDelivered": 2739.0,
+              "minDelivered": 2730,
+              "meanReturnFraction": 0.9978234409831994,
+              "meanSourcesVisited": 3.0,
+              "valid": true,
+              "meanLeastLargeSourcePickedFraction": 0.0072796934865900385,
+              "minLeastLargeSourcePickedFraction": 0.0019157088122605363
+            },
+            {
+              "mapId": "shortcut",
+              "trials": 2,
+              "meanDelivered": 4726.5,
+              "minDelivered": 4710,
+              "meanReturnFraction": 0.9798048903074139,
+              "meanSourcesVisited": 1.0,
+              "valid": true,
+              "meanLateShortcutFraction": 0.0,
+              "deliveryWeightedReturnDistanceBeforeOpening": 145.50364091391225,
+              "deliveryWeightedLateReturnDistance": 134.08504164512047
+            },
+            {
+              "mapId": "zigzag",
+              "trials": 2,
+              "meanDelivered": 670.5,
+              "minDelivered": 598,
+              "meanReturnFraction": 0.8426971947563867,
+              "meanSourcesVisited": 1.0,
+              "valid": true
+            }
+          ]
+        },
+        {
+          "candidateId": "sensor-individuality-1--1-0.6",
+          "score": 0.6852253355422351,
+          "summary": [
+            {
+              "mapId": "fork",
+              "trials": 2,
+              "meanDelivered": 2816.5,
+              "minDelivered": 2761,
+              "meanReturnFraction": 0.9613876381464761,
+              "meanSourcesVisited": 3.0,
+              "valid": true,
+              "meanLeastLargeSourcePickedFraction": 0.10344827586206896,
+              "minLeastLargeSourcePickedFraction": 0.050191570881226055
+            },
+            {
+              "mapId": "shortcut",
+              "trials": 2,
+              "meanDelivered": 2792.0,
+              "minDelivered": 2554,
+              "meanReturnFraction": 0.9425778379867744,
+              "meanSourcesVisited": 1.0,
+              "valid": true,
+              "meanLateShortcutFraction": 0.021854448076241484,
+              "deliveryWeightedReturnDistanceBeforeOpening": 230.17838327559622,
+              "deliveryWeightedLateReturnDistance": 230.5966416043183
+            },
+            {
+              "mapId": "zigzag",
+              "trials": 2,
+              "meanDelivered": 612.0,
+              "minDelivered": 556,
+              "meanReturnFraction": 0.7968891015998906,
+              "meanSourcesVisited": 1.5,
+              "valid": true
+            }
+          ]
+        },
+        {
+          "candidateId": "sensor-individuality-1--1-1",
+          "score": 0.6469836348398541,
+          "summary": [
+            {
+              "mapId": "fork",
+              "trials": 2,
+              "meanDelivered": 2838.0,
+              "minDelivered": 2829,
+              "meanReturnFraction": 0.9838797512093987,
+              "meanSourcesVisited": 3.0,
+              "valid": true,
+              "meanLeastLargeSourcePickedFraction": 0.060727969348659004,
+              "minLeastLargeSourcePickedFraction": 0.057088122605363986
+            },
+            {
+              "mapId": "shortcut",
+              "trials": 2,
+              "meanDelivered": 2890.5,
+              "minDelivered": 2881,
+              "meanReturnFraction": 0.9436810412317675,
+              "meanSourcesVisited": 1.0,
+              "valid": true,
+              "meanLateShortcutFraction": 0.022134239662730724,
+              "deliveryWeightedReturnDistanceBeforeOpening": 191.96096071577477,
+              "deliveryWeightedLateReturnDistance": 231.18291046226278
+            },
+            {
+              "mapId": "zigzag",
+              "trials": 2,
+              "meanDelivered": 472.0,
+              "minDelivered": 444,
+              "meanReturnFraction": 0.7494522842151599,
+              "meanSourcesVisited": 1.5,
+              "valid": true
+            }
+          ]
+        },
+        {
+          "candidateId": "sensor-individuality-0--1-1",
+          "score": 0.6078183647297376,
+          "summary": [
+            {
+              "mapId": "fork",
+              "trials": 2,
+              "meanDelivered": 2810.5,
+              "minDelivered": 2806,
+              "meanReturnFraction": 0.9765477708236748,
+              "meanSourcesVisited": 3.0,
+              "valid": true,
+              "meanLeastLargeSourcePickedFraction": 0.0582375478927203,
+              "minLeastLargeSourcePickedFraction": 0.05747126436781609
+            },
+            {
+              "mapId": "shortcut",
+              "trials": 2,
+              "meanDelivered": 2454.5,
+              "minDelivered": 2349,
+              "meanReturnFraction": 0.9420536442436171,
+              "meanSourcesVisited": 1.0,
+              "valid": true,
+              "meanLateShortcutFraction": 0.0072316736902346395,
+              "deliveryWeightedReturnDistanceBeforeOpening": 210.71391795490266,
+              "deliveryWeightedLateReturnDistance": 288.4157158348143
+            },
+            {
+              "mapId": "zigzag",
+              "trials": 2,
+              "meanDelivered": 554.5,
+              "minDelivered": 490,
+              "meanReturnFraction": 0.7937475218646788,
+              "meanSourcesVisited": 2.0,
+              "valid": true
+            }
+          ]
+        },
+        {
+          "candidateId": "sensor-individuality-0--1-0.6",
+          "score": 0.5998439027988863,
+          "summary": [
+            {
+              "mapId": "fork",
+              "trials": 2,
+              "meanDelivered": 2851.0,
+              "minDelivered": 2815,
+              "meanReturnFraction": 0.9780454141407293,
+              "meanSourcesVisited": 3.0,
+              "valid": true,
+              "meanLeastLargeSourcePickedFraction": 0.07241379310344828,
+              "minLeastLargeSourcePickedFraction": 0.05823754789272031
+            },
+            {
+              "mapId": "shortcut",
+              "trials": 2,
+              "meanDelivered": 2934.0,
+              "minDelivered": 2785,
+              "meanReturnFraction": 0.9452706756237145,
+              "meanSourcesVisited": 1.0,
+              "valid": true,
+              "meanLateShortcutFraction": 0.0016863406408094434,
+              "deliveryWeightedReturnDistanceBeforeOpening": 204.58177471560944,
+              "deliveryWeightedLateReturnDistance": 255.64519451470164
+            },
+            {
+              "mapId": "zigzag",
+              "trials": 2,
+              "meanDelivered": 384.0,
+              "minDelivered": 334,
+              "meanReturnFraction": 0.7163377192982456,
+              "meanSourcesVisited": 2.0,
+              "valid": true
+            }
+          ]
+        },
+        {
+          "candidateId": "sensor-individuality-1-1-1",
+          "score": 0.5877580154983764,
+          "summary": [
+            {
+              "mapId": "fork",
+              "trials": 2,
+              "meanDelivered": 2595.0,
+              "minDelivered": 2565,
+              "meanReturnFraction": 0.9386116904780253,
+              "meanSourcesVisited": 3.0,
+              "valid": true,
+              "meanLeastLargeSourcePickedFraction": 0.21187739463601532,
+              "minLeastLargeSourcePickedFraction": 0.20689655172413793
+            },
+            {
+              "mapId": "shortcut",
+              "trials": 2,
+              "meanDelivered": 2669.5,
+              "minDelivered": 2299,
+              "meanReturnFraction": 0.9382745300168485,
+              "meanSourcesVisited": 1.0,
+              "valid": true,
+              "meanLateShortcutFraction": 0.5157854861167991,
+              "deliveryWeightedReturnDistanceBeforeOpening": 255.60432726202453,
+              "deliveryWeightedLateReturnDistance": 249.94546093387405
+            },
+            {
+              "mapId": "zigzag",
+              "trials": 2,
+              "meanDelivered": 454.0,
+              "minDelivered": 449,
+              "meanReturnFraction": 0.7383262823902697,
+              "meanSourcesVisited": 1.5,
+              "valid": true
+            }
+          ]
+        },
+        {
+          "candidateId": "sensor-individuality-0-1-0.6",
+          "score": 0.5788980386840006,
+          "summary": [
+            {
+              "mapId": "fork",
+              "trials": 2,
+              "meanDelivered": 2725.5,
+              "minDelivered": 2558,
+              "meanReturnFraction": 0.9575240746611715,
+              "meanSourcesVisited": 3.0,
+              "valid": true,
+              "meanLeastLargeSourcePickedFraction": 0.16226053639846744,
+              "minLeastLargeSourcePickedFraction": 0.0896551724137931
+            },
+            {
+              "mapId": "shortcut",
+              "trials": 2,
+              "meanDelivered": 2709.5,
+              "minDelivered": 2507,
+              "meanReturnFraction": 0.9441857324313743,
+              "meanSourcesVisited": 1.0,
+              "valid": true,
+              "meanLateShortcutFraction": 0.24933862433862433,
+              "deliveryWeightedReturnDistanceBeforeOpening": 230.1767304734516,
+              "deliveryWeightedLateReturnDistance": 254.33261750208155
+            },
+            {
+              "mapId": "zigzag",
+              "trials": 2,
+              "meanDelivered": 398.5,
+              "minDelivered": 376,
+              "meanReturnFraction": 0.7187568256576267,
+              "meanSourcesVisited": 1.0,
+              "valid": true
+            }
+          ]
+        },
+        {
+          "candidateId": "sensor-individuality-1-1-0.6",
+          "score": 0.571236690120799,
+          "summary": [
+            {
+              "mapId": "fork",
+              "trials": 2,
+              "meanDelivered": 2427.5,
+              "minDelivered": 2427,
+              "meanReturnFraction": 0.9367337776626254,
+              "meanSourcesVisited": 3.0,
+              "valid": true,
+              "meanLeastLargeSourcePickedFraction": 0.41053639846743295,
+              "minLeastLargeSourcePickedFraction": 0.39770114942528734
+            },
+            {
+              "mapId": "shortcut",
+              "trials": 2,
+              "meanDelivered": 2608.0,
+              "minDelivered": 2289,
+              "meanReturnFraction": 0.9342119129296965,
+              "meanSourcesVisited": 1.0,
+              "valid": true,
+              "meanLateShortcutFraction": 0.9675649217202855,
+              "deliveryWeightedReturnDistanceBeforeOpening": 268.3133005830616,
+              "deliveryWeightedLateReturnDistance": 218.36586982825563
+            },
+            {
+              "mapId": "zigzag",
+              "trials": 2,
+              "meanDelivered": 467.5,
+              "minDelivered": 340,
+              "meanReturnFraction": 0.7450777981350324,
+              "meanSourcesVisited": 1.5,
+              "valid": true
+            }
+          ]
+        },
+        {
+          "candidateId": "sensor-individuality-0-1-1",
+          "score": 0.5697307180643101,
+          "summary": [
+            {
+              "mapId": "fork",
+              "trials": 2,
+              "meanDelivered": 2709.5,
+              "minDelivered": 2702,
+              "meanReturnFraction": 0.9505692263081043,
+              "meanSourcesVisited": 3.0,
+              "valid": true,
+              "meanLeastLargeSourcePickedFraction": 0.12183908045977011,
+              "minLeastLargeSourcePickedFraction": 0.040229885057471264
+            },
+            {
+              "mapId": "shortcut",
+              "trials": 2,
+              "meanDelivered": 2857.0,
+              "minDelivered": 2742,
+              "meanReturnFraction": 0.9460361131294033,
+              "meanSourcesVisited": 1.0,
+              "valid": true,
+              "meanLateShortcutFraction": 0.4994318181818182,
+              "deliveryWeightedReturnDistanceBeforeOpening": 211.42248281809913,
+              "deliveryWeightedLateReturnDistance": 231.25951150274426
+            },
+            {
+              "mapId": "zigzag",
+              "trials": 2,
+              "meanDelivered": 369.0,
+              "minDelivered": 358,
+              "meanReturnFraction": 0.6924519257880787,
+              "meanSourcesVisited": 2.0,
+              "valid": true
+            }
+          ]
+        }
+      ]
+    },
+    "validation": {
+      "sourceHash": "aa3d4b5cd8799d03fd10fd3a113142d41c997f9cee2959b85836b8a7fca5b50c",
+      "ranked": [
+        {
+          "candidateId": "previous",
+          "score": 1,
+          "summary": [
+            {
+              "mapId": "fork",
+              "trials": 5,
+              "meanDelivered": 2734.4,
+              "minDelivered": 2669,
+              "meanReturnFraction": 0.988949268443673,
+              "meanSourcesVisited": 3.0,
+              "valid": true,
+              "meanLeastLargeSourcePickedFraction": 0.016628352490421456,
+              "minLeastLargeSourcePickedFraction": 0.0011494252873563218
+            },
+            {
+              "mapId": "loop",
+              "trials": 5,
+              "meanDelivered": 770.6,
+              "minDelivered": 668,
+              "meanReturnFraction": 0.8217950724320311,
+              "meanSourcesVisited": 2.0,
+              "valid": true,
+              "meanLeastLargeSourcePickedFraction": 0.3195402298850575,
+              "minLeastLargeSourcePickedFraction": 0.2704980842911877
+            },
+            {
+              "mapId": "rooms",
+              "trials": 5,
+              "meanDelivered": 169.8,
+              "minDelivered": 121,
+              "meanReturnFraction": 0.6152546202022273,
+              "meanSourcesVisited": 2.0,
+              "valid": true,
+              "meanLeastLargeSourcePickedFraction": 0.058620689655172406,
+              "minLeastLargeSourcePickedFraction": 0.02567049808429119
+            },
+            {
+              "mapId": "shortcut",
+              "trials": 5,
+              "meanDelivered": 4511.4,
+              "minDelivered": 3818,
+              "meanReturnFraction": 0.9801509478936854,
+              "meanSourcesVisited": 1.0,
+              "valid": true,
+              "meanLateShortcutFraction": 0.0,
+              "deliveryWeightedReturnDistanceBeforeOpening": 143.43695033250344,
+              "deliveryWeightedLateReturnDistance": 146.5937087534794
+            }
+          ]
+        },
+        {
+          "candidateId": "sensor-individuality-1-1-0.6",
+          "score": 0.6486149930194709,
+          "summary": [
+            {
+              "mapId": "fork",
+              "trials": 5,
+              "meanDelivered": 2503.8,
+              "minDelivered": 2303,
+              "meanReturnFraction": 0.9324833650730916,
+              "meanSourcesVisited": 3.0,
+              "valid": true,
+              "meanLeastLargeSourcePickedFraction": 0.2682758620689655,
+              "minLeastLargeSourcePickedFraction": 0.16475095785440613
+            },
+            {
+              "mapId": "loop",
+              "trials": 5,
+              "meanDelivered": 611.4,
+              "minDelivered": 175,
+              "meanReturnFraction": 0.738100442082821,
+              "meanSourcesVisited": 2.0,
+              "valid": true,
+              "meanLeastLargeSourcePickedFraction": 0.25118773946360157,
+              "minLeastLargeSourcePickedFraction": 0.07777777777777778
+            },
+            {
+              "mapId": "rooms",
+              "trials": 5,
+              "meanDelivered": 127.4,
+              "minDelivered": 119,
+              "meanReturnFraction": 0.5790762091377691,
+              "meanSourcesVisited": 2.0,
+              "valid": true,
+              "meanLeastLargeSourcePickedFraction": 0.04045977011494253,
+              "minLeastLargeSourcePickedFraction": 0.028735632183908046
+            },
+            {
+              "mapId": "shortcut",
+              "trials": 5,
+              "meanDelivered": 2767.0,
+              "minDelivered": 2280,
+              "meanReturnFraction": 0.9413739019137214,
+              "meanSourcesVisited": 1.0,
+              "valid": true,
+              "meanLateShortcutFraction": 0.6403268573606139,
+              "deliveryWeightedReturnDistanceBeforeOpening": 247.8708286376118,
+              "deliveryWeightedLateReturnDistance": 235.9787961301496
+            }
+          ]
+        }
+      ]
+    },
+    "regression": {
+      "sourceHash": "aa3d4b5cd8799d03fd10fd3a113142d41c997f9cee2959b85836b8a7fca5b50c",
+      "ranked": [
+        {
+          "candidateId": "previous",
+          "score": 1,
+          "summary": [
+            {
+              "mapId": "open",
+              "trials": 5,
+              "meanDelivered": 2831.2,
+              "minDelivered": 2644,
+              "meanReturnFraction": 0.9793064513841878,
+              "meanSourcesVisited": 2.0,
+              "valid": true
+            },
+            {
+              "mapId": "detour",
+              "trials": 5,
+              "meanDelivered": 1768.8,
+              "minDelivered": 1566,
+              "meanReturnFraction": 0.9050565852233108,
+              "meanSourcesVisited": 2.0,
+              "valid": true
+            },
+            {
+              "mapId": "gap",
+              "trials": 5,
+              "meanDelivered": 1612.0,
+              "minDelivered": 756,
+              "meanReturnFraction": 0.8852018255533629,
+              "meanSourcesVisited": 2.0,
+              "valid": true
+            },
+            {
+              "mapId": "zigzag",
+              "trials": 5,
+              "meanDelivered": 501.0,
+              "minDelivered": 306,
+              "meanReturnFraction": 0.7677705346588017,
+              "meanSourcesVisited": 1.2,
+              "valid": true
+            },
+            {
+              "mapId": "scattered",
+              "trials": 5,
+              "meanDelivered": 2204.0,
+              "minDelivered": 2019,
+              "meanReturnFraction": 0.9830032480544902,
+              "meanSourcesVisited": 5.4,
+              "valid": true
+            },
+            {
+              "mapId": "far",
+              "trials": 5,
+              "meanDelivered": 1188.8,
+              "minDelivered": 810,
+              "meanReturnFraction": 0.880461903045566,
+              "meanSourcesVisited": 2.0,
+              "valid": true
+            }
+          ]
+        },
+        {
+          "candidateId": "sensor-individuality-1-1-0.6",
+          "score": 0.5061245609855988,
+          "summary": [
+            {
+              "mapId": "open",
+              "trials": 5,
+              "meanDelivered": 1855.0,
+              "minDelivered": 1534,
+              "meanReturnFraction": 0.9089099639017689,
+              "meanSourcesVisited": 2.0,
+              "valid": true
+            },
+            {
+              "mapId": "detour",
+              "trials": 5,
+              "meanDelivered": 863.0,
+              "minDelivered": 801,
+              "meanReturnFraction": 0.8177254973169068,
+              "meanSourcesVisited": 2.0,
+              "valid": true
+            },
+            {
+              "mapId": "gap",
+              "trials": 5,
+              "meanDelivered": 1151.2,
+              "minDelivered": 985,
+              "meanReturnFraction": 0.870146479076854,
+              "meanSourcesVisited": 2.0,
+              "valid": true
+            },
+            {
+              "mapId": "zigzag",
+              "trials": 5,
+              "meanDelivered": 387.2,
+              "minDelivered": 126,
+              "meanReturnFraction": 0.706995241883327,
+              "meanSourcesVisited": 1.4,
+              "valid": true
+            },
+            {
+              "mapId": "scattered",
+              "trials": 5,
+              "meanDelivered": 1722.2,
+              "minDelivered": 1572,
+              "meanReturnFraction": 0.9003376264475641,
+              "meanSourcesVisited": 6.0,
+              "valid": true
+            },
+            {
+              "mapId": "far",
+              "trials": 5,
+              "meanDelivered": 607.4,
+              "minDelivered": 395,
+              "meanReturnFraction": 0.7765127000841856,
+              "meanSourcesVisited": 2.0,
+              "valid": true
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

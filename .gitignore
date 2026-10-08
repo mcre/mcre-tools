@@ -30,3 +30,6 @@ pnpm-debug.log*
 __pycache__/
 *.py[cod]
 *$py.class
+# Local browser screenshots and performance measurements
+/output/playwright/
+/.playwright-cli/

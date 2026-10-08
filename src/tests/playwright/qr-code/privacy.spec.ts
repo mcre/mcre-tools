@@ -3,13 +3,14 @@ import { expect, test } from "@playwright/test";
 for (const locale of ["ja", "en"]) {
   test(`QR ${locale} links to clear terms in static HTML and after hydration`, async ({
     browser,
+    baseURL,
   }) => {
     for (const javaScriptEnabled of [false, true]) {
-      const context = await browser.newContext({ javaScriptEnabled });
+      const context = await browser.newContext({ javaScriptEnabled, baseURL });
       try {
         const page = await context.newPage();
         await page.goto(
-          `http://127.0.0.1:4173/${locale}/qr-code${javaScriptEnabled ? "" : "/index.html"}`,
+          `/${locale}/qr-code${javaScriptEnabled ? "" : "/index.html"}`,
         );
         const guide = page.getByTestId("tool-guide");
         await guide.locator("summary").click();
@@ -59,9 +60,7 @@ test("QR keeps both production scripts enabled with input absent from the URL", 
   await page.route("**/*", async (route) => {
     const url = new URL(route.request().url());
     if (url.origin === origin) {
-      const response = await request.get(
-        `http://127.0.0.1:4173${url.pathname}${url.search}`,
-      );
+      const response = await request.get(`${url.pathname}${url.search}`);
       await route.fulfill({ response });
     } else {
       scripts.push(url.href);

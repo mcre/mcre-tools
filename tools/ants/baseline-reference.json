@@ -1,0 +1,229 @@
+{
+  "protocol": {
+    "version": 1,
+    "screen": {
+      "seconds": 90,
+      "seeds": [17, 29],
+      "candidates": 36
+    },
+    "refine": {
+      "seconds": 180,
+      "seeds": [17, 29],
+      "candidates": 18
+    },
+    "validation": {
+      "seconds": 180,
+      "seeds": [101, 211, 307, 401, 503]
+    },
+    "ranges": {
+      "sensorDistance": [3, 4, 5, 6, 7],
+      "sensorAngle": [0.45, 0.6, 0.75, 0.9],
+      "turnRate": [2, 2.5, 3, 4],
+      "distanceDecay": [20, 35, 50, 70],
+      "evaporation": [0.025, 0.045, 0.075, 0.12],
+      "diffusion": [0.15, 0.3, 0.6, 0.9]
+    }
+  },
+  "sourceHash": "6ba848490b121a386377c9c23c4b62c4270247485990b703b778a8781fce2b50",
+  "ranked": [
+    {
+      "config": {
+        "speed": 9,
+        "sensorDistance": 5,
+        "sensorAngle": 0.6,
+        "turnRate": 2,
+        "randomTurn": 0.09,
+        "foodSmellRadius": 8,
+        "foodSmellTurnRate": 1.2,
+        "deposit": 2.5,
+        "distanceDecay": 35,
+        "evaporation": 0.045,
+        "diffusion": 0.3,
+        "maxPheromone": 100
+      },
+      "trials": [
+        {
+          "mapId": "open",
+          "seed": 17,
+          "seconds": 180,
+          "tick": 5400,
+          "ground": 3849,
+          "carrying": 201,
+          "delivered": 1170,
+          "initialFood": 5220,
+          "firstDeliverySeconds": 9.666666666666666,
+          "sourcesVisited": 2,
+          "totalSources": 2,
+          "saturation": 0,
+          "valid": true
+        },
+        {
+          "mapId": "open",
+          "seed": 29,
+          "seconds": 180,
+          "tick": 5400,
+          "ground": 3826,
+          "carrying": 178,
+          "delivered": 1216,
+          "initialFood": 5220,
+          "firstDeliverySeconds": 9.1,
+          "sourcesVisited": 2,
+          "totalSources": 2,
+          "saturation": 0,
+          "valid": true
+        },
+        {
+          "mapId": "detour",
+          "seed": 17,
+          "seconds": 180,
+          "tick": 5400,
+          "ground": 4280,
+          "carrying": 159,
+          "delivered": 781,
+          "initialFood": 5220,
+          "firstDeliverySeconds": 26.8,
+          "sourcesVisited": 2,
+          "totalSources": 2,
+          "saturation": 0,
+          "valid": true
+        },
+        {
+          "mapId": "detour",
+          "seed": 29,
+          "seconds": 180,
+          "tick": 5400,
+          "ground": 4393,
+          "carrying": 196,
+          "delivered": 631,
+          "initialFood": 5220,
+          "firstDeliverySeconds": 36.03333333333333,
+          "sourcesVisited": 2,
+          "totalSources": 2,
+          "saturation": 0,
+          "valid": true
+        },
+        {
+          "mapId": "gap",
+          "seed": 17,
+          "seconds": 180,
+          "tick": 5400,
+          "ground": 4368,
+          "carrying": 152,
+          "delivered": 700,
+          "initialFood": 5220,
+          "firstDeliverySeconds": 25.666666666666668,
+          "sourcesVisited": 2,
+          "totalSources": 2,
+          "saturation": 0,
+          "valid": true
+        },
+        {
+          "mapId": "gap",
+          "seed": 29,
+          "seconds": 180,
+          "tick": 5400,
+          "ground": 4184,
+          "carrying": 146,
+          "delivered": 890,
+          "initialFood": 5220,
+          "firstDeliverySeconds": 18.8,
+          "sourcesVisited": 2,
+          "totalSources": 2,
+          "saturation": 0,
+          "valid": true
+        },
+        {
+          "mapId": "zigzag",
+          "seed": 17,
+          "seconds": 180,
+          "tick": 5400,
+          "ground": 4661,
+          "carrying": 139,
+          "delivered": 420,
+          "initialFood": 5220,
+          "firstDeliverySeconds": 40.96666666666667,
+          "sourcesVisited": 1,
+          "totalSources": 2,
+          "saturation": 0,
+          "valid": true
+        },
+        {
+          "mapId": "zigzag",
+          "seed": 29,
+          "seconds": 180,
+          "tick": 5400,
+          "ground": 4640,
+          "carrying": 156,
+          "delivered": 424,
+          "initialFood": 5220,
+          "firstDeliverySeconds": 65.63333333333334,
+          "sourcesVisited": 2,
+          "totalSources": 2,
+          "saturation": 0.000013020833333333334,
+          "valid": true
+        },
+        {
+          "mapId": "scattered",
+          "seed": 17,
+          "seconds": 180,
+          "tick": 5400,
+          "ground": 4354,
+          "carrying": 206,
+          "delivered": 1290,
+          "initialFood": 5850,
+          "firstDeliverySeconds": 12.6,
+          "sourcesVisited": 6,
+          "totalSources": 6,
+          "saturation": 0,
+          "valid": true
+        },
+        {
+          "mapId": "scattered",
+          "seed": 29,
+          "seconds": 180,
+          "tick": 5400,
+          "ground": 4436,
+          "carrying": 214,
+          "delivered": 1200,
+          "initialFood": 5850,
+          "firstDeliverySeconds": 10.366666666666667,
+          "sourcesVisited": 5,
+          "totalSources": 6,
+          "saturation": 0,
+          "valid": true
+        },
+        {
+          "mapId": "far",
+          "seed": 17,
+          "seconds": 180,
+          "tick": 5400,
+          "ground": 4443,
+          "carrying": 185,
+          "delivered": 592,
+          "initialFood": 5220,
+          "firstDeliverySeconds": 35.13333333333333,
+          "sourcesVisited": 2,
+          "totalSources": 2,
+          "saturation": 0,
+          "valid": true
+        },
+        {
+          "mapId": "far",
+          "seed": 29,
+          "seconds": 180,
+          "tick": 5400,
+          "ground": 4582,
+          "carrying": 176,
+          "delivered": 462,
+          "initialFood": 5220,
+          "firstDeliverySeconds": 46.733333333333334,
+          "sourcesVisited": 2,
+          "totalSources": 2,
+          "saturation": 0,
+          "valid": true
+        }
+      ],
+      "score": 1
+    }
+  ]
+}

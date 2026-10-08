@@ -16,6 +16,8 @@ MCRE TOOLS is a public web app that provides small utility and fun tools. The ca
 - QR Code Generator in English: https://tools.mcre.info/en/qr-code
 - 円周率の実験 / Pi Experiments: https://tools.mcre.info/ja/pi-lab
 - Pi Experiments in English: https://tools.mcre.info/en/pi-lab
+- アリ観察 / Ant Observation: https://tools.mcre.info/ja/ants
+- Ant Observation in English: https://tools.mcre.info/en/ants
 - Sitemap: https://tools.mcre.info/sitemap.xml
 - Source code: https://github.com/mcre/mcre-tools
 - License: https://tools.mcre.info/licenses.txt
@@ -43,6 +45,10 @@ A metronome that changes the screen color instead of making a sound. Users can s
 ### 熟語パズル / Jukugo Puzzle
 
 This tool solves the Japanese kanji puzzle also known as 和同開珎. Users enter up to four surrounding kanji and choose the direction of each compound. The app returns candidate center kanji and example compounds.
+
+### アリ観察 / Ant Observation
+
+An interactive ant foraging box using local pheromones. Choose brush sizes to add food, draw walls or erase them. Ants wander at individual speeds while gradually forming foraging paths. Each visit starts a fresh demo.
 
 ## Public API
 

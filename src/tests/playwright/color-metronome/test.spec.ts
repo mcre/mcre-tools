@@ -86,21 +86,24 @@ test.describe("color metronome first visit", () => {
 test.describe("color metronome", () => {
   // These checks cover returning visitors with previously saved settings.
   test.use({
-    storageState: {
-      cookies: [],
-      origins: [
-        {
-          origin: "http://127.0.0.1:4173",
-          localStorage: [
-            {
-              name: storageKey,
-              value: JSON.stringify({ bpm: 90, beats: 2, subdivision: 1 }),
-            },
-          ],
-        },
-      ],
+    storageState: async ({ baseURL }, use) => {
+      await use({
+        cookies: [],
+        origins: [
+          {
+            origin: baseURL!,
+            localStorage: [
+              {
+                name: storageKey,
+                value: JSON.stringify({ bpm: 90, beats: 2, subdivision: 1 }),
+              },
+            ],
+          },
+        ],
+      });
     },
   });
+
   test("switches directly between colors without dimming or fading, including fullscreen", async ({
     page,
   }) => {
