@@ -1,0 +1,12 @@
+{
+  "id": "open",
+  "name": { "ja": "開けた場所", "en": "Open field" },
+  "columns": 240,
+  "rows": 160,
+  "nest": { "x": 75, "y": 80, "radius": 5 },
+  "food": [
+    { "x": 110, "y": 55, "radius": 3, "amount": 90 },
+    { "x": 125, "y": 105, "radius": 3, "amount": 90 }
+  ],
+  "walls": []
+}
