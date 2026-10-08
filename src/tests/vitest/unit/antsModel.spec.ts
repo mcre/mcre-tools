@@ -266,6 +266,35 @@ describe("ant model: deterministic local foraging", () => {
 });
 
 describe("terrain editing", () => {
+  it.each(["initial", "painted"])(
+    "allows walls after the last piece of %s food is collected",
+    (source) => {
+      const food = 10 * 32 + 20;
+      const s = createSimulation(
+        layout({
+          antCount: 1,
+          food: source === "initial" ? [{ index: food, amount: 1 }] : [],
+        }),
+      );
+      if (source === "painted") applyEdit(s, "food", [food], 1);
+      Object.assign(s.ants[0], { x: 20.5, y: 10.5, heading: 0 });
+      step(s);
+      expect(s.food[food]).toBe(0);
+      expect(s.layout.food).toContainEqual({ index: food, amount: 1 });
+      expect(mass(s)).toBe(1);
+
+      applyEdit(s, "wall", [food]);
+      expect(s.walls[food]).toBe(1);
+      expect(s.layout.walls).toContain(food);
+      expect(s.layout.food.some((f) => f.index === food)).toBe(false);
+      expect(s.ants[0].carrying).toBe(1);
+      expect(s.walls[cellIndex(s.layout, s.ants[0].x, s.ants[0].y)]).toBe(0);
+      expect(mass(s)).toBe(1);
+      const rebuilt = createSimulation(s.layout);
+      expect(rebuilt.walls[food]).toBe(1);
+      expect(rebuilt.food[food]).toBe(0);
+    },
+  );
   it("applies food, wall and eraser rules to layout and current world", () => {
     const s = createSimulation(layout());
     const nest = 12 * 32 + 6,

@@ -494,7 +494,7 @@ test.describe("Ant Observation", () => {
           const preview = (await circle.boundingBox())!;
           return Math.abs(preview.width - (box.width / 240) * size);
         })
-        .toBeLessThan(1);
+        .toBeLessThan(0.5);
       const preview = (await circle.boundingBox())!;
       expect(preview.height).toBeCloseTo(preview.width, 0);
       const input = (await slider.boundingBox())!;

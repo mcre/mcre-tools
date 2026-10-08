@@ -423,9 +423,10 @@ export const applyEdit = (
       s.food[i] = Math.min(65_535, s.food[i] + addition);
       layoutFood.set(i, Math.min(65_535, (layoutFood.get(i) ?? 0) + addition));
     } else if (tool === "wall") {
-      if (s.food[i] > 0 || (layoutFood.get(i) ?? 0) > 0) continue;
+      if (s.food[i] > 0) continue;
       s.walls[i] = 1;
       layoutWalls.add(i);
+      layoutFood.delete(i);
       addedWall = true;
       for (const a of [
         s.homePheromone,
