@@ -87,6 +87,8 @@ declare global {
   const tools: typeof import('./router/index').tools
   const triggerRef: typeof import('vue').triggerRef
   const unref: typeof import('vue').unref
+  const useAntExpandedView: typeof import('./composables/useAntExpandedView').useAntExpandedView
+  const useAntSimulation: typeof import('./composables/useAntSimulation').useAntSimulation
   const useApi: typeof import('./composables/useApi').useApi
   const useAttrs: typeof import('vue').useAttrs
   const useColorMetronome: typeof import('./composables/useColorMetronome').useColorMetronome
@@ -218,6 +220,8 @@ declare module 'vue' {
     readonly tools: UnwrapRef<typeof import('./router/index')['tools']>
     readonly triggerRef: UnwrapRef<typeof import('vue')['triggerRef']>
     readonly unref: UnwrapRef<typeof import('vue')['unref']>
+    readonly useAntExpandedView: UnwrapRef<typeof import('./composables/useAntExpandedView')['useAntExpandedView']>
+    readonly useAntSimulation: UnwrapRef<typeof import('./composables/useAntSimulation')['useAntSimulation']>
     readonly useApi: UnwrapRef<typeof import('./composables/useApi')['useApi']>
     readonly useAttrs: UnwrapRef<typeof import('vue')['useAttrs']>
     readonly useColorMetronome: UnwrapRef<typeof import('./composables/useColorMetronome')['useColorMetronome']>

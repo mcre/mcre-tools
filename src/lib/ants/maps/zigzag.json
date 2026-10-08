@@ -1,0 +1,15 @@
+{
+  "id": "zigzag",
+  "name": { "ja": "折り返しの壁", "en": "Alternating walls" },
+  "columns": 240,
+  "rows": 160,
+  "nest": { "x": 75, "y": 80, "radius": 5 },
+  "food": [
+    { "x": 165, "y": 55, "radius": 3, "amount": 90 },
+    { "x": 178, "y": 90, "radius": 3, "amount": 90 }
+  ],
+  "walls": [
+    { "x": 100, "y": 0, "width": 2, "height": 93 },
+    { "x": 138, "y": 68, "width": 2, "height": 92 }
+  ]
+}

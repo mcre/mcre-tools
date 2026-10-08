@@ -1,0 +1,17 @@
+{
+  "id": "rooms",
+  "name": { "ja": "餌の先の別室", "en": "Another room beyond food" },
+  "columns": 240,
+  "rows": 160,
+  "nest": { "x": 30, "y": 80, "radius": 5 },
+  "food": [
+    { "x": 110, "y": 80, "radius": 3, "amount": 4 },
+    { "x": 200, "y": 80, "radius": 3, "amount": 90 }
+  ],
+  "walls": [
+    { "x": 75, "y": 0, "width": 2, "height": 70 },
+    { "x": 75, "y": 91, "width": 2, "height": 69 },
+    { "x": 145, "y": 0, "width": 2, "height": 120 },
+    { "x": 145, "y": 139, "width": 2, "height": 21 }
+  ]
+}

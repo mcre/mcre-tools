@@ -8,6 +8,7 @@ const ColorMetronome = () => import("@/pages/color-metronome.vue");
 const CharacterCount = () => import("@/pages/character-count.vue");
 const QrCode = () => import("@/pages/qr-code.vue");
 const PiLab = () => import("@/pages/pi-lab.vue");
+const Ants = () => import("@/pages/ants.vue");
 const NotFound = () => import("@/pages/not-found.vue");
 
 const toolsComponents = {
@@ -16,6 +17,7 @@ const toolsComponents = {
   "character-count": CharacterCount,
   "qr-code": QrCode,
   "pi-lab": PiLab,
+  ants: Ants,
 };
 export const tools = Object.keys(toolsComponents);
 

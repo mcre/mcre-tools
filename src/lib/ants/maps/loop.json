@@ -1,0 +1,12 @@
+{
+  "id": "loop",
+  "name": { "ja": "壁の周りの古い道", "en": "Old trail around a wall" },
+  "columns": 240,
+  "rows": 160,
+  "nest": { "x": 35, "y": 80, "radius": 5 },
+  "food": [
+    { "x": 100, "y": 32, "radius": 2, "amount": 8 },
+    { "x": 190, "y": 80, "radius": 3, "amount": 90 }
+  ],
+  "walls": [{ "x": 80, "y": 45, "width": 70, "height": 70 }]
+}

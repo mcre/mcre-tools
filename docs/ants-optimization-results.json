@@ -1,0 +1,409 @@
+{
+  "version": 2,
+  "protocol": {
+    "version": 1,
+    "screen": {
+      "seconds": 90,
+      "seeds": [17, 29],
+      "candidates": 36
+    },
+    "refine": {
+      "seconds": 180,
+      "seeds": [17, 29],
+      "candidates": 18
+    },
+    "validation": {
+      "seconds": 180,
+      "seeds": [101, 211, 307, 401, 503]
+    },
+    "followupValidation": {
+      "seconds": 180,
+      "seeds": [809, 919, 1009, 1103, 1201]
+    },
+    "depletion": {
+      "seconds": 600,
+      "seeds": [601, 701],
+      "maps": ["scattered"],
+      "amountPerCell": 20
+    },
+    "ranges": {
+      "sensorDistance": [3, 4, 5, 6, 7],
+      "sensorAngle": [0.45, 0.6, 0.75, 0.9],
+      "turnRate": [2, 2.5, 3, 4],
+      "distanceDecay": [20, 35, 50, 70],
+      "evaporation": [0.025, 0.045, 0.075, 0.12],
+      "diffusion": [0.15, 0.3, 0.6, 0.9]
+    }
+  },
+  "sourceHash": "7b75ee3b84956e01ccb27e7483f46f4ed790ffb8d89a39d0859f1c39284632c8",
+  "baseline": {
+    "speed": 9,
+    "sensorDistance": 5,
+    "sensorAngle": 0.6,
+    "turnRate": 2,
+    "randomTurn": 0.09,
+    "foodSmellRadius": 8,
+    "foodSmellTurnRate": 1.2,
+    "deposit": 2.5,
+    "distanceDecay": 35,
+    "evaporation": 0.045,
+    "diffusion": 0.3,
+    "maxPheromone": 100
+  },
+  "chosen": {
+    "speed": 9,
+    "sensorDistance": 5,
+    "sensorAngle": 0.7,
+    "turnRate": 4,
+    "randomTurn": 0.09,
+    "foodSmellRadius": 8,
+    "foodSmellTurnRate": 1.2,
+    "deposit": 2.5,
+    "distanceDecay": 35,
+    "evaporation": 0.12,
+    "diffusion": 0.6,
+    "maxPheromone": 100
+  },
+  "validationScore": 2.511565478055871,
+  "summary": {
+    "baseline": [
+      {
+        "mapId": "open",
+        "meanDelivered": 1223,
+        "minDelivered": 1159,
+        "meanReturnFraction": 0.8640213818525307,
+        "meanSourcesVisited": 2,
+        "valid": true,
+        "trials": 5,
+        "meanGround": 3805.0,
+        "maxGround": 3866,
+        "meanCarrying": 192.0
+      },
+      {
+        "mapId": "detour",
+        "meanDelivered": 637.2,
+        "minDelivered": 562,
+        "meanReturnFraction": 0.7713585241564006,
+        "meanSourcesVisited": 2,
+        "valid": true,
+        "trials": 5,
+        "meanGround": 4394.8,
+        "maxGround": 4455,
+        "meanCarrying": 188.0
+      },
+      {
+        "mapId": "gap",
+        "meanDelivered": 859.8,
+        "minDelivered": 711,
+        "meanReturnFraction": 0.8467628385797354,
+        "meanSourcesVisited": 2,
+        "valid": true,
+        "trials": 5,
+        "meanGround": 4206.2,
+        "maxGround": 4336,
+        "meanCarrying": 154.0
+      },
+      {
+        "mapId": "zigzag",
+        "meanDelivered": 312.2,
+        "minDelivered": 150,
+        "meanReturnFraction": 0.6688361394759015,
+        "meanSourcesVisited": 1.8,
+        "valid": true,
+        "trials": 5,
+        "meanGround": 4766.4,
+        "maxGround": 4933,
+        "meanCarrying": 141.4
+      },
+      {
+        "mapId": "scattered",
+        "meanDelivered": 1161,
+        "minDelivered": 1135,
+        "meanReturnFraction": 0.8430219830118583,
+        "meanSourcesVisited": 5.4,
+        "valid": true,
+        "trials": 5,
+        "meanGround": 4473.0,
+        "maxGround": 4499,
+        "meanCarrying": 216.0
+      },
+      {
+        "mapId": "far",
+        "meanDelivered": 574.4,
+        "minDelivered": 467,
+        "meanReturnFraction": 0.7748477957601378,
+        "meanSourcesVisited": 2,
+        "valid": true,
+        "trials": 5,
+        "meanGround": 4480.4,
+        "maxGround": 4586,
+        "meanCarrying": 165.2
+      }
+    ],
+    "optimized": [
+      {
+        "mapId": "open",
+        "meanDelivered": 3210.8,
+        "minDelivered": 2362,
+        "meanReturnFraction": 0.9604678142677059,
+        "meanSourcesVisited": 2,
+        "valid": true,
+        "trials": 5,
+        "meanGround": 1877.8,
+        "maxGround": 2656,
+        "meanCarrying": 131.4
+      },
+      {
+        "mapId": "detour",
+        "meanDelivered": 1545.2,
+        "minDelivered": 1415,
+        "meanReturnFraction": 0.886565589837596,
+        "meanSourcesVisited": 2,
+        "valid": true,
+        "trials": 5,
+        "meanGround": 3478.6,
+        "maxGround": 3598,
+        "meanCarrying": 196.2
+      },
+      {
+        "mapId": "gap",
+        "meanDelivered": 2049.6,
+        "minDelivered": 1818,
+        "meanReturnFraction": 0.9365676036798805,
+        "meanSourcesVisited": 1.8,
+        "valid": true,
+        "trials": 5,
+        "meanGround": 3032.6,
+        "maxGround": 3252,
+        "meanCarrying": 137.8
+      },
+      {
+        "mapId": "zigzag",
+        "meanDelivered": 528.2,
+        "minDelivered": 216,
+        "meanReturnFraction": 0.7858564268802423,
+        "meanSourcesVisited": 1.4,
+        "valid": true,
+        "trials": 5,
+        "meanGround": 4558.0,
+        "maxGround": 4914,
+        "meanCarrying": 133.8
+      },
+      {
+        "mapId": "scattered",
+        "meanDelivered": 2234.8,
+        "minDelivered": 2072,
+        "meanReturnFraction": 0.9718716561972089,
+        "meanSourcesVisited": 5.2,
+        "valid": true,
+        "trials": 5,
+        "meanGround": 3548.6,
+        "maxGround": 3778,
+        "meanCarrying": 66.6
+      },
+      {
+        "mapId": "far",
+        "meanDelivered": 1115.8,
+        "minDelivered": 903,
+        "meanReturnFraction": 0.8674412396453455,
+        "meanSourcesVisited": 2,
+        "valid": true,
+        "trials": 5,
+        "meanGround": 3936.8,
+        "maxGround": 4129,
+        "meanCarrying": 167.4
+      }
+    ]
+  },
+  "trainingScore": 2.471123419047555,
+  "preliminaryCandidate": {
+    "parameters": {
+      "speed": 9,
+      "sensorDistance": 6,
+      "sensorAngle": 0.6,
+      "turnRate": 3.5,
+      "randomTurn": 0.09,
+      "foodSmellRadius": 8,
+      "foodSmellTurnRate": 1.2,
+      "deposit": 2.5,
+      "distanceDecay": 35,
+      "evaporation": 0.045,
+      "diffusion": 0.6,
+      "maxPheromone": 100
+    },
+    "trainingScore": 2.478307132385012,
+    "validationSeeds": [101, 211, 307, 401, 503],
+    "summary": {
+      "baseline": [
+        {
+          "mapId": "open",
+          "meanDelivered": 1231.6,
+          "minDelivered": 1144,
+          "meanReturnFraction": 0.8724572715383303,
+          "meanSourcesVisited": 2,
+          "valid": true
+        },
+        {
+          "mapId": "detour",
+          "meanDelivered": 719.6,
+          "minDelivered": 644,
+          "meanReturnFraction": 0.7993875726688036,
+          "meanSourcesVisited": 2,
+          "valid": true
+        },
+        {
+          "mapId": "gap",
+          "meanDelivered": 779.6,
+          "minDelivered": 682,
+          "meanReturnFraction": 0.8366604571053387,
+          "meanSourcesVisited": 2,
+          "valid": true
+        },
+        {
+          "mapId": "zigzag",
+          "meanDelivered": 360.2,
+          "minDelivered": 324,
+          "meanReturnFraction": 0.6935625737835179,
+          "meanSourcesVisited": 1.6,
+          "valid": true
+        },
+        {
+          "mapId": "scattered",
+          "meanDelivered": 1168.4,
+          "minDelivered": 1056,
+          "meanReturnFraction": 0.8487997104380363,
+          "meanSourcesVisited": 5.6,
+          "valid": true
+        },
+        {
+          "mapId": "far",
+          "meanDelivered": 551.2,
+          "minDelivered": 463,
+          "meanReturnFraction": 0.764256520646883,
+          "meanSourcesVisited": 2,
+          "valid": true
+        }
+      ],
+      "optimized": [
+        {
+          "mapId": "open",
+          "meanDelivered": 2590.2,
+          "minDelivered": 2282,
+          "meanReturnFraction": 0.9831977523687534,
+          "meanSourcesVisited": 2,
+          "valid": true
+        },
+        {
+          "mapId": "detour",
+          "meanDelivered": 1694.2,
+          "minDelivered": 1333,
+          "meanReturnFraction": 0.897832219208597,
+          "meanSourcesVisited": 2,
+          "valid": true
+        },
+        {
+          "mapId": "gap",
+          "meanDelivered": 1570.8,
+          "minDelivered": 901,
+          "meanReturnFraction": 0.890029100431333,
+          "meanSourcesVisited": 2,
+          "valid": true
+        },
+        {
+          "mapId": "zigzag",
+          "meanDelivered": 837,
+          "minDelivered": 625,
+          "meanReturnFraction": 0.8380343445150154,
+          "meanSourcesVisited": 1,
+          "valid": true
+        },
+        {
+          "mapId": "scattered",
+          "meanDelivered": 2285.6,
+          "minDelivered": 2084,
+          "meanReturnFraction": 0.9899627283948025,
+          "meanSourcesVisited": 5.4,
+          "valid": true
+        },
+        {
+          "mapId": "far",
+          "meanDelivered": 1083.2,
+          "minDelivered": 771,
+          "meanReturnFraction": 0.8608261895293661,
+          "meanSourcesVisited": 2,
+          "valid": true
+        }
+      ]
+    },
+    "depletionChecks": {
+      "seconds": 600,
+      "map": "scattered",
+      "amountPerCell": 20,
+      "seeds": [601, 701],
+      "summary": {
+        "baseline": [
+          {
+            "mapId": "scattered",
+            "meanDelivered": 1532.5,
+            "minDelivered": 1526,
+            "meanReturnFraction": 0.9823717948717949,
+            "meanSourcesVisited": 6.0,
+            "valid": true,
+            "trials": 2,
+            "meanGround": 0.0,
+            "maxGround": 0,
+            "meanCarrying": 27.5
+          }
+        ],
+        "optimized": [
+          {
+            "mapId": "scattered",
+            "meanDelivered": 1427.0,
+            "minDelivered": 1303,
+            "meanReturnFraction": 0.9967319490325626,
+            "meanSourcesVisited": 6.0,
+            "valid": true,
+            "trials": 2,
+            "meanGround": 128.0,
+            "maxGround": 256,
+            "meanCarrying": 5.0
+          }
+        ]
+      }
+    }
+  },
+  "depletionChecks": {
+    "sourceHash": "7b75ee3b84956e01ccb27e7483f46f4ed790ffb8d89a39d0859f1c39284632c8",
+    "validationScore": 1.023986887631596,
+    "summary": {
+      "baseline": [
+        {
+          "mapId": "scattered",
+          "meanDelivered": 1532.5,
+          "minDelivered": 1526,
+          "meanReturnFraction": 0.9823717948717949,
+          "meanSourcesVisited": 6,
+          "valid": true,
+          "trials": 2,
+          "meanGround": 0.0,
+          "maxGround": 0,
+          "meanCarrying": 27.5
+        }
+      ],
+      "optimized": [
+        {
+          "mapId": "scattered",
+          "meanDelivered": 1560,
+          "minDelivered": 1560,
+          "meanReturnFraction": 1,
+          "meanSourcesVisited": 6,
+          "valid": true,
+          "trials": 2,
+          "meanGround": 0.0,
+          "maxGround": 0,
+          "meanCarrying": 0.0
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "speed": 9,
+  "sensorDistance": 5,
+  "sensorAngle": 0.6,
+  "turnRate": 2,
+  "randomTurn": 0.09,
+  "foodSmellRadius": 8,
+  "foodSmellTurnRate": 1.2,
+  "deposit": 2.5,
+  "distanceDecay": 35,
+  "evaporation": 0.045,
+  "diffusion": 0.3,
+  "maxPheromone": 100
+}

@@ -1,0 +1,150 @@
+{
+  "version": 1,
+  "screen": {
+    "seconds": 420,
+    "windowSeconds": 60,
+    "seeds": [17, 29],
+    "maps": ["fork", "shortcut", "zigzag"],
+    "scenarios": {
+      "shortcut": {
+        "seconds": 600,
+        "shortcut": {
+          "x": 115,
+          "y": 77,
+          "width": 2,
+          "height": 7,
+          "openAtSeconds": 240
+        }
+      },
+      "zigzag": {
+        "seconds": 180
+      }
+    }
+  },
+  "candidates": [
+    {
+      "id": "previous",
+      "config": {}
+    },
+    {
+      "id": "sensor-individuality-0--1-0.6",
+      "config": {
+        "pheromoneExponent": 1.1,
+        "pheromoneChoiceChance": 1,
+        "returnChoiceChance": 1,
+        "individuality": 0.6,
+        "turnRate": 4.5,
+        "averageSteering": 0,
+        "sensorIndividuality": -1
+      }
+    },
+    {
+      "id": "sensor-individuality-0--1-1",
+      "config": {
+        "pheromoneExponent": 1.1,
+        "pheromoneChoiceChance": 1,
+        "returnChoiceChance": 1,
+        "individuality": 1,
+        "turnRate": 4.5,
+        "averageSteering": 0,
+        "sensorIndividuality": -1
+      }
+    },
+    {
+      "id": "sensor-individuality-0-1-0.6",
+      "config": {
+        "pheromoneExponent": 1.1,
+        "pheromoneChoiceChance": 1,
+        "returnChoiceChance": 1,
+        "individuality": 0.6,
+        "turnRate": 4.5,
+        "averageSteering": 0,
+        "sensorIndividuality": 1
+      }
+    },
+    {
+      "id": "sensor-individuality-0-1-1",
+      "config": {
+        "pheromoneExponent": 1.1,
+        "pheromoneChoiceChance": 1,
+        "returnChoiceChance": 1,
+        "individuality": 1,
+        "turnRate": 4.5,
+        "averageSteering": 0,
+        "sensorIndividuality": 1
+      }
+    },
+    {
+      "id": "sensor-individuality-1--1-0.6",
+      "config": {
+        "pheromoneExponent": 0.9,
+        "pheromoneChoiceChance": 1,
+        "returnChoiceChance": 1,
+        "individuality": 0.6,
+        "turnRate": 4.5,
+        "averageSteering": 1,
+        "sensorIndividuality": -1
+      }
+    },
+    {
+      "id": "sensor-individuality-1--1-1",
+      "config": {
+        "pheromoneExponent": 0.9,
+        "pheromoneChoiceChance": 1,
+        "returnChoiceChance": 1,
+        "individuality": 1,
+        "turnRate": 4.5,
+        "averageSteering": 1,
+        "sensorIndividuality": -1
+      }
+    },
+    {
+      "id": "sensor-individuality-1-1-0.6",
+      "config": {
+        "pheromoneExponent": 0.9,
+        "pheromoneChoiceChance": 1,
+        "returnChoiceChance": 1,
+        "individuality": 0.6,
+        "turnRate": 4.5,
+        "averageSteering": 1,
+        "sensorIndividuality": 1
+      }
+    },
+    {
+      "id": "sensor-individuality-1-1-1",
+      "config": {
+        "pheromoneExponent": 0.9,
+        "pheromoneChoiceChance": 1,
+        "returnChoiceChance": 1,
+        "individuality": 1,
+        "turnRate": 4.5,
+        "averageSteering": 1,
+        "sensorIndividuality": 1
+      }
+    }
+  ],
+  "validation": {
+    "seconds": 420,
+    "windowSeconds": 60,
+    "seeds": [1901, 2003, 2111, 2203, 2309],
+    "maps": ["fork", "loop", "rooms", "shortcut"],
+    "scenarios": {
+      "shortcut": {
+        "seconds": 600,
+        "shortcut": {
+          "x": 115,
+          "y": 77,
+          "width": 2,
+          "height": 7,
+          "openAtSeconds": 240
+        }
+      }
+    }
+  },
+  "regression": {
+    "seconds": 180,
+    "windowSeconds": 60,
+    "seeds": [1901, 2003, 2111, 2203, 2309],
+    "maps": ["open", "detour", "gap", "zigzag", "scattered", "far"]
+  }
+}

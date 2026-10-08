@@ -23,15 +23,19 @@ for (const entry of cases) {
   test(`${entry.path} has useful search metadata and help without JavaScript`, async ({
     browser,
     request,
+    baseURL,
   }) => {
     const html = await (await request.get(`${entry.path}/index.html`)).text();
     expect(html).toContain(`<title>${entry.title}</title>`);
     expect(html).toContain(entry.answer);
 
-    const context = await browser.newContext({ javaScriptEnabled: false });
+    const context = await browser.newContext({
+      javaScriptEnabled: false,
+      baseURL,
+    });
     try {
       const page = await context.newPage();
-      await page.goto(`http://127.0.0.1:4173${entry.path}/index.html`);
+      await page.goto(`${entry.path}/index.html`);
       const description = page.locator('head meta[name="description"]');
       await expect(description).toHaveCount(1);
       await expect(description).toHaveAttribute("content", entry.description);

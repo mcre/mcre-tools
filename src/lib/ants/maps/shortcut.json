@@ -1,0 +1,12 @@
+{
+  "id": "shortcut",
+  "name": { "ja": "近道と迂回路", "en": "Shortcut and detour" },
+  "columns": 240,
+  "rows": 160,
+  "nest": { "x": 70, "y": 80, "radius": 5 },
+  "food": [{ "x": 155, "y": 80, "radius": 3, "amount": 180 }],
+  "walls": [
+    { "x": 115, "y": 0, "width": 2, "height": 77 },
+    { "x": 115, "y": 84, "width": 2, "height": 31 }
+  ]
+}

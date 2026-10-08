@@ -37,11 +37,15 @@ test("the distribution includes full license texts and QR source notices", async
 for (const locale of ["ja", "en"]) {
   test(`${locale} static home links to the distributed licenses`, async ({
     browser,
+    baseURL,
   }) => {
-    const context = await browser.newContext({ javaScriptEnabled: false });
+    const context = await browser.newContext({
+      javaScriptEnabled: false,
+      baseURL,
+    });
     try {
       const page = await context.newPage();
-      await page.goto(`http://127.0.0.1:4173/${locale}/index.html`);
+      await page.goto(`/${locale}/index.html`);
       const link = page.getByRole("link", {
         name: locale === "ja" ? "ライセンスに関して" : "Licenses",
         exact: true,
