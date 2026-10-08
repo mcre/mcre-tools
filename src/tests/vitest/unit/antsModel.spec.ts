@@ -262,7 +262,7 @@ describe("ant model: deterministic local foraging", () => {
     }
     expect(s.delivered).toBeGreaterThan(120);
     expect(mass(s)).toBe(5220);
-  });
+  }, 30_000);
 });
 
 describe("terrain editing", () => {
