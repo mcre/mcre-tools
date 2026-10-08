@@ -43,7 +43,8 @@
 | 遠くの餌     |  574.4 | 1115.8 | 1.94 |            903 |
 
 全60検証試行で質量保存と状態の有効性を確認した。
-各試行の搬入・運搬中・地面の餌・初回搬入時刻・発見した餌の数・飽和率を`ants-optimization-results.json`に保存している。
+`ants-optimization-results.json`には採用値、変更前の値、評価条件、ソースのハッシュ、評価点とマップ別の集計結果を保存している。
+各試行の詳細データはGitに保存しない。
 
 ## 餌が少ない場合の追加確認
 
@@ -65,4 +66,6 @@ npm run test:unit -- src/tests/vitest/unit/antsOptimization.spec.ts
 `tools/ants/protocol.json`に範囲・seed・時間、`baseline.json`に変更前の値を固定している。
 通常の探索コマンドは3分間の搬入数による上位候補を出力する。今回の最終値は、上位2候補を別途`--validate`と`--depletion`で比較して決めた。
 結果はignoredの`output/playwright/ants/optimization/`へ出力する。コマンドはマップや既定値を書き換えない。
+今回の詳細データは`output/playwright/ants/optimization/optimization-results-detailed.json`に移した。このファイルはGit管理対象外で、再検証には集計結果JSONの採用値を使用する。
+採用値の`depletionChecks`では、条件とパラメータに共通の`protocol`・`baseline`・`chosen`を使う。
 回帰テストの`baseline-reference.json`は調整前に測定した結果で、探索コマンドから自動更新しない。
